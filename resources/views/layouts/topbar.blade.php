@@ -5,19 +5,19 @@
             <div class="navbar-brand-box">
                 <a href="index" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{{ URL::asset ('/assets/images/logo.svg') }}" alt="" height="22">
+                        <img src="{{ URL::asset ('/logo.jpg') }}" alt="" height="30">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ URL::asset ('/assets/images/logo-dark.png') }}" alt="" height="17">
+                        <img src="{{ URL::asset ('/logo.jpg') }}" alt="" height="17">
                     </span>
                 </a>
 
                 <a href="index" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{{ URL::asset ('/assets/images/logo-light.svg') }}" alt="" height="22">
+                        <img src="{{ URL::asset ('/logo.jpg') }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ URL::asset ('/assets/images/logo-light.png') }}" alt="" height="19">
+                        <img src="{{ URL::asset ('/logo.jpg') }}" alt="" height="100">
                     </span>
                 </a>
             </div>
@@ -27,18 +27,18 @@
             </button>
 
            <!-- App Search-->
-           <form class="app-search d-none d-lg-block">
+           <!-- <form class="app-search d-none d-lg-block">
             <div class="position-relative">
                 <input type="text" class="form-control" placeholder="@lang('translation.Search')">
                 <span class="bx bx-search-alt"></span>
             </div>
-        </form>
+        </form> -->
 
         <div class="dropdown dropdown-mega d-none d-lg-block ms-2">
-            <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
+            <!-- <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown" aria-haspopup="false" aria-expanded="false">
                 <span key="t-megamenu">@lang('translation.Mega_Menu')</span>
-                <i class="mdi mdi-chevron-down"></i> 
-            </button>
+                <i class="mdi mdi-chevron-down"></i>
+            </button> -->
             <div class="dropdown-menu dropdown-megamenu">
                 <div class="row">
                     <div class="col-sm-8">
@@ -119,7 +119,7 @@
                                     <li>
                                         <a href="javascript:void(0);" key="t-faqs">@lang('translation.FAQs')</a>
                                     </li>
-                        
+
                                 </ul>
                             </div>
                         </div>
@@ -175,12 +175,12 @@
             </button>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
                 aria-labelledby="page-header-search-dropdown">
-                
+
                 <form class="p-3">
                     <div class="form-group m-0">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="@lang('translation.Search')" aria-label="Search input">
-                            
+
                             <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>s
                         </div>
                     </div>
@@ -189,7 +189,7 @@
         </div>
 
         <div class="dropdown d-inline-block">
-            <button type="button" class="btn header-item waves-effect"
+            <!-- <button type="button" class="btn header-item waves-effect"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @switch(Session::get('lang'))
                     @case('ru')
@@ -207,7 +207,7 @@
                     @default
                         <img src="{{ URL::asset('/assets/images/flags/us.jpg')}}" alt="Header Language" height="16"> <span class="align-middle">English</span>
                 @endswitch
-            </button>
+            </button> -->
             <div class="dropdown-menu dropdown-menu-end">
 
                 <!-- item-->
@@ -237,10 +237,10 @@
         </div>
 
         <div class="dropdown d-none d-lg-inline-block ms-1">
-            <button type="button" class="btn header-item noti-icon waves-effect"
+            <!-- <button type="button" class="btn header-item noti-icon waves-effect"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="bx bx-customize"></i>
-            </button>
+            </button> -->
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <div class="px-lg-2">
                     <div class="row g-0">
@@ -295,11 +295,11 @@
         </div>
 
         <div class="dropdown d-inline-block">
-            <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
+            <!-- <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="bx bx-bell bx-tada"></i>
                 <span class="badge bg-danger rounded-pill">3</span>
-            </button>
+            </button> -->
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
                 aria-labelledby="page-header-notifications-dropdown">
                 <div class="p-3">
@@ -375,7 +375,7 @@
                 </div>
                 <div class="p-2 border-top d-grid">
                     <a class="btn btn-sm btn-link font-size-14 text-center" href="javascript:void(0)">
-                        <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more">@lang('translation.View_More')</span> 
+                        <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more">@lang('translation.View_More')</span>
                     </a>
                 </div>
             </div>
@@ -403,12 +403,12 @@
             </div>
         </div>
 
-        <div class="dropdown d-inline-block">
+        <!-- <div class="dropdown d-inline-block">
             <button type="button" class="btn header-item noti-icon right-bar-toggle waves-effect">
                 <i class="bx bx-cog bx-spin"></i>
             </button>
-        </div>
-        
+        </div> -->
+
     </div>
 </div>
 </header>

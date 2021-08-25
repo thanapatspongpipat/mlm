@@ -105,11 +105,21 @@
                                             <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                                                 @csrf
                                                 <div class="mb-3">
-                                                    <label for="username" class="form-label">Email</label>
+                                                    <!-- <label for="username" class="form-label">Email</label>
                                                     <input name="email" type="email"
                                                         class="form-control @error('email') is-invalid @enderror"
                                                         value="{{ old('email', 'admin@themesbrand.com') }}" id="username"
                                                         placeholder="Enter Email" autocomplete="email" autofocus>
+                                                    @error('email')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{ $message }}</strong>
+                                                        </span>
+                                                    @enderror -->
+                                                    <label for="username" class="form-label">Username</label>
+                                                    <input name="username" type="text"
+                                                        class="form-control @error('username') is-invalid @enderror"
+                                                        value="{{ old('username', '') }}" id="username"
+                                                        placeholder="Enter Username" autocomplete="username" autofocus>
                                                     @error('email')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{ $message }}</strong>

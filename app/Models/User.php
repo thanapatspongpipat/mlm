@@ -11,9 +11,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-
-    protected $table = 'admin_users';
-
     /**
      * The attributes that are mass assignable.
      *
@@ -21,10 +18,30 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
-        'password',
+        'username',
+        'firstname',
+        'lastname',
+        'on_card',
         'dob',
+        'email',
+        'phone_number',
+        'line',
+        'fb',
+        'address',
+        'zip_code',
+        'send_address',
+        'send_zip_code',
+        'user_invite_id',
+        'user_upline_id',
+        'bank_id',
+        'bank_no',
+        'bank_own_name',
+        'level',
         'avatar',
+        'position_space',
+        'password',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -45,4 +62,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
 }

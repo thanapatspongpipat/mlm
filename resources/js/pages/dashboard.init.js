@@ -8,9 +8,9 @@ File: Dashboard Init Js File
 
 //  subscribe modal
 
-setTimeout(function () {
-    $('#subscribeModal').modal('show');
-}, 2000);
+// setTimeout(function () {
+//     $('#subscribeModal').modal('show');
+// }, 2000);
 
 
 // stacked column chart
@@ -91,7 +91,7 @@ var options = {
                     offsetY: 22,
                     fontSize: '16px',
                     color: undefined,
-                    formatter: function (val) {
+                    formatter: function(val) {
                         return val + "%";
                     }
                 }
@@ -124,5 +124,3 @@ var chart = new ApexCharts(
 );
 
 chart.render();
-
-

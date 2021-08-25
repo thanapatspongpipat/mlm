@@ -10,6 +10,31 @@
                 <li class="menu-title" key="t-menu">@lang('translation.Menu')</li>
 
                 <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="bx bx-store"></i>
+                        <span key="t-ecommerce">User</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="/member" key="t-products">Member Detail</a></li>
+                        <li><a href="/member/create" key="t-products">Member Register</a></li>
+                        <li><a href="/member" key="t-products">Member Upgrade</a></li>
+                        <li><a href="/member" key="t-products">OrderTrading</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="bx bx-store"></i>
+                        <span key="t-ecommerce">OrderTrading</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="/upline" key="t-products">ผังโครงสร้าง อัฟไลน์</a></li>
+                        <li><a href="/upline" key="t-products">ผังโครงสร้าง แนะนำ</a></li>
+                        <li><a href="/upline" key="t-products">ผังโครงสร้าง แนะนำ Tree</a></li>
+                    </ul>
+                </li>
+
+
+                <!-- <li>
                     <a href="javascript: void(0);" class="waves-effect">
                         <i class="bx bx-home-circle"></i><span class="badge rounded-pill bg-info float-end">04</span>
                         <span key="t-dashboards">@lang('translation.Dashboards')</span>
@@ -401,7 +426,7 @@
                             </ul>
                         </li>
                     </ul>
-                </li>
+                </li> -->
 
             </ul>
         </div>

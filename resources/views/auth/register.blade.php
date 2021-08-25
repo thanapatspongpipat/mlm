@@ -115,19 +115,19 @@
                                                         </span>
                                                     @enderror
                                                 </div>
-        
+
                                                 <div class="mb-3">
                                                     <label for="username" class="form-label">Username</label>
-                                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                                    value="{{ old('name') }}" id="username" name="name" autofocus required
+                                                    <input type="text" class="form-control @error('username') is-invalid @enderror"
+                                                    value="{{ old('username') }}" id="username" name="username" autofocus required
                                                         placeholder="Enter username">
-                                                    @error('name')
+                                                    @error('username')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{ $message }}</strong>
                                                         </span>
                                                     @enderror
                                                 </div>
-        
+
                                                 <div class="mb-3">
                                                     <label for="userpassword" class="form-label">Password</label>
                                                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="userpassword" name="password"
@@ -138,7 +138,7 @@
                                                         </span>
                                                     @enderror
                                                 </div>
-        
+
                                                 <div class="mb-3">
                                                     <label for="confirmpassword" class="form-label">Confirm Password</label>
                                                     <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="confirmpassword"
@@ -149,7 +149,7 @@
                                                         </span>
                                                     @enderror
                                                 </div>
-        
+
                                                 <div class="mb-3">
                                                     <label for="userdob">Date of Birth</label>
                                                     <div class="input-group" id="datepicker1">
@@ -164,7 +164,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-        
+
                                                 <div class="mb-3">
                                                     <label for="avatar">Profile Picture</label>
                                                     <div class="input-group">
@@ -177,15 +177,15 @@
                                                         </span>
                                                     @enderror
                                                 </div>
-        
+
                                                 <div class="mt-4 d-grid">
                                                     <button class="btn btn-primary waves-effect waves-light"
                                                         type="submit">Register</button>
                                                 </div>
-        
+
                                                 <div class="mt-4 text-center">
                                                     <h5 class="font-size-14 mb-3">Sign up using</h5>
-        
+
                                                     <ul class="list-inline">
                                                         <li class="list-inline-item">
                                                             <a href="#"
@@ -207,7 +207,7 @@
                                                         </li>
                                                     </ul>
                                                 </div>
-        
+
                                                 <div class="mt-4 text-center">
                                                     <p class="mb-0">By registering you agree to the Skote <a href="#"
                                                             class="text-primary">Terms of Use</a></p>

@@ -25,7 +25,7 @@
                     <h4 class="card-title">Basic Information</h4>
                     <p class="card-title-desc">Fill all information below</p>
 
-                    <form>
+                    <form class="needs-validation" novalidate>
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="mb-3">
