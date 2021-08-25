@@ -1,56 +1,54 @@
 <?php
 
-namespace App\Http\Controllers\Mlm;
+namespace App\Http\Controllers\MLM;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
+use App\Http\Controllers\MLM\BaseMLM;
 
-class RollUpController extends Controller
+class RollUpController extends BaseMLM
 {
-    public function __construct(){
-        $this->middleware('auth');
-    }
-    public function index($id){
+    public function index($type,$id){
         // Get Key Topic 3
         // MyUserID , Percent
-        //$KeyPriceResult = $this->getKeyResult($id, 5);
-        //dd($KeyPriceResult);
+        if($type == "key"){
+            return $this->getKeyCost($id, 5);
+        }
 
         // GetLogRollUp
         // MyUserID
-        $logRollUp = $this->getLogRollUp($id);
-        dd($logRollUp);
-
+        if($type == "log"){
+            return $this->getLogRollUp($id);
+        }
     }
     public function getLogRollUp($id){
-        $ReferralData = User::where('user_invite_id', $id)->select('level', 'id')->get();
+        $ReferralData = $this->getUserInviter($id);
         $result = array();
         foreach($ReferralData as $user){
             $UserID = $user->id;
             $UserLevel  = $user->level;
             $PercentRollUp = $this->getPercentRollUp($UserLevel);
-            $PriceLevel = $this->getPriceLevel($UserLevel);
+            $PriceLevel = $this->getLevelCost($UserLevel);
             $RollUpResult = ($PercentRollUp / 100) * $PriceLevel;
-            $DealerCloserLevel = $this->DealerCloser($UserLevel);
-            $DealerID = $this->getDealer($id, $DealerCloserLevel);
-            array_push($result, array(
-                "DealerID"=>$DealerID,
-                "RollUpResult"=>$RollUpResult,
-                "PercentRollUp"=>$PercentRollUp,
-                "UserID"=>$UserID
-            ));
+            $CloserDealerLevel = $this->CloserDealer($UserLevel);
+            $DealerID = $this->getDealer($id, $CloserDealerLevel);
+            $result[] = array(
+                "dealerId"=>$DealerID,
+                "rollUpResult"=>$RollUpResult,
+                "percentRollUp"=>$PercentRollUp,
+                "userId"=>$UserID
+            );
         }
-        dd($result);
+        return $result;
     }
 
-    private function getKeyResult($UserID, $Percent){
-        $MyData = User::where('id', $UserID)->select('level')->get();
-        $MyLevel = $MyData[0]->level;
+    private function getKeyCost($userId, $Percent){
+        $MyLevel = $this->getUserLevel($userId);
         $KeyFee = $Percent / 100;
-        return $this->getPriceLevel($MyLevel) * $KeyFee;
+        return array(
+            "cost" => $this->getLevelCost($MyLevel) * $KeyFee
+        );
     }
-    private function DealerCloser($Level){
+
+    private function CloserDealer($Level){
         $levels = array(
             "S"=>"D",
             "M"=>"D",
@@ -59,6 +57,7 @@ class RollUpController extends Controller
         );
         return $levels[$Level];
     }
+
     private function getPercentRollUp($Level){
         $levels = array(
             "S"=>10,
@@ -68,29 +67,15 @@ class RollUpController extends Controller
         );
         return $levels[$Level];
     }
-    private function getPriceLevel($Level){
-        $levels = array(
-            "S"=>1500,
-            "M"=>15000,
-            "D"=>45000,
-            "SD"=>150000
-        );
-        return $levels[$Level];
-    }
+
     private function getDealer($id, $Level){
-        $MyData = User::where('id', $id)->select('user_invite_id', 'level')->get();
-        $MyLevel = $MyData[0]->id;
-        $HeaderID = $MyData[0]->user_invite_id;
+        $MyData = $this->getUserById($id);
+        $HeaderID = $MyData->user_invite_id;
         if(isset($HeaderID)){
-            $HeaderData = User::where('id', $HeaderID)->select('level')->get();
-            $HeaderLevel  = $HeaderData[0]->level;
-            if($HeaderLevel == $Level){
-                return $HeaderID;
-            }  else {
-                return $this->getDealer($HeaderID, $Level);
-            }
-        } else {
-            return 0;
+            $HeaderLevel = $this->getUserLevel($HeaderID);
+            if($HeaderLevel == $Level) return $HeaderID;
+            return $this->getDealer($HeaderID, $Level);
         }
+        return 0;
     }
 }
