@@ -32,6 +32,10 @@ Route::get('/upline', [App\Http\Controllers\User\OrgController::class, 'index'])
 Route::post('/update-profile/{id}', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('updateProfile');
 Route::post('/update-password/{id}', [App\Http\Controllers\HomeController::class, 'updatePassword'])->name('updatePassword');
 
+// mlm process
+Route::get('/mlm/{id}', [App\Http\Controllers\Mlm\RollUpController::class, 'index'])->name('getDealer');
+
+
 // Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 
 //Language Translation
