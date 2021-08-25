@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\getReferralController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,7 @@ Route::post('/update-password/{id}', [App\Http\Controllers\HomeController::class
 
 //Language Translation
 // Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
+
+// referral
+Route::get('/fee-referral/{id}', [App\Http\Controllers\Mlm\getReferralController::class, 'computeFee'])->name('getReferral');
+
