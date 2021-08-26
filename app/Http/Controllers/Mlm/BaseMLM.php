@@ -45,4 +45,31 @@ class BaseMLM extends Controller
         $this->UsersCache = $Users;
         return $this->UsersCache;
     }
+
+    protected function computeValueOfRank(&$array, $raw, $side = "left"){
+        $targetSide = $raw[$side];
+        $otherSide = $raw[ (($side === "left") ? "right" : "left") ];
+        if($targetSide !== null){
+            # ถ้าอีกข้างมีค่า (มีทั้งสองข้าง) ให้หยุดทำงาน
+            if($otherSide !== null && count($array) > 0) return;
+            $array[] = array(
+                "userId"=> $targetSide["id"],
+                "level" => $targetSide["level"]
+            );
+            $this->computeValueOfRank($array, $targetSide, $side);
+        }
+    }
+
+    protected function sumValueOfRank($structure){
+        $results_left = array();
+        $results_right = array();
+        $this->computeValueOfRank($results_left, $structure, "left");
+        $this->computeValueOfRank($results_right, $structure, "right");
+        $levelKey = "level";
+        return array(
+            "userId"=>$structure["id"],
+            "left_value" => array_sum(array_column($results_left, $levelKey)),
+            "right_value" => array_sum(array_column($results_right, $levelKey))
+        );
+    }
 }
