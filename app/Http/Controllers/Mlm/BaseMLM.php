@@ -72,4 +72,14 @@ class BaseMLM extends Controller
             "rightValue" => array_sum(array_column($results_right, $levelKey))
         );
     }
+
+    protected function convertLevelPrice($Level){
+        $result = array(
+            "S"=>1,
+            "M"=>10,
+            "D"=>30,
+            "SD"=>100,
+        );
+        return $result[$Level];
+    }
 }
