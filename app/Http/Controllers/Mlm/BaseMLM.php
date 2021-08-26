@@ -38,7 +38,11 @@ class BaseMLM extends Controller
         return (isset($levels[$lowerLevel])) ? $levels[$lowerLevel] : 0;
     }
 
+    private $UsersCache = array();
     protected function getAllUser(){
-        return User::all();
+        if(isset($this->UsersCache)) return $this->UsersCache;
+        $Users = User::all();
+        $this->UsersCache = $Users;
+        return $this->UsersCache;
     }
 }
