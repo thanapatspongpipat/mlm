@@ -68,8 +68,8 @@ class BaseMLM extends Controller
         $levelKey = "level";
         return array(
             "userId"=>$structure["id"],
-            "left_value" => array_sum(array_column($results_left, $levelKey)),
-            "right_value" => array_sum(array_column($results_right, $levelKey))
+            "leftValue" => array_sum(array_column($results_left, $levelKey)),
+            "rightValue" => array_sum(array_column($results_right, $levelKey))
         );
     }
 }
