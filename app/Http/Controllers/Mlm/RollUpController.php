@@ -18,7 +18,75 @@ class RollUpController extends BaseMLM
         if($type == "log"){
             return $this->getLogRollUp($id);
         }
+
+        if($type == "all"){
+            return $this->getAllLog();
+        }
     }
+    private function formatUserData($UserData){
+        $result = array(
+            "id"=>$UserData->id,
+            "user_invite_id"=>$UserData->user_invite_id,
+            "position_space"=>$UserData->position_space,
+            "level"=>$UserData->level,
+        );
+        return $result;
+    }
+    public function getAllLog(){
+        /*$AllUserData = $this->getAllUser();
+        $AllUserDataFormat = array();
+        $userInviteId = array();
+        foreach($AllUserData as $UserData){
+            $userInviteId[] = intval($UserData->user_invite_id);
+            $AllUserDataFormat[] = $this->formatUserData($UserData);
+        }*/
+        $result = $this->getLeftRight(1);
+        dd($result);
+        return $result;
+        /*$FinalUserData = array();
+        foreach($AllUserDataFormat as $UserData){
+            $UserId = $UserData["id"];
+            $BottomUserData = $this->getUserInviter($UserId);
+            $UserData["isMatch"] = (count($BottomUserData) == 2)?TRUE:FALSE;
+            $BottomDataResult = array();
+            foreach($BottomUserData as $data){
+                $BottomDataResult[] = $this->formatUserData($data);
+            }
+            $UserData["MyBottomUser"] = $BottomDataResult;
+            $FinalUserData[] = $UserData;
+        }
+        dd($FinalUserData);*/
+        //$countUserInviteId = array_count_values($userInviteId);
+    }
+
+    private function formatLeftRight($UserId){
+        $UserInviter = $this->getUserInviter($UserId);
+        $result = array(
+            "left"=>null,
+            "right"=>null
+        );
+        foreach($UserInviter as $user){
+            if($user->position_space == "left"){
+                $result["left"] = $user->id;
+            } else {
+                $result["right"] = $user->id;
+            }
+        }
+        return $result;
+    }
+
+    private function getLeftRight($UserId){
+        if($UserId == 0) return [];
+        $LeftRight = $this->formatLeftRight($UserId);
+        $result = array(
+            "userId"=>$UserId,
+            "level"=>$this->getUserLevel($UserId),
+            "left"=>$this->getLeftRight(($LeftRight["left"] !== null)?$LeftRight["left"]:0),
+            "right"=>$this->getLeftRight($LeftRight["right"] !== null?$LeftRight["right"]:0),
+        );
+        return $result;
+    }
+
     public function getLogRollUp($id){
         $ReferralData = $this->getUserInviter($id);
         $result = array();

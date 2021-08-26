@@ -37,4 +37,8 @@ class BaseMLM extends Controller
         $lowerLevel = strtolower($Level);
         return (isset($levels[$lowerLevel])) ? $levels[$lowerLevel] : 0;
     }
+
+    protected function getAllUser(){
+        return User::all();
+    }
 }
