@@ -75,8 +75,8 @@ class RollUpController extends BaseMLM
         return $result;
     }
 
-    private function getLeftRight($UserId){
-        if($UserId == 0) return [];
+    public function getLeftRight($UserId){
+        if($UserId == 0) return null;
         $LeftRight = $this->formatLeftRight($UserId);
         $result = array(
             "userId"=>$UserId,
