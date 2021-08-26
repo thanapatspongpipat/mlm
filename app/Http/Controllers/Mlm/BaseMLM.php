@@ -41,4 +41,14 @@ class BaseMLM extends Controller
     protected function getAllUser(){
         return User::all();
     }
+
+    protected function convertLevelPrice($Level){
+        $result = array(
+            "S"=>1,
+            "M"=>10,
+            "D"=>30,
+            "SD"=>100,
+        );
+        return $result[$Level];
+    }
 }

@@ -10,7 +10,8 @@ class RollUpController extends BaseMLM
         // Get Key Topic 3
         // MyUserID , Percent
         if($type == "key"){
-            return $this->getKeyCost($id, 5);
+            $headerId = 1;
+            return $this->getKeyCost($id, 5, $headerId);
         }
 
         // GetLogRollUp
@@ -20,9 +21,36 @@ class RollUpController extends BaseMLM
         }
 
         if($type == "all"){
-            return $this->getAllLog();
+            return $this->getAllLog($id);
+        }
+
+        if($type == "balance"){
+            $AllData = $this->getAllLog($id);
+            $CombineValue = $this->combine($AllData);
+            $LeftValue = $CombineValue["left"];
+            $RightValue = $CombineValue["right"];
+            $result = min($LeftValue, $RightValue);
+            return ["point"=>$result * 255];
         }
     }
+
+    public function compute($data, &$total = 0){
+        $total += $this->convertLevelPrice($data["level"]);
+        if($data["left"] !== null) $this->compute($data["left"], $total);
+        if($data["right"] !== null) $this->compute($data["right"], $total);
+    }
+
+    public function combine($data){
+        $totalLeft = 0;
+        $totalRight = 0;
+        $this->compute($data["left"], $totalLeft);
+        $this->compute($data["right"], $totalRight);
+        return array(
+            "left"=>$totalLeft,
+            "right"=>$totalRight
+        );
+    }
+
     private function formatUserData($UserData){
         $result = array(
             "id"=>$UserData->id,
@@ -32,31 +60,10 @@ class RollUpController extends BaseMLM
         );
         return $result;
     }
-    public function getAllLog(){
-        /*$AllUserData = $this->getAllUser();
-        $AllUserDataFormat = array();
-        $userInviteId = array();
-        foreach($AllUserData as $UserData){
-            $userInviteId[] = intval($UserData->user_invite_id);
-            $AllUserDataFormat[] = $this->formatUserData($UserData);
-        }*/
-        $result = $this->getLeftRight(1);
-        dd($result);
+
+    public function getAllLog($UserId){
+        $result = $this->getLeftRight($UserId);
         return $result;
-        /*$FinalUserData = array();
-        foreach($AllUserDataFormat as $UserData){
-            $UserId = $UserData["id"];
-            $BottomUserData = $this->getUserInviter($UserId);
-            $UserData["isMatch"] = (count($BottomUserData) == 2)?TRUE:FALSE;
-            $BottomDataResult = array();
-            foreach($BottomUserData as $data){
-                $BottomDataResult[] = $this->formatUserData($data);
-            }
-            $UserData["MyBottomUser"] = $BottomDataResult;
-            $FinalUserData[] = $UserData;
-        }
-        dd($FinalUserData);*/
-        //$countUserInviteId = array_count_values($userInviteId);
     }
 
     private function formatLeftRight($UserId){
@@ -75,8 +82,8 @@ class RollUpController extends BaseMLM
         return $result;
     }
 
-    private function getLeftRight($UserId){
-        if($UserId == 0) return [];
+    public function getLeftRight($UserId){
+        if($UserId == 0) return null;
         $LeftRight = $this->formatLeftRight($UserId);
         $result = array(
             "userId"=>$UserId,
@@ -90,14 +97,14 @@ class RollUpController extends BaseMLM
     public function getLogRollUp($id){
         $ReferralData = $this->getUserInviter($id);
         $result = array();
+        $UserLevel = $this->getUserLevel($id);
+        $PercentRollUp = $this->getPercentRollUp($UserLevel);
         foreach($ReferralData as $user){
             $UserID = $user->id;
             $UserLevel  = $user->level;
-            $PercentRollUp = $this->getPercentRollUp($UserLevel);
             $PriceLevel = $this->getLevelCost($UserLevel);
             $RollUpResult = ($PercentRollUp / 100) * $PriceLevel;
-            $CloserDealerLevel = $this->CloserDealer($UserLevel);
-            $DealerID = $this->getDealer($id, $CloserDealerLevel);
+            $DealerID = $this->getDealer($id);
             $result[] = array(
                 "dealerId"=>$DealerID,
                 "rollUpResult"=>$RollUpResult,
@@ -108,11 +115,13 @@ class RollUpController extends BaseMLM
         return $result;
     }
 
-    private function getKeyCost($userId, $Percent){
+    private function getKeyCost($userId, $Percent, $headerId){
         $MyLevel = $this->getUserLevel($userId);
         $KeyFee = $Percent / 100;
         return array(
-            "cost" => $this->getLevelCost($MyLevel) * $KeyFee
+            "cost" => $this->getLevelCost($MyLevel) * $KeyFee,
+            "userId"=> $userId,
+            "headerId"=>$headerId,
         );
     }
 
@@ -136,13 +145,13 @@ class RollUpController extends BaseMLM
         return $levels[$Level];
     }
 
-    private function getDealer($id, $Level){
+    private function getDealer($id){
         $MyData = $this->getUserById($id);
         $HeaderID = $MyData->user_invite_id;
         if(isset($HeaderID)){
             $HeaderLevel = $this->getUserLevel($HeaderID);
-            if($HeaderLevel == $Level) return $HeaderID;
-            return $this->getDealer($HeaderID, $Level);
+            if($HeaderLevel == "D" || $HeaderLevel == "SD") return $HeaderID;
+            return $this->getDealer($HeaderID);
         }
         return 0;
     }
