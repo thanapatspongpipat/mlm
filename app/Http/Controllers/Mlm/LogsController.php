@@ -73,7 +73,7 @@ class LogsController extends RollUpController
         if(count($keyDuplicate) > 0) return ["status"=>false];
         Transactions::insert([
             "user_id"=>$id,
-            "detail"=>"key",
+            "detail"=>"key from userId {$pairId}",
             "balance"=>$keyValue["cost"],
             "amount"=>0,
             "type"=>"DEPOSIT",
