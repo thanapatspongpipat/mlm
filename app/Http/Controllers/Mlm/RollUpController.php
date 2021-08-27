@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\MLM;
 
 use App\Http\Controllers\MLM\BaseMLM;
+use App\Models\transactions;
 
 class RollUpController extends BaseMLM
 {
-    public function index($type,$id){
+    public function index($id, $pairId, $type){
         // Get Key Topic 3
         // MyUserID , Percent
         if($type == "key"){
             $headerId = 1;
             // user, percent, dealerId or super dealer id
-            return $this->getKeyCost($id, 5, $headerId);
+            return $this->getKeyCost($headerId, $id);
         }
 
         // GetLogRollUp Topic 2
@@ -28,13 +29,20 @@ class RollUpController extends BaseMLM
 
         // Topic 4
         if($type == "balance"){
-            $AllData = $this->getAllLog($id);
-            $CombineValue = $this->combine($AllData);
-            $LeftValue = $CombineValue["left"];
-            $RightValue = $CombineValue["right"];
-            $result = min($LeftValue, $RightValue);
-            return ["point"=>$result * 255];
+            return $this->getBalance($id);
         }
+    }
+
+    public function getBalance($id){
+        $AllData = $this->getAllLog($id);
+        $CombineValue = $this->combine($AllData);
+        $MyLevel = $this->getUserLevel($id);
+        $RangeCouple = $this->convertMaxCouple($MyLevel);
+        $LeftValue = $CombineValue["left"];
+        $RightValue = $CombineValue["right"];
+        $numCouple = min($LeftValue, $RightValue);
+        $result = $this->calculateResultCouple($RangeCouple, $numCouple);
+        return ["point"=>$result];
     }
 
     public function compute($data, &$total = 0){
@@ -66,6 +74,30 @@ class RollUpController extends BaseMLM
 
     public function getAllLog($UserId){
         $result = $this->getLeftRight($UserId);
+        return $result;
+    }
+
+    private function calculateResultCouple($RangeCouple, $numCouple){
+        $result = 0;
+        $min = $RangeCouple["phrase1"];
+        $max = $RangeCouple["phrase2"];
+        if($numCouple >= $min["countCouple"]){
+            $result += $min["price"] * $min["countCouple"];
+            $numCouple -= $min["countCouple"];
+        } else {
+            $result += $min["price"] * $numCouple;
+            $numCouple = 0;
+        }
+        // unlimit for D and SD
+        if($max == 0){
+            $result += $max["price"] * $numCouple;
+        } else {
+            if($numCouple >= $max["countCouple"]){
+                $result += $max["price"] * ($max["countCouple"] - $min["countCouple"]);
+            } else {
+                $result += $max["price"] * $numCouple;
+            }
+        }
         return $result;
     }
 
@@ -118,13 +150,13 @@ class RollUpController extends BaseMLM
         return $result;
     }
 
-    private function getKeyCost($userId, $Percent, $headerId){
+    public function getKeyCost($headerId, $userId, $Percent = 5){
         $MyLevel = $this->getUserLevel($userId);
         $KeyFee = $Percent / 100;
         return array(
             "cost" => $this->getLevelCost($MyLevel) * $KeyFee,
             "userId"=> $userId,
-            "headerId"=>$headerId,
+            "headerId"=>$headerId, // D or SD
         );
     }
 

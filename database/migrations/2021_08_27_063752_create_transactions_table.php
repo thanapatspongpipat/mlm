@@ -15,13 +15,16 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger("userId")->unsigned();
-            $table->bigInteger("pairId")->comment("คนที่เรากรอก ไอดีให้")->unsigned();
-            $table->string("action", 20)->nullable();
-            $table->integer("point");
+            $table->integer("user_id")->comment("user");
+            $table->decimal('amount', $precision = 20, $scale = 2)->comment("จำนวนเงิน");
+            $table->decimal('balance', $precision = 20, $scale = 2)->comment("ยอดคงเหลือ");
+            $table->string("type", 255)->comment("DEPOSIT WITHDRAW");
+            $table->string('detail', 255)->nullable()->comment("รายละเอียด");
+            $table->timestamp("transaction_timestamp")->comment("วันที่ทำรายการ");
             $table->timestamps();
-
-            $table->foreign('userId')->references('id')->on('users');
+            $table->timestamp("deleted_at")->nullable();
+            $table->integer("user_approve_id")->comment("คนยืนยัน");
+            $table->integer("user_create_id")->comment("คนสร้าง");
         });
     }
 
