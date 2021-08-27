@@ -80,15 +80,16 @@ class BaseMLM extends Controller
             "D"=>30,
             "SD"=>100,
         );
-        return $result[$Level];
+        return (isset($result[$Level]))?$result[$Level]:0;
     }
+
 
     protected function convertMaxCouple($level){
         $result = array(
             "S" => [
                 "phrase1" => [
                     "countCouple" => 8,
-                    "price" => 225],
+                    "price" => 255],
                 "phrase2" => [
                     "countCouple" => 56,
                     "price" => 75]
@@ -96,7 +97,7 @@ class BaseMLM extends Controller
             "M" => [
                 "phrase1" => [
                     "countCouple" => 16,
-                    "price" => 225],
+                    "price" => 255],
                 "phrase2" => [
                     "countCouple" => 416,
                     "price" => 112]
@@ -104,7 +105,7 @@ class BaseMLM extends Controller
             "D" => [
                 "phrase1" => [
                     "countCouple" => 32,
-                    "price" => 225
+                    "price" => 255
                 ],
                 "phrase2" => [
                     "countCouple" => 0,
@@ -114,11 +115,11 @@ class BaseMLM extends Controller
             "SD" => [
                 "phrase1" => [
                     "countCouple" => 70,
-                    "price" => 225
+                    "price" => 255
                 ],
-                "phrase2" => [
+                "phrase2"=> [
                     "countCouple" => 0,
-                    "price" => 112
+                    "price"=>112
                 ]
             ]
         );

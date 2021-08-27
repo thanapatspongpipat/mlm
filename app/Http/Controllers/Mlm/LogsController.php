@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Mlm;
 
 use App\Http\Controllers\Mlm\RollUpController;
 use Illuminate\Http\Request;
-use App\Models\transaction;
+use App\Models\User;
+use App\Models\Transactions;
 class LogsController extends RollUpController
 {
     public function index($id, $playerId, $type){
@@ -16,6 +17,34 @@ class LogsController extends RollUpController
             $result = $this->getCoupleValue($id);
             return $result;
         }
+        if($type == "allLogs"){
+            $result = $this->getLogs();
+            return $result;
+        }
+    }
+
+    public function getLogs(){
+        $UserData = User::select("id")->get();
+        $AllLogs = array();
+        foreach($UserData as $User){
+            $userId = $User->id;
+            $logs = $this->getCoupleValue($userId);
+            foreach($logs as $log){
+                for($i=0;$i<$log[1];$i++){
+                    $AllLogs[] = $this->generateLogsCouple($userId, $log[0]);
+                }
+            }
+        }
+        return $AllLogs;
+    }
+
+    public function generateLogsCouple($userId, $balance){
+        return [
+            "userId"=>$userId,
+            "balance"=>$balance,
+            "detail"=>"couple",
+            "type"=>"DEPOSIT"
+        ];
     }
 
     public function getCoupleValue($id){
@@ -33,29 +62,29 @@ class LogsController extends RollUpController
             ["user_id", "=", $id],
             ["balance", "=", $result["max"][1]]
         ])->select("user_id", "balance")->get();
-        if(count($minTransaction) < $result["min"][0]){
+        if(count($minTransaction) < $result["min"][0] && $MyPoint > 0){
             $toInsert = $result["min"][0] - count($minTransaction);
             for($i=0;$i<$toInsert;$i++){
                 Transactions::insert([
                     "user_id"=>$id,
                     "amount"=>0,
                     "balance"=>$result["min"][1],
-                    "type"=>"DEPOSIT",
-                    "detail"=>"couple",
+                    "type"=>"DEPOSIT_COUPLE",
+                    "detail"=>"COUPLE",
                     "user_approve_id"=>0,
                     "user_create_id"=>0
 
                 ]);
             }
         }
-        if(count($maxTransaction) < $result["max"][0]){
+        if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
             $toInsert = $result["max"][0] - count($maxTransaction);
             for($i=0;$i<$toInsert;$i++){
                 Transactions::insert([
                     "user_id"=>$id,
-                    "type"=>"DEPOSIT",
+                    "type"=>"DEPOSIT_COUPLE",
                     "amount"=>0,
-                    "detail"=>"couple",
+                    "detail"=>"COUPLE",
                     "balance"=>$result["max"][1],
                     "user_approve_id"=>0,
                     "user_create_id"=>0
@@ -89,20 +118,21 @@ class LogsController extends RollUpController
         $PriceMin = $RangeCouple["phrase1"]["price"];
         $MaxCouple = $RangeCouple["phrase2"]["countCouple"];
         $PriceMax = $RangeCouple["phrase2"]["price"];
-        if($MyPoint <= $MinCouple){
-            return ["min"=> [$MyPoint, $PriceMin] , "max" => [0, $PriceMax]];
+        if($MyPoint <= $MinCouple * $PriceMin){
+            return ["min"=> [$MyPoint / $PriceMin, $PriceMin] , "max" => [0, $PriceMax]];
         }
         $MaxPrice = 0;
-        $MyPoint -= $MinCouple;
+        $MyPoint -= $MinCouple * $PriceMin;
         if($MaxCouple == 0){
-            $MaxPrice = $MyPoint;
+            $MaxPrice = $MyPoint / $PriceMax;
         } else {
-            if($MyPoint <= $MaxCouple){
-                $MaxPrice = $MyPoint;
+            if($MyPoint <= ($MaxCouple - $MinCouple) * $PriceMax){
+                $MaxPrice = $MyPoint / $PriceMax ;
             } else {
-                $MaxPrice = $MaxCouple;
+                $MaxPrice = $MaxCouple - $MinCouple;
             }
         }
+        // [8, 255], [4, 75]
         return ["min" => [$MinCouple, $PriceMin], "max" => [$MaxPrice, $PriceMax]];
     }
 }
