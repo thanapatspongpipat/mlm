@@ -46,9 +46,11 @@ class RollUpController extends BaseMLM
     }
 
     public function compute($data, &$total = 0){
-        $total += $this->convertLevelPrice($data["level"]);
-        if($data["left"] !== null) $this->compute($data["left"], $total);
-        if($data["right"] !== null) $this->compute($data["right"], $total);
+        if($data !== null && $data["level"] !== null) {
+            $total += $this->convertLevelPrice($data["level"]);
+        }
+        if($data !== null && $data["left"] !== null ) $this->compute($data["left"], $total);
+        if($data !== null && $data["right"] !== null) $this->compute($data["right"], $total);
     }
 
     public function combine($data){
@@ -89,10 +91,10 @@ class RollUpController extends BaseMLM
             $numCouple = 0;
         }
         // unlimit for D and SD
-        if($max == 0){
+        if($max["countCouple"] == 0){
             $result += $max["price"] * $numCouple;
         } else {
-            if($numCouple >= $max["countCouple"]){
+            if($numCouple >= $max["countCouple"] - $min["countCouple"]){
                 $result += $max["price"] * ($max["countCouple"] - $min["countCouple"]);
             } else {
                 $result += $max["price"] * $numCouple;

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Mlm;
 
 use App\Http\Controllers\Mlm\RollUpController;
+use App\Http\Controllers\Mlm\BasicController;
 use Illuminate\Http\Request;
-use App\Models\transaction;
+use App\Models\User;
+use App\Models\Transactions;
 class LogsController extends RollUpController
 {
     public function index($id, $playerId, $type){
@@ -16,6 +18,76 @@ class LogsController extends RollUpController
             $result = $this->getCoupleValue($id);
             return $result;
         }
+        if($type == "allLogs"){
+            // date
+            $result = $this->getLogs($id);
+            return $result;
+        }
+        if($type == "setlog"){
+            $result = $this->InsertData();
+        }
+    }
+
+    // format yyyy-mm-dd
+    public function getKeyLogDate($id, $date = null){
+        if($date === null){
+            $date = date('Y-m-d');
+        }
+        $result = Transactions::where('user_id', $id)
+        ->where('type', "DEPOSIT_KEY")
+        ->whereDate("transaction_timestamp", $date);
+        return $result->get();
+    }
+    public function getLogs($date = null){
+        if($date === null){
+            $date = date('Y-m-d');
+        }
+        $result = Transactions::whereDate("transaction_timestamp", $date);
+        return $result->get();
+    }
+
+    public function InsertData(){
+        $UserData = User::select("id")->get();
+        $AllLogs = array();
+        $BasicController = new BasicController();
+        foreach($UserData as $User){
+            $userId = $User->id;
+            $logs = $this->getCoupleValue($userId);
+            foreach($logs as $log){
+                for($i=0;$i<$log[0];$i++){
+                    $couple = $this->generateLogsCouple($userId, $log[1]);
+                    if($couple != false){
+                        $AllLogs[] = $couple;
+                    }
+                }
+            }
+            $KeyLogDate = $this->getKeyLogDate($userId);
+            foreach($KeyLogDate as $key){
+                $AllLogs[] = $this->formatKeyLog($key);
+            }
+            // have to add log
+            $BasicController->insertFee($userId);
+            $BasicController->insertRollup($userId);
+        }
+        return $AllLogs;
+    }
+    public function formatKeyLog($data){
+        return  [
+            "user_id"=>$data->user_id,
+            "balance"=>$data->balance,
+            "detail"=>$data->detail,
+            "type"=>"DEPOSIT_KEY"
+        ];
+    }
+
+
+    public function generateLogsCouple($userId, $balance){
+        return [
+            "user_id"=>$userId,
+            "balance"=>$balance,
+            "detail"=>"COUPLE",
+            "type"=>"DEPOSIT",
+        ];
     }
 
     public function getCoupleValue($id){
@@ -33,29 +105,29 @@ class LogsController extends RollUpController
             ["user_id", "=", $id],
             ["balance", "=", $result["max"][1]]
         ])->select("user_id", "balance")->get();
-        if(count($minTransaction) < $result["min"][0]){
+        if(count($minTransaction) < $result["min"][0] && $MyPoint > 0){
             $toInsert = $result["min"][0] - count($minTransaction);
             for($i=0;$i<$toInsert;$i++){
                 Transactions::insert([
                     "user_id"=>$id,
                     "amount"=>0,
                     "balance"=>$result["min"][1],
-                    "type"=>"DEPOSIT",
-                    "detail"=>"couple",
+                    "type"=>"DEPOSIT_COUPLE",
+                    "detail"=>"COUPLE",
                     "user_approve_id"=>0,
                     "user_create_id"=>0
 
                 ]);
             }
         }
-        if(count($maxTransaction) < $result["max"][0]){
+        if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
             $toInsert = $result["max"][0] - count($maxTransaction);
             for($i=0;$i<$toInsert;$i++){
                 Transactions::insert([
                     "user_id"=>$id,
-                    "type"=>"DEPOSIT",
+                    "type"=>"DEPOSIT_COUPLE",
                     "amount"=>0,
-                    "detail"=>"couple",
+                    "detail"=>"COUPLE",
                     "balance"=>$result["max"][1],
                     "user_approve_id"=>0,
                     "user_create_id"=>0
@@ -68,15 +140,18 @@ class LogsController extends RollUpController
     public function getKeyLogs($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
         $keyDuplicate = Transactions::where([
-            ['user_id', '=', $id]
+            ['user_id', '=', $id],
+            ['fk_id', '=', $pairId],
+            ['type', '=', "DEPOSIT_KEY"]
         ])->get();
         if(count($keyDuplicate) > 0) return ["status"=>false];
         Transactions::insert([
             "user_id"=>$id,
-            "detail"=>"key from userId {$pairId}",
+            "detail"=>"KEY",
             "balance"=>$keyValue["cost"],
             "amount"=>0,
-            "type"=>"DEPOSIT",
+            "fk_id"=>$pairId,
+            "type"=>"DEPOSIT_KEY",
             "user_approve_id"=>0,
             "user_create_id"=>0
         ]);
@@ -89,20 +164,21 @@ class LogsController extends RollUpController
         $PriceMin = $RangeCouple["phrase1"]["price"];
         $MaxCouple = $RangeCouple["phrase2"]["countCouple"];
         $PriceMax = $RangeCouple["phrase2"]["price"];
-        if($MyPoint <= $MinCouple){
-            return ["min"=> [$MyPoint, $PriceMin] , "max" => [0, $PriceMax]];
+        if($MyPoint <= $MinCouple * $PriceMin){
+            return ["min"=> [$MyPoint / $PriceMin, $PriceMin] , "max" => [0, $PriceMax]];
         }
         $MaxPrice = 0;
-        $MyPoint -= $MinCouple;
+        $MyPoint -= $MinCouple * $PriceMin;
         if($MaxCouple == 0){
-            $MaxPrice = $MyPoint;
+            $MaxPrice = $MyPoint / $PriceMax;
         } else {
-            if($MyPoint <= $MaxCouple){
-                $MaxPrice = $MyPoint;
+            if($MyPoint <= ($MaxCouple - $MinCouple) * $PriceMax){
+                $MaxPrice = $MyPoint / $PriceMax ;
             } else {
-                $MaxPrice = $MaxCouple;
+                $MaxPrice = $MaxCouple - $MinCouple;
             }
         }
+        // [8, 255], [4, 75]
         return ["min" => [$MinCouple, $PriceMin], "max" => [$MaxPrice, $PriceMax]];
     }
 }
