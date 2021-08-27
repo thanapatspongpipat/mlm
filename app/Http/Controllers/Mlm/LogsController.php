@@ -19,26 +19,32 @@ class LogsController extends RollUpController
     }
 
     public function getCoupleValue($id){
+        $id = (int)$id;
         $userLevel = $this->getUserLevel($id);
         $RangeCouple = $this->convertMaxCouple($userLevel);
+        if(!isset($RangeCouple)){ return ["status"=>false]; }
         $MyPoint = $this->getBalance($id);
         $result = $this->reverseCoupleValue($MyPoint["point"], $RangeCouple);
         $minTransaction = transaction::where([
-            ["userId", "=", $id],
-            ["point", "=", $result["min"][1]]
-        ])->select("userId", "point")->get();
+            ["user_id", "=", $id],
+            ["balance", "=", $result["min"][1]]
+        ])->select("user_id", "balance")->get();
         $maxTransaction = transaction::where([
-            ["userId", "=", $id],
-            ["point", "=", $result["max"][1]]
-        ])->select("userId", "point")->get();
+            ["user_id", "=", $id],
+            ["balance", "=", $result["max"][1]]
+        ])->select("user_id", "balance")->get();
         if(count($minTransaction) < $result["min"][0]){
             $toInsert = $result["min"][0] - count($minTransaction);
             for($i=0;$i<$toInsert;$i++){
                 transaction::insert([
-                    "userId"=>$id,
-                    "pairId"=>0,
-                    "action"=>"couple",
-                    "point"=>$result["min"][1]
+                    "user_id"=>$id,
+                    "amount"=>0,
+                    "balance"=>$result["min"][1],
+                    "type"=>"DEPOSIT",
+                    "detail"=>"couple",
+                    "user_approve_id"=>0,
+                    "user_create_id"=>0
+
                 ]);
             }
         }
@@ -46,10 +52,13 @@ class LogsController extends RollUpController
             $toInsert = $result["max"][0] - count($maxTransaction);
             for($i=0;$i<$toInsert;$i++){
                 transaction::insert([
-                    "userId"=>$id,
-                    "pairId"=>0,
-                    "action"=>"couple",
-                    "point"=>$result["max"][1]
+                    "user_id"=>$id,
+                    "type"=>"DEPOSIT",
+                    "amount"=>0,
+                    "detail"=>"couple",
+                    "balance"=>$result["max"][1],
+                    "user_approve_id"=>0,
+                    "user_create_id"=>0
                 ]);
             }
         }
@@ -59,11 +68,18 @@ class LogsController extends RollUpController
     public function getKeyLogs($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
         $keyDuplicate = transaction::where([
-            ['userId', '=', $id],
-            ['pairId', '=', $pairId],
+            ['user_id', '=', $id]
         ])->get();
         if(count($keyDuplicate) > 0) return ["status"=>false];
-        transaction::insert(["userId"=>$id, "pairId"=>$pairId,"action"=>"key", "point"=>$keyValue["cost"]]);
+        transaction::insert([
+            "user_id"=>$id,
+            "detail"=>"key",
+            "balance"=>$keyValue["cost"],
+            "amount"=>0,
+            "type"=>"DEPOSIT",
+            "user_approve_id"=>0,
+            "user_create_id"=>0
+        ]);
         $keyValue["status"] = true;
         return $keyValue;
     }

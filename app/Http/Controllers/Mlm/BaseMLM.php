@@ -123,6 +123,6 @@ class BaseMLM extends Controller
             ]
         );
 
-        return $result[$level];
+        return (isset($result[$level]))?$result[$level]:null;
     }
 }
