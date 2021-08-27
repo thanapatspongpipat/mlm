@@ -19,8 +19,12 @@ class LogsController extends RollUpController
             return $result;
         }
         if($type == "allLogs"){
-            $result = $this->getLogs();
+            // date
+            $result = $this->getLogs($id);
             return $result;
+        }
+        if($type == "setlog"){
+            $result = $this->InsertData();
         }
     }
 
@@ -34,8 +38,15 @@ class LogsController extends RollUpController
         ->whereDate("transaction_timestamp", $date);
         return $result->get();
     }
+    public function getLogs($date = null){
+        if($date === null){
+            $date = date('Y-m-d');
+        }
+        $result = Transactions::whereDate("transaction_timestamp", $date);
+        return $result->get();
+    }
 
-    public function getLogs(){
+    public function InsertData(){
         $UserData = User::select("id")->get();
         $AllLogs = array();
         $BasicController = new BasicController();

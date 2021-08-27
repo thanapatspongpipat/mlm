@@ -44,3 +44,4 @@ Route::get('/mlm/rollup/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\RollUpC
 Route::get('/mlm/logs/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\LogsController::class, 'index'])->name("getLogs");
 Route::get('/mlm/test/insertfee/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertFee'])->name('insertFee');
 Route::get('/mlm/test/insertrollup/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertRollUp'])->name('insertRollUp');
+Route::get('/mlm/logs', [App\Http\Controllers\MLM\LogsController::class, 'getLogs']);
