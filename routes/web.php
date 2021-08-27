@@ -40,4 +40,5 @@ Route::post('/update-password/{id}', [App\Http\Controllers\HomeController::class
 
 // Referral
 Route::get('/mlm/basic/{id}', [App\Http\Controllers\MLM\BasicController::class, 'computeFee'])->name('getReferral');
-Route::get('/mlm/rollup/{type}-{id}', [App\Http\Controllers\MLM\RollUpController::class, 'index'])->name('getDealer');
+Route::get('/mlm/rollup/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\RollUpController::class, 'index'])->name('getDealer');
+Route::get('/mlm/logs/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\LogsController::class, 'index'])->name("getLogs");

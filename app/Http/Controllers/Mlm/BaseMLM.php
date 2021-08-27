@@ -82,4 +82,47 @@ class BaseMLM extends Controller
         );
         return $result[$Level];
     }
+
+    protected function convertMaxCouple($level){
+        $result = array(
+            "S" => [
+                "phrase1" => [
+                    "countCouple" => 8,
+                    "price" => 225],
+                "phrase2" => [
+                    "countCouple" => 56,
+                    "price" => 75]
+            ],
+            "M" => [
+                "phrase1" => [
+                    "countCouple" => 16,
+                    "price" => 225],
+                "phrase2" => [
+                    "countCouple" => 416,
+                    "price" => 112]
+            ],
+            "D" => [
+                "phrase1" => [
+                    "countCouple" => 32,
+                    "price" => 225
+                ],
+                "phrase2" => [
+                    "countCouple" => 0,
+                    "price" => 112
+                ]
+            ],
+            "SD" => [
+                "phrase1" => [
+                    "countCouple" => 70,
+                    "price" => 225
+                ],
+                "phrase2" => [
+                    "countCouple" => 0,
+                    "price" => 112
+                ]
+            ]
+        );
+
+        return $result[$level];
+    }
 }
