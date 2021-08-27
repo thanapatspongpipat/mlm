@@ -67,13 +67,13 @@ class LogsController extends RollUpController
 
     public function getKeyLogs($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
-        $keyDuplicate = transaction::where([
-            ['user_id', '=', $id]
+        /*$keyDuplicate = transaction::where([
+            ['user_id', '=', $id, ""]
         ])->get();
-        if(count($keyDuplicate) > 0) return ["status"=>false];
+        if(count($keyDuplicate) > 0) return ["status"=>false];*/
         transaction::insert([
             "user_id"=>$id,
-            "detail"=>"key",
+            "detail"=>"key from userId {$pairId}",
             "balance"=>$keyValue["cost"],
             "amount"=>0,
             "type"=>"DEPOSIT",
