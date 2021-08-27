@@ -11,12 +11,14 @@ class RollUpController extends BaseMLM
         // MyUserID , Percent
         if($type == "key"){
             $headerId = 1;
+            // user, percent, dealerId or super dealer id
             return $this->getKeyCost($id, 5, $headerId);
         }
 
-        // GetLogRollUp
+        // GetLogRollUp Topic 2
         // MyUserID
         if($type == "log"){
+            // my userId
             return $this->getLogRollUp($id);
         }
 
@@ -24,6 +26,7 @@ class RollUpController extends BaseMLM
             return $this->getAllLog($id);
         }
 
+        // Topic 4
         if($type == "balance"){
             $AllData = $this->getAllLog($id);
             $CombineValue = $this->combine($AllData);
