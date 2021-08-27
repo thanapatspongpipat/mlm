@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mlm;
 
 use App\Http\Controllers\Mlm\RollUpController;
+use App\Http\Controllers\Mlm\BasicController;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Transactions;
@@ -23,27 +24,58 @@ class LogsController extends RollUpController
         }
     }
 
+    // format yyyy-mm-dd
+    public function getKeyLogDate($id, $date = null){
+        if($date === null){
+            $date = date('Y-m-d');
+        }
+        $result = Transactions::where('user_id', $id)
+        ->where('type', "DEPOSIT_KEY")
+        ->whereDate("transaction_timestamp", $date);
+        return $result->get();
+    }
+
     public function getLogs(){
         $UserData = User::select("id")->get();
         $AllLogs = array();
+        $BasicController = new BasicController();
         foreach($UserData as $User){
             $userId = $User->id;
             $logs = $this->getCoupleValue($userId);
             foreach($logs as $log){
-                for($i=0;$i<$log[1];$i++){
-                    $AllLogs[] = $this->generateLogsCouple($userId, $log[0]);
+                for($i=0;$i<$log[0];$i++){
+                    $couple = $this->generateLogsCouple($userId, $log[1]);
+                    if($couple != false){
+                        $AllLogs[] = $couple;
+                    }
                 }
             }
+            $KeyLogDate = $this->getKeyLogDate($userId);
+            foreach($KeyLogDate as $key){
+                $AllLogs[] = $this->formatKeyLog($key);
+            }
+            // have to add log
+            $BasicController->insertFee($userId);
+            $BasicController->insertRollup($userId);
         }
         return $AllLogs;
     }
+    public function formatKeyLog($data){
+        return  [
+            "user_id"=>$data->user_id,
+            "balance"=>$data->balance,
+            "detail"=>$data->detail,
+            "type"=>"DEPOSIT_KEY"
+        ];
+    }
+
 
     public function generateLogsCouple($userId, $balance){
         return [
-            "userId"=>$userId,
+            "user_id"=>$userId,
             "balance"=>$balance,
-            "detail"=>"couple",
-            "type"=>"DEPOSIT"
+            "detail"=>"COUPLE",
+            "type"=>"DEPOSIT",
         ];
     }
 
@@ -97,15 +129,18 @@ class LogsController extends RollUpController
     public function getKeyLogs($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
         $keyDuplicate = Transactions::where([
-            ['user_id', '=', $id]
+            ['user_id', '=', $id],
+            ['fk_id', '=', $pairId],
+            ['type', '=', "DEPOSIT_KEY"]
         ])->get();
         if(count($keyDuplicate) > 0) return ["status"=>false];
         Transactions::insert([
             "user_id"=>$id,
-            "detail"=>"key from userId {$pairId}",
+            "detail"=>"KEY",
             "balance"=>$keyValue["cost"],
             "amount"=>0,
-            "type"=>"DEPOSIT",
+            "fk_id"=>$pairId,
+            "type"=>"DEPOSIT_KEY",
             "user_approve_id"=>0,
             "user_create_id"=>0
         ]);
