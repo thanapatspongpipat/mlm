@@ -19,6 +19,7 @@ class CreateTransactionsTable extends Migration
             $table->decimal('amount', $precision = 20, $scale = 2)->comment("จำนวนเงิน");
             $table->decimal('balance', $precision = 20, $scale = 2)->comment("ยอดคงเหลือ");
             $table->string("type", 255)->comment("DEPOSIT WITHDRAW");
+            $table->integer("fk_id")->comment("ค่า ID สำหรับอ้างอิง (MLM)")->nullable();
             $table->string('detail', 255)->nullable()->comment("รายละเอียด");
             $table->timestamp("transaction_timestamp")->comment("วันที่ทำรายการ");
             $table->timestamps();
