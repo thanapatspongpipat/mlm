@@ -25,18 +25,18 @@ class LogsController extends RollUpController
         if(!isset($RangeCouple)){ return ["status"=>false]; }
         $MyPoint = $this->getBalance($id);
         $result = $this->reverseCoupleValue($MyPoint["point"], $RangeCouple);
-        $minTransaction = transaction::where([
+        $minTransaction = Transactions::where([
             ["user_id", "=", $id],
             ["balance", "=", $result["min"][1]]
         ])->select("user_id", "balance")->get();
-        $maxTransaction = transaction::where([
+        $maxTransaction = Transactions::where([
             ["user_id", "=", $id],
             ["balance", "=", $result["max"][1]]
         ])->select("user_id", "balance")->get();
         if(count($minTransaction) < $result["min"][0]){
             $toInsert = $result["min"][0] - count($minTransaction);
             for($i=0;$i<$toInsert;$i++){
-                transaction::insert([
+                Transactions::insert([
                     "user_id"=>$id,
                     "amount"=>0,
                     "balance"=>$result["min"][1],
@@ -51,7 +51,7 @@ class LogsController extends RollUpController
         if(count($maxTransaction) < $result["max"][0]){
             $toInsert = $result["max"][0] - count($maxTransaction);
             for($i=0;$i<$toInsert;$i++){
-                transaction::insert([
+                Transactions::insert([
                     "user_id"=>$id,
                     "type"=>"DEPOSIT",
                     "amount"=>0,
@@ -67,11 +67,11 @@ class LogsController extends RollUpController
 
     public function getKeyLogs($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
-        /*$keyDuplicate = transaction::where([
-            ['user_id', '=', $id, ""]
+        $keyDuplicate = Transactions::where([
+            ['user_id', '=', $id]
         ])->get();
-        if(count($keyDuplicate) > 0) return ["status"=>false];*/
-        transaction::insert([
+        if(count($keyDuplicate) > 0) return ["status"=>false];
+        Transactions::insert([
             "user_id"=>$id,
             "detail"=>"key from userId {$pairId}",
             "balance"=>$keyValue["cost"],
