@@ -16,6 +16,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->bigInteger("userId")->unsigned();
+            $table->bigInteger("pairId")->comment("คนที่เรากรอก ไอดีให้")->unsigned();
             $table->string("action", 20)->nullable();
             $table->integer("point");
             $table->timestamps();
