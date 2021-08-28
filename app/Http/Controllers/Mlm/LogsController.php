@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Mlm;
 
 use App\Http\Controllers\Mlm\RollUpController;
 use App\Http\Controllers\Mlm\BasicController;
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Transactions;
 class LogsController extends RollUpController
@@ -38,6 +37,7 @@ class LogsController extends RollUpController
         ->whereDate("transaction_timestamp", $date);
         return $result->get();
     }
+
     public function getLogs($date = null){
         if($date === null){
             $date = date('Y-m-d');
@@ -71,6 +71,7 @@ class LogsController extends RollUpController
         }
         return $AllLogs;
     }
+
     public function formatKeyLog($data){
         return  [
             "user_id"=>$data->user_id,
@@ -79,7 +80,6 @@ class LogsController extends RollUpController
             "type"=>"DEPOSIT_KEY"
         ];
     }
-
 
     public function generateLogsCouple($userId, $balance){
         return [

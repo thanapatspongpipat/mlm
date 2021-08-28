@@ -7,6 +7,7 @@ use App\Models\transactions;
 
 class RollUpController extends BaseMLM
 {
+
     public function index($id, $pairId, $type){
         // Get Key Topic 3
         // MyUserID , Percent
@@ -62,16 +63,6 @@ class RollUpController extends BaseMLM
             "left"=>$totalLeft,
             "right"=>$totalRight
         );
-    }
-
-    private function formatUserData($UserData){
-        $result = array(
-            "id"=>$UserData->id,
-            "user_invite_id"=>$UserData->user_invite_id,
-            "position_space"=>$UserData->position_space,
-            "level"=>$UserData->level,
-        );
-        return $result;
     }
 
     public function getAllLog($UserId){
@@ -160,16 +151,6 @@ class RollUpController extends BaseMLM
             "userId"=> $userId,
             "headerId"=>$headerId, // D or SD
         );
-    }
-
-    private function CloserDealer($Level){
-        $levels = array(
-            "S"=>"D",
-            "M"=>"D",
-            "D"=>"SD",
-            "SD"=>"SD"
-        );
-        return $levels[$Level];
     }
 
     private function getPercentRollUp($Level){

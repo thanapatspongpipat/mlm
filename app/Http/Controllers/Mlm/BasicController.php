@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\MLM;
 
-use App\Http\Controllers\MLM\BaseMLM;
 use App\Models\Transactions;
 
 class BasicController extends RollUpController
 {
     private function percentage($level){
         $percentage = array(
-            'S' => 20/100,
-            'M' => 25/100,
-            'D' => 30/100,
-            'SD' => 30/100
+            'S' => 20,
+            'M' => 25,
+            'D' => 30,
+            'SD' => 30
         );
-        return $percentage[$level];
+        return intval($percentage[$level])/100;
     }
 
     private function finalCompute($id){
@@ -39,7 +38,7 @@ class BasicController extends RollUpController
         $result = $this->finalCompute($id);
         return $result;
     }
-    
+
     public function insertFee($id){
         $presentArray = array();
         $type = 'DEPOSIT_FEE';
@@ -85,24 +84,19 @@ class BasicController extends RollUpController
         $type = "DEPOSIT_ROLLUP";
         $this->computeRollup($id, $presentArray);
         $finishedCount = 0;
-        //dd($presentArray);
         foreach($presentArray as $index){
             $userId = $index["userId"];
             $action = "ค่า RollUp";
-            // SELECT * FROM transactions WHERE user_id = $userId AND fk_id = $dealerId AND type = 'DEPOSIT_ROLLUP' AND user_id != 0;
             $condition = Transactions::where('user_id', $userId)
                                         ->where('fk_id', $index['dealerId'])
                                         ->where('type', $type);
             $selfCondition = Transactions::where('user_id',$index['dealerId'])
                                         ->where('type', $type)
                                         ->where('fk_id', $index['userId']);
-            /*echo $condition->toSql();
-            dd($userId,$index['dealerId'],$type,$index['dealerId']);*/
-            #dd($userId);
             if (count($condition->get()) <= 0 and count($selfCondition->get()) <= 0){
                 Transactions::insert(array(
                     'user_id' => $index['dealerId'],
-                    'fk_id' => $index['userId'], 
+                    'fk_id' => $index['userId'],
                     'type' => $type,
                     'detail' => $action,
                     'balance' => $index['total'],
@@ -115,7 +109,7 @@ class BasicController extends RollUpController
         }
         return $finishedCount > 0;
     }
-    
+
 
     private function computeRollup($id, &$presentArray){
         $userData = $this->getLeftRight($id);
@@ -132,6 +126,5 @@ class BasicController extends RollUpController
         if($userLeft !== null) $this->getLogRollUp($userLeft['userId'], $presentArray);
         if($userRight !== null) $this->getLogRollUp($userRight['userId'], $presentArray);
     }
-    //private function computeRollup
 
 }
