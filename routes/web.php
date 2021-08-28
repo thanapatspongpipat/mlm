@@ -109,11 +109,15 @@ Route::post('/sponsor/list', [App\Http\Controllers\Sponsor\SponsorController::cl
 Route::get('/member-upgrade', [App\Http\Controllers\Upgrade\UpgradeController::class, 'memberUpgrade'])->name('member.upgrade');
 Route::post('/member-upgrade/product-list', [App\Http\Controllers\Upgrade\UpgradeController::class, 'productList'])->name('member.product-list');
 
-// MLM Debug
+/*
+*
+* MLM Debug
+*
 Route::get('/mlm/basic/{id}', [App\Http\Controllers\MLM\BasicController::class, 'computeFee'])->name('getReferral');
 Route::get('/mlm/rollup/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\RollUpController::class, 'index'])->name('getDealer');
 Route::get('/mlm/logs', [App\Http\Controllers\MLM\LogsController::class, 'getLogs']);
 Route::get('/mlm/logs/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\LogsController::class, 'index'])->name("getLogs");
+*/
 // MLM Insert Functions
 Route::get('/mlm/test/insert-fee/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertFee'])->name('insertFee');
 Route::get('/mlm/test/insert-rollup/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertRollUp'])->name('insertRollUp');

@@ -97,8 +97,8 @@ class LogsController extends RollUpController
         for($i=0;$i<$count;$i++){
             Transaction::insert([
                 "user_id"=>$id,
-                "amount"=>0,
-                "balance"=>$balance,
+                "balance"=>0,
+                "amount"=>$balance,
                 "type"=>"DEPOSIT_COUPLE",
                 "detail"=>$this->detailCouple,
                 "user_approve_id"=>0,
@@ -159,8 +159,8 @@ class LogsController extends RollUpController
         Transaction::insert([
             "user_id"=>$id,
             "detail"=>"ค่าลงทะเบียน {$pairId}",
-            "balance"=>$keyValue["cost"],
-            "amount"=>0,
+            "amount"=>$keyValue["cost"],
+            "balance"=>0,
             "fk_id"=>$pairId,
             "type"=>"DEPOSIT_KEY",
             "user_approve_id"=>0,
