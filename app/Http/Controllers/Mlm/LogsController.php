@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Mlm;
 use App\Http\Controllers\Mlm\RollUpController;
 use App\Http\Controllers\Mlm\BasicController;
 use App\Models\User;
-use App\Models\Transactions;
+use App\Models\Transaction;
 class LogsController extends RollUpController
 {
     public function index($id, $playerId, $type){
@@ -32,7 +32,7 @@ class LogsController extends RollUpController
         if($date === null){
             $date = date('Y-m-d');
         }
-        $result = Transactions::where('user_id', $id)
+        $result = Transaction::where('user_id', $id)
         ->where('type', "DEPOSIT_KEY")
         ->whereDate("transaction_timestamp", $date);
         return $result->get();
@@ -42,7 +42,7 @@ class LogsController extends RollUpController
         if($date === null){
             $date = date('Y-m-d');
         }
-        $result = Transactions::whereDate("transaction_timestamp", $date);
+        $result = Transaction::whereDate("transaction_timestamp", $date);
         return $result->get();
     }
 
@@ -97,18 +97,18 @@ class LogsController extends RollUpController
         if(!isset($RangeCouple)){ return ["status"=>false]; }
         $MyPoint = $this->getBalance($id);
         $result = $this->reverseCoupleValue($MyPoint["point"], $RangeCouple);
-        $minTransaction = Transactions::where([
+        $minTransaction = Transaction::where([
             ["user_id", "=", $id],
             ["balance", "=", $result["min"][1]]
         ])->select("user_id", "balance")->get();
-        $maxTransaction = Transactions::where([
+        $maxTransaction = Transaction::where([
             ["user_id", "=", $id],
             ["balance", "=", $result["max"][1]]
         ])->select("user_id", "balance")->get();
         if(count($minTransaction) < $result["min"][0] && $MyPoint > 0){
             $toInsert = $result["min"][0] - count($minTransaction);
             for($i=0;$i<$toInsert;$i++){
-                Transactions::insert([
+                Transaction::insert([
                     "user_id"=>$id,
                     "amount"=>0,
                     "balance"=>$result["min"][1],
@@ -123,7 +123,7 @@ class LogsController extends RollUpController
         if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
             $toInsert = $result["max"][0] - count($maxTransaction);
             for($i=0;$i<$toInsert;$i++){
-                Transactions::insert([
+                Transaction::insert([
                     "user_id"=>$id,
                     "type"=>"DEPOSIT_COUPLE",
                     "amount"=>0,
@@ -139,13 +139,13 @@ class LogsController extends RollUpController
 
     public function getKeyLogs($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
-        $keyDuplicate = Transactions::where([
+        $keyDuplicate = Transaction::where([
             ['user_id', '=', $id],
             ['fk_id', '=', $pairId],
             ['type', '=', "DEPOSIT_KEY"]
         ])->get();
         if(count($keyDuplicate) > 0) return ["status"=>false];
-        Transactions::insert([
+        Transaction::insert([
             "user_id"=>$id,
             "detail"=>"KEY",
             "balance"=>$keyValue["cost"],

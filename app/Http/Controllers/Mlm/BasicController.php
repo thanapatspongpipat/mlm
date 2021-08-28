@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\MLM;
 
-use App\Models\Transactions;
+use App\Models\Transaction;
 
 class BasicController extends RollUpController
 {
@@ -48,8 +48,8 @@ class BasicController extends RollUpController
         foreach($presentArray as $present){
             foreach($present['total'] as $index){
                 $action = "ค่าแนะนำสมาชิก";
-                    if (count(Transactions::where('user_id', $present['id'])->get()) <= 0  || count(Transactions::where('fk_id', $index['invitedUserId'])->get()) <= 0){
-                        Transactions::insert(array(
+                    if (count(Transaction::where('user_id', $present['id'])->get()) <= 0  || count(Transaction::where('fk_id', $index['invitedUserId'])->get()) <= 0){
+                        Transaction::insert(array(
                             'user_id' => $present['id'],
                             'type' => $type,
                             'fk_id' => $index['invitedUserId'],
@@ -87,14 +87,14 @@ class BasicController extends RollUpController
         foreach($presentArray as $index){
             $userId = $index["userId"];
             $action = "ค่า RollUp";
-            $condition = Transactions::where('user_id', $userId)
+            $condition = Transaction::where('user_id', $userId)
                                         ->where('fk_id', $index['dealerId'])
                                         ->where('type', $type);
-            $selfCondition = Transactions::where('user_id',$index['dealerId'])
+            $selfCondition = Transaction::where('user_id',$index['dealerId'])
                                         ->where('type', $type)
                                         ->where('fk_id', $index['userId']);
             if (count($condition->get()) <= 0 and count($selfCondition->get()) <= 0){
-                Transactions::insert(array(
+                Transaction::insert(array(
                     'user_id' => $index['dealerId'],
                     'fk_id' => $index['userId'],
                     'type' => $type,
