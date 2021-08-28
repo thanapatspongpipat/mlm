@@ -114,6 +114,7 @@ Route::get('/mlm/basic/{id}', [App\Http\Controllers\MLM\BasicController::class, 
 Route::get('/mlm/rollup/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\RollUpController::class, 'index'])->name('getDealer');
 Route::get('/mlm/logs', [App\Http\Controllers\MLM\LogsController::class, 'getLogs']);
 Route::get('/mlm/logs/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\LogsController::class, 'index'])->name("getLogs");
+// MLM Insert Functions
 Route::get('/mlm/test/insert-fee/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertFee'])->name('insertFee');
 Route::get('/mlm/test/insert-rollup/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertRollUp'])->name('insertRollUp');
 Route::get('/mlm/test/insert-key/{id}/{childUser}', [App\Http\Controllers\MLM\LogsController::class, 'insertKey'])->name('insertKey');

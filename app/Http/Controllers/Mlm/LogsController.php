@@ -8,13 +8,8 @@ use App\Models\User;
 use App\Models\Transaction;
 class LogsController extends RollUpController
 {
-    public function insertKey($id, $childUser){
-        $result = $this->getKeyLogs($id, $childUser);
-        return $result;
-    }
-
     public function insertCouple($id){
-        $result = 0; // insert couple function
+        $result = $this->insertTransactionById($id);
         return $result;
     }
 
@@ -88,12 +83,13 @@ class LogsController extends RollUpController
         ];
     }
 
+    private $detailCouple = "ค่าครบคู่";
     public function generateLogsCouple($userId, $balance){
         return [
             "user_id"=>$userId,
             "balance"=>$balance,
-            "detail"=>"COUPLE",
-            "type"=>"DEPOSIT",
+            "detail"=>$this->detailCouple,
+            "type"=>"DEPOSIT_COUPLE",
         ];
     }
 
@@ -104,7 +100,7 @@ class LogsController extends RollUpController
                 "amount"=>0,
                 "balance"=>$balance,
                 "type"=>"DEPOSIT_COUPLE",
-                "detail"=>"COUPLE",
+                "detail"=>$this->detailCouple,
                 "user_approve_id"=>0,
                 "user_create_id"=>0
             ]);
@@ -112,6 +108,7 @@ class LogsController extends RollUpController
     }
 
     public function insertTransactionById($id){
+        $increment = 0;
         $id = (int)$id;
         $userLevel = $this->getUserLevel($id);
         $RangeCouple = $this->convertMaxCouple($userLevel);
@@ -131,11 +128,14 @@ class LogsController extends RollUpController
         if($MyPoint > 0){
             if(count($minTransaction) < $result["min"][0]){
                 $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
+                $increment++;
             }
             if(count($maxTransaction) < $result["max"][0]){
                 $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
+                $increment++;
             }
         }
+        return $increment > 0;
     }
 
     public function getCoupleValue($id){
@@ -148,7 +148,7 @@ class LogsController extends RollUpController
         return $result;
     }
 
-    public function getKeyLogs($id, $pairId){
+    public function insertKey($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
         $keyDuplicate = Transaction::where([
             ['user_id', '=', $id],
@@ -158,7 +158,7 @@ class LogsController extends RollUpController
         if(count($keyDuplicate) > 0) return false;
         Transaction::insert([
             "user_id"=>$id,
-            "detail"=>"KEY",
+            "detail"=>"ค่าลงทะเบียน {$pairId}",
             "balance"=>$keyValue["cost"],
             "amount"=>0,
             "fk_id"=>$pairId,
