@@ -17,7 +17,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'id',
         'name',
+        'prefix_name',
+        'fullname',
         'username',
         'firstname',
         'lastname',
@@ -39,7 +42,26 @@ class User extends Authenticatable
         'level',
         'avatar',
         'position_space',
+        'thai_id',
+        'birth_date',
+        'nationality',
+        'sex',
+        'ig',
+        'country',
+        'region',
+        'province',
+        'district',
+        'sub_district',
+        'send_region',
+        'send_province',
+        'send_sub_district',
+        'send_district',
+        'send_zip_code',
+        'send_email',
+        'send_phone_number',
+        'first_time_login',
         'password',
+        'product_id',
         'created_at',
         'updated_at'
     ];
@@ -62,6 +84,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function childrenUpline(){
+        return $this->hasMany(User::class, 'user_upline_id', 'id')
+        ->orderBy('position_space','ASC')
+        ->with('childrenUpline');
+    }
+
+    public function getChlidrenAttribute(){
+        return $this->hasMany(User::class, 'user_upline_id', 'id')
+        ->orderBy('position_space','ASC')
+        ->with('childrenUpline');
+    }
+
+
+
 
 
 }

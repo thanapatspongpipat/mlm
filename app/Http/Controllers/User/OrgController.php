@@ -67,4 +67,106 @@ class OrgController extends Controller
             ->withErrors($validator)
             ->withInput();
     }
+
+    public function uplineListInfo(Request $request){
+        $user = User::where('id', $request->input('id'))->first();
+        if($user){
+            return response()->json($user);
+        }else{
+            return response()->json([], 400);
+        }
+    }
+
+    public function uplineList(Request $request){
+        // dd($request->all());
+        $username = $request->input('username');
+        $start = $request->input('start');
+        $end = $request->input('end');
+        $users = User::with('childrenUpline')
+            ->where('username', $username);
+        if($start !== '' && $start !== null){
+            $users = $users->whereDate('created_at', '>=', date("Y-m-d",strtotime($start)));
+        }
+
+        if($end !== '' && $end !== null){
+            $users = $users->whereDate('created_at', '<=', date("Y-m-d",strtotime($end)));
+        }
+
+
+        $users = $users->orderBy('position_space','ASC')->get();
+        // return $users;
+        $data = $this->responsiteData($users, true);
+        return response()->json($data);
+    }
+
+    private function responsiteData($users, $first=false, $parent_id=0){
+        $data_set = [];
+        foreach ($users as $key => $value) {
+            $data_set[] = [
+                "id" => $value->id,
+                "parent_id" => $parent_id,
+                "name"=> $value->firstname.' '.$value->lastname,
+                "title"=> $value->firstname.' '.$value->lastname,
+                "avatar"=> $value->avatar,
+                "level"=> $value->username,
+                "level"=> $value->level,
+                "username"=> $value->username,
+                "position" => $value->position_space,
+                "empty"=> false,
+                "children" => $this->responsiteData($value->getAttribute('childrenUpline'), false, $value->id)
+            ];
+        }
+        if(!$first){
+            if(count($data_set) == 0){
+                $data_set[] = [
+                    "id" => null,
+                    "parent_id" => $parent_id,
+                    "name"=> '',
+                    "title"=> '<button type="button" class="btn btn-primary">Add</button>',
+                    "avatar"=> '',
+                    "level"=> '',
+                    "level"=> '',
+                    "username"=> '',
+                    "position" => 'left',
+                    "empty"=> true,
+                ];
+                $data_set[] = [
+                    "id" => null,
+                    "parent_id" => $parent_id,
+                    "name"=> '',
+                    "title"=> '<button type="button" class="btn btn-primary">Add</button>',
+                    "avatar"=> '',
+                    "level"=> '',
+                    "level"=> '',
+                    "username"=> '',
+                    "position" => 'right',
+                    "empty"=> true,
+                ];
+            }
+            if(count($data_set) == 1){
+                $posi = 'left';
+                if($data_set[0]['position'] == 'left'){
+                    $posi = 'right';
+                }
+                $data_set[] = [
+                    "id" => null,
+                    "parent_id" => $parent_id,
+                    "name"=> '',
+                    "title"=> '<button type="button" class="btn btn-primary">Add</button>',
+                    "avatar"=> '',
+                    "level"=> '',
+                    "level"=> '',
+                    "username"=> '',
+                    "position" => $posi,
+                    "empty"=> true,
+                ];
+                // $data_set[] = [];
+            }
+        }else{
+            if(count($data_set)>0){
+                $data_set = $data_set[0];
+            }
+        }
+        return $data_set;
+    }
 }

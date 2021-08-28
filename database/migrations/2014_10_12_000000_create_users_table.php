@@ -36,6 +36,7 @@ class CreateUsersTable extends Migration
             $table->string('bank_no')->comment('เลขที่บันชี')->nullable();
             $table->string('bank_own_name')->comment('ชื่อบันชี ผู้ใช้')->nullable();
             $table->string('level')->comment('ตำแหน่ง')->nullable();
+            $table->integer('product_id')->nullable();
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();

@@ -8,11 +8,17 @@ use App\Models\User;
 use App\Models\Transaction;
 class LogsController extends RollUpController
 {
+    public function insertKey($id, $childUser){
+        $result = $this->getKeyLogs($id, $childUser);
+        return $result;
+    }
+
+    public function insertCouple($id){
+        $result = 0; // insert couple function
+        return $result;
+    }
+
     public function index($id, $playerId, $type){
-        if($type == "key"){
-            $result = $this->getKeyLogs($id, $playerId);
-            return $result;
-        }
         if($type == "couple"){
             $result = $this->getCoupleValue($id);
             return $result;
@@ -116,7 +122,6 @@ class LogsController extends RollUpController
                     "detail"=>"COUPLE",
                     "user_approve_id"=>0,
                     "user_create_id"=>0
-
                 ]);
             }
         }
@@ -144,7 +149,7 @@ class LogsController extends RollUpController
             ['fk_id', '=', $pairId],
             ['type', '=', "DEPOSIT_KEY"]
         ])->get();
-        if(count($keyDuplicate) > 0) return ["status"=>false];
+        if(count($keyDuplicate) > 0) return false;
         Transaction::insert([
             "user_id"=>$id,
             "detail"=>"KEY",
@@ -155,8 +160,7 @@ class LogsController extends RollUpController
             "user_approve_id"=>0,
             "user_create_id"=>0
         ]);
-        $keyValue["status"] = true;
-        return $keyValue;
+        return true;
     }
 
     public function reverseCoupleValue($MyPoint, $RangeCouple){

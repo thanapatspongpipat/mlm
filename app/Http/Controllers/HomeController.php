@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\CashWallet;
+use App\Models\CoinWallet;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -35,8 +37,11 @@ class HomeController extends Controller
     }
 
     public function root()
-    {
-        return view('index');
+    {   
+        $userId = Auth::user()->id;
+        $cashWallet = CashWallet::where('user_id', $userId)->first();
+        $coinWallet = CoinWallet::where('user_id', $userId)->first();
+        return view('index', compact('cashWallet', 'coinWallet'));
     }
 
     /*Language Translation*/
