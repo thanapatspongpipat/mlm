@@ -96,6 +96,20 @@ class LogsController extends RollUpController
         ];
     }
 
+    private function insertTransaction($id, $balance, $count){
+        for($i=0;$i<$count;$i++){
+            Transaction::insert([
+                "user_id"=>$id,
+                "amount"=>0,
+                "balance"=>$result["min"][1],
+                "type"=>"DEPOSIT_COUPLE",
+                "detail"=>"COUPLE",
+                "user_approve_id"=>0,
+                "user_create_id"=>0
+            ]);
+        }
+    }
+
     public function getCoupleValue($id){
         $id = (int)$id;
         $userLevel = $this->getUserLevel($id);
@@ -111,32 +125,15 @@ class LogsController extends RollUpController
             ["user_id", "=", $id],
             ["balance", "=", $result["max"][1]]
         ])->select("user_id", "balance")->get();
-        if(count($minTransaction) < $result["min"][0] && $MyPoint > 0){
-            $toInsert = $result["min"][0] - count($minTransaction);
-            for($i=0;$i<$toInsert;$i++){
-                Transaction::insert([
-                    "user_id"=>$id,
-                    "amount"=>0,
-                    "balance"=>$result["min"][1],
-                    "type"=>"DEPOSIT_COUPLE",
-                    "detail"=>"COUPLE",
-                    "user_approve_id"=>0,
-                    "user_create_id"=>0
-                ]);
+        $toInsertMin = $result["min"][0] - count($minTransaction);
+        $toInsertMax = $result["max"][0] - count($maxTransaction);
+        // insert transaction
+        if($MyPoint > 0){
+            if(count($minTransaction) < $result["min"][0]){
+                $this->insertTransaction($id, $result["min"][1], $toInsertMin);
             }
-        }
-        if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
-            $toInsert = $result["max"][0] - count($maxTransaction);
-            for($i=0;$i<$toInsert;$i++){
-                Transaction::insert([
-                    "user_id"=>$id,
-                    "type"=>"DEPOSIT_COUPLE",
-                    "amount"=>0,
-                    "detail"=>"COUPLE",
-                    "balance"=>$result["max"][1],
-                    "user_approve_id"=>0,
-                    "user_create_id"=>0
-                ]);
+            if(count($maxTransaction) < $result["max"][0]){
+                $this->insertTransaction($id, $result["max"][1], $toInsertMax);
             }
         }
         return $result;
