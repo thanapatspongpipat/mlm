@@ -59,6 +59,7 @@ class LogsController extends RollUpController
         foreach($UserData as $User){
             $userId = $User->id;
             $logs = $this->getCoupleValue($userId);
+            $this->insertTransactionById($userId);
             foreach($logs as $log){
                 for($i=0;$i<$log[0];$i++){
                     $couple = $this->generateLogsCouple($userId, $log[1]);
@@ -96,12 +97,12 @@ class LogsController extends RollUpController
         ];
     }
 
-    private function insertTransaction($id, $balance, $count){
+    private function insertTransactionLoop($id, $balance, $count){
         for($i=0;$i<$count;$i++){
             Transaction::insert([
                 "user_id"=>$id,
                 "amount"=>0,
-                "balance"=>$result["min"][1],
+                "balance"=>$balance,
                 "type"=>"DEPOSIT_COUPLE",
                 "detail"=>"COUPLE",
                 "user_approve_id"=>0,
@@ -110,11 +111,10 @@ class LogsController extends RollUpController
         }
     }
 
-    public function getCoupleValue($id){
+    public function insertTransactionById($id){
         $id = (int)$id;
         $userLevel = $this->getUserLevel($id);
         $RangeCouple = $this->convertMaxCouple($userLevel);
-        if(!isset($RangeCouple)){ return ["status"=>false]; }
         $MyPoint = $this->getBalance($id);
         $result = $this->reverseCoupleValue($MyPoint["point"], $RangeCouple);
         $minTransaction = Transaction::where([
@@ -130,12 +130,21 @@ class LogsController extends RollUpController
         // insert transaction
         if($MyPoint > 0){
             if(count($minTransaction) < $result["min"][0]){
-                $this->insertTransaction($id, $result["min"][1], $toInsertMin);
+                $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
             }
             if(count($maxTransaction) < $result["max"][0]){
-                $this->insertTransaction($id, $result["max"][1], $toInsertMax);
+                $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
             }
         }
+    }
+
+    public function getCoupleValue($id){
+        $id = (int)$id;
+        $userLevel = $this->getUserLevel($id);
+        $RangeCouple = $this->convertMaxCouple($userLevel);
+        if(!isset($RangeCouple)){ return ["status"=>false]; }
+        $MyPoint = $this->getBalance($id);
+        $result = $this->reverseCoupleValue($MyPoint["point"], $RangeCouple);
         return $result;
     }
 
