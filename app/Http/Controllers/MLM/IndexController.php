@@ -27,13 +27,13 @@ class IndexController extends Controller
     }
 
     /**
-     * คำนวน Point สำหรับลงข้อมูล User ใหม่
+     * คำนวนค่าครบคู่ใหม่ตั้งแต่ $headUserId (UserID)
      *
      * @param integer $headUserId   UserID ที่จะให้ระบบเริ่มคำนวนค่าครบคู่ (default: 1, เริ่มคำนวนตั้งแต่ต้นสายใหม่ทั้งหมด)
      *
      * @author Aom (siriwat576@gmail.com)
      */
-    public function RecalcuateCouple($headUserId = 1){
+    public function RecalculateCouple($headUserId = 1){
         $Logs = new LogsController();
         $Logs->insertCouple($headUserId);
     }
