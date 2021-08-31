@@ -3,6 +3,7 @@ namespace App\Http\Controllers\MLM;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ProductModel;
 
 class BaseMLM extends Controller
 {
@@ -27,15 +28,13 @@ class BaseMLM extends Controller
         return $this->InviterCache["u{$userId}"];
     }
 
+    private $LevelCache = null;
     protected function getLevelCost($Level){
-        $levels = array(
-            "s"=>1500,
-            "m"=>15000,
-            "d"=>45000,
-            "sd"=>150000
-        );
-        $lowerLevel = strtolower($Level);
-        return (isset($levels[$lowerLevel])) ? $levels[$lowerLevel] : 0;
+        if($this->LevelCache == null || count($this->LevelCache) <= 0) $this->LevelCache = ProductModel::all();
+        foreach($this->LevelCache as $LevelData){
+            if(strtolower($LevelData->level) == strtolower($Level)) return intval($LevelData->price_num);
+        }
+        return 0;
     }
 
     private $UsersCache = array();

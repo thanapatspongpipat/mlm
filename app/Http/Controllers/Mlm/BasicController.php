@@ -47,15 +47,15 @@ class BasicController extends RollUpController
         $finishedCount = 0;
         foreach($presentArray as $present){
             foreach($present['total'] as $index){
-                $action = "ค่าแนะนำสมาชิก";
+                $action = "ค่าแนะนำสมาชิก {$index['invitedUserId']}";
                     if (count(Transaction::where('user_id', $present['id'])->get()) <= 0  || count(Transaction::where('fk_id', $index['invitedUserId'])->get()) <= 0){
                         Transaction::insert(array(
                             'user_id' => $present['id'],
                             'type' => $type,
                             'fk_id' => $index['invitedUserId'],
-                            'balance' => $index['total'],
+                            'amount' => $index['total'],
                             'detail' => $action,
-                            'amount' => 0,
+                            'balance' => 0,
                             'user_approve_id' => 0,
                             'user_create_id' => 0
                         ));
@@ -86,7 +86,7 @@ class BasicController extends RollUpController
         $finishedCount = 0;
         foreach($presentArray as $index){
             $userId = $index["userId"];
-            $action = "ค่า RollUp";
+            $action = "ค่า RollUp {$index['userId']}";
             $condition = Transaction::where('user_id', $userId)
                                         ->where('fk_id', $index['dealerId'])
                                         ->where('type', $type);
@@ -99,8 +99,8 @@ class BasicController extends RollUpController
                     'fk_id' => $index['userId'],
                     'type' => $type,
                     'detail' => $action,
-                    'balance' => $index['total'],
-                    'amount' => 0,
+                    'amount' => $index['total'],
+                    'balance' => 0,
                     'user_approve_id' => 0,
                     'user_create_id' => 0
                 ));
