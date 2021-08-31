@@ -8,12 +8,14 @@ class BasicController extends RollUpController
 {
     private function percentage($level){
         $percentage = array(
-            'S' => 20,
-            'M' => 25,
-            'D' => 30,
-            'SD' => 30
+            's' => 20,
+            'm' => 25,
+            'd' => 30,
+            'sd' => 30
         );
-        return intval($percentage[$level])/100;
+        $lowerLevel = strtolower($level);
+        if(!isset($percentage[$lowerLevel])) return 0;
+        return intval($percentage[$lowerLevel])/100;
     }
 
     private function finalCompute($id){
@@ -21,12 +23,12 @@ class BasicController extends RollUpController
         $usersLevel = $this->getUserLevel($id);
         $result = array();
         foreach($inviteUsersLevel as $inviteUser){
-            $userInviteLevel = $inviteUser->level;
+            $userInviteLevel = $this->getLevelByProductId($inviteUser->product_id);
             $value = $this->getLevelCost($userInviteLevel);
             $percent = $this->percentage($usersLevel);
             $total = $value * $percent;
             $result[] = array(
-                'invitedUserLevel' => $inviteUser->level,
+                'invitedUserLevel' => $userInviteLevel,
                 'invitedUserId' => $inviteUser->id,
                 'total' => $total
             );
@@ -43,7 +45,6 @@ class BasicController extends RollUpController
         $presentArray = array();
         $type = 'DEPOSIT_FEE';
         $this->computeReferral($id, $presentArray);
-        //dd($presentArray);
         $finishedCount = 0;
         foreach($presentArray as $present){
             foreach($present['total'] as $index){
@@ -68,8 +69,9 @@ class BasicController extends RollUpController
 
     private function computeReferral($id, &$presentArray){
         $userData = $this->getLeftRight($id);
-        $userLeft = $userData['left'];
-        $userRight = $userData['right'];
+        if(!isset($userData) || $userData === null) return;
+        $userLeft =  (isset($userData['left'])) ? $userData['left'] : null;
+        $userRight = (isset($userData['right'])) ? $userData['right'] : null;
         $total = $this->finalCompute($userData['userId']);
         $presentArray[] = array(
             'id' => $userData['userId'],
@@ -113,8 +115,9 @@ class BasicController extends RollUpController
 
     private function computeRollup($id, &$presentArray){
         $userData = $this->getLeftRight($id);
-        $userLeft = $userData['left'];
-        $userRight = $userData['right'];
+        if(!isset($userData) || $userData === null) return;
+        $userLeft =  (isset($userData['left'])) ? $userData['left'] : null;
+        $userRight = (isset($userData['right'])) ? $userData['right'] : null;
         $rollup = $this->getLogRollUp($userData['userId']);
         foreach($rollup as $index){
             $presentArray[] = array(

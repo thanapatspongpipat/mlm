@@ -41,7 +41,7 @@ class ReportController extends Controller
         if($type == null){
             if($from == null && $to == null){
                 foreach ($users as $user) {
-                    $deposit = Transaction::where('type', 'DEPOSIT')
+                    $deposit = Transaction::where('type', 'like', '%DEPOSIT%')
                         ->where('user_id', $user->id)->sum('amount');
                     $withdraw = Transaction::where('type', 'WITHDRAW')
                         ->where('user_id', $user->id)->sum('amount');
@@ -62,7 +62,7 @@ class ReportController extends Controller
                 }
             }else if($from == null && $to != null){
                 foreach ($users as $user) {
-                    $deposit = Transaction::where('type', 'DEPOSIT')
+                    $deposit = Transaction::where('type', 'like', '%DEPOSIT%')
                         ->whereDate('transaction_timestamp', '<=', $to)
                         ->where('user_id', $user->id)->sum('amount');
                     $withdraw = Transaction::where('type', 'WITHDRAW')
@@ -85,7 +85,7 @@ class ReportController extends Controller
                 }
             }else if($from != null && $to == null){
                 foreach ($users as $user) {
-                    $deposit = Transaction::where('type', 'DEPOSIT')
+                    $deposit = Transaction::where('type', 'like', '%DEPOSIT%')
                         ->whereDate('transaction_timestamp', '>=', $from)
                         ->where('user_id', $user->id)->sum('amount');
                     $withdraw = Transaction::where('type', 'WITHDRAW')
@@ -108,7 +108,7 @@ class ReportController extends Controller
                 }
             }else{
                 foreach ($users as $user) {
-                    $deposit = Transaction::where('type', 'DEPOSIT')
+                    $deposit = Transaction::where('type', 'like', '%DEPOSIT%')
                         ->whereDate('transaction_timestamp', '>=', $from)
                         ->whereDate('transaction_timestamp', '<=', $to)
                         ->where('user_id', $user->id)->sum('amount');
@@ -135,7 +135,7 @@ class ReportController extends Controller
         }else{
             if($type == 'd'){
                 foreach ($users as $user) {
-                    $deposit = Transaction::where('type', 'DEPOSIT')
+                    $deposit = Transaction::where('type', 'like', '%DEPOSIT%')
                         ->whereDate('transaction_timestamp', date('Y-m-d'))
                         ->where('user_id', $user->id)->sum('amount');
                     $withdraw = Transaction::where('type', 'WITHDRAW')
@@ -150,7 +150,7 @@ class ReportController extends Controller
                         'deposit' => $deposit,
                         'balance' => $balance,
                     ];
-                    
+
                     array_push($data, $tmp);
                     $sumBalance += $balance;
                     $sumDeposit += $deposit;
@@ -158,7 +158,7 @@ class ReportController extends Controller
                 }
             }else if($type == 'm'){
                 foreach ($users as $user) {
-                    $deposit = Transaction::where('type', 'DEPOSIT')
+                    $deposit = Transaction::where('type', 'like', '%DEPOSIT%')
                         ->whereMonth('transaction_timestamp', '=', date('Y-m-d'))
                         ->where('user_id', $user->id)->sum('amount');
                     $withdraw = Transaction::where('type', 'WITHDRAW')
@@ -181,7 +181,7 @@ class ReportController extends Controller
                 }
             }else if($type == 'y'){
                 foreach ($users as $user) {
-                    $deposit = Transaction::where('type', 'DEPOSIT')
+                    $deposit = Transaction::where('type', 'like', '%DEPOSIT%')
                         ->whereYear('transaction_timestamp', '=', date('Y-m-d'))
                         ->where('user_id', $user->id)->sum('amount');
                     $withdraw = Transaction::where('type', 'WITHDRAW')

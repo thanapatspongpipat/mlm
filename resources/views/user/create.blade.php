@@ -87,7 +87,7 @@
                                     <label for="formrow-user_invite_id" class="form-label">ผู้แนะนำ</label>
                                     <input type="text" class="form-control @error('user_invite_id') is-invalid @enderror" id="formrow-user_invite_id" value="{{ old('user_invite_id', $data->user_invite_id ?? null) }}"  name="user_invite_id">
                                 </div> -->
-                                <label for="formrow-user_invite_id" class="form-label">ผู้แนะนำ</label>
+                                <label for="formrow-user_invite_id" class="form-label">รหัส ผู้แนะนำ</label>
                                 <div class="input-group mb-3">
                                     <input type="text" class="form-control @error('user_invite_id') is-invalid @enderror" id="formrow-user_invite_id" value="{{ old('user_invite_id', $data->user_invite_id ?? null) }}"  name="user_invite_id">
                                     <button type="button" class="btn btn-primary" onclick="fnInviteSearch()">ค้นหา</button>
@@ -102,7 +102,7 @@
                             </div>
                             <div class="col-lg-2">
                                 <div class="mb-3">
-                                    <label for="formrow-user_upline_id" class="form-label">อัฟไลน์</label>
+                                    <label for="formrow-user_upline_id" class="form-label">รหัส อัฟไลน์</label>
                                     <input type="text" class="form-control @error('user_upline_id') is-invalid @enderror" id="formrow-user_upline_id" value="{{ old('user_upline_id', $data->user_upline_id ?? $user_upline->id ?? '') }}"  name="user_upline_id" disabled>
                                 </div>
                             </div>

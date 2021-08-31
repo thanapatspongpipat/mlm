@@ -90,7 +90,7 @@
                                         <label for="amount" class="form-label"> จำนวนเงิน </label>
                                         <div class="input-group mb-3">
                                             <label class="input-group-text"> <i class="bx bx-money"></i></label>
-                                             <input type="number" class="formInput form-control" id="amount" value="" placeholder="Enter amount" required>
+                                             <input type="number" class="formInput form-control" id="amount" value="" min="1" step="0.01" placeholder="กรอกจำนวนเงิน" required>
                                             <label class="input-group-text">฿ </label>
                                         </div>
                                     </div>
@@ -144,7 +144,9 @@
                                     <th scope="col">รายละเอียด</th>
                                     <th scope="col">ธนาคาร</th>
                                     <th scope="col">เลขบัญชี</th>
-                                    <th scope="col">จำนวนเงิน</th>
+                                    <th scope="col">จำนวนที่ถอน</th>
+                                    <th scope="col">จำนวนเงินที่ได้รับ</th>
+                                    <th scope="col">หัก ณ ที่จ่าย </th>
                                     <th scope="col">สถานะ</th>
 
                                 </tr>
@@ -162,6 +164,25 @@
             <!-- end card -->
         </div>
     </div>
+
+    <!--  Note modal example -->
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+        aria-hidden="true" id="noteModal">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel"> หมายเหตุ </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                      {{-- <p class="text-center" id="note"> </p> --}}
+                      <h5 class="text-center text-danger" id="note"></h5>
+                  </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
 @endsection
 
@@ -198,10 +219,10 @@
             }else if(bankAccountId == ''){
                 Swal.fire('แจ้งเตือน!', 'กรุณากรอกข้อมูลธนาคาร', 'warning');
             }else{
-                amount = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                var amountShow = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 Swal.fire({
                     title: 'คุณมั่นใจหรือไม่ ?',
-                    text: `คุณต้องการถอนเงินจำนวน ${amount} บาทนี้หรือไม่ `,
+                    text: `คุณต้องการถอนเงินจำนวน ${amountShow} บาทนี้หรือไม่ `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#556ee6',
@@ -252,7 +273,7 @@
                 },
                 'columnDefs': [
                     {
-                        "targets": [0,1,2,3,4,5],
+                        "targets": [0,1,2,3,4,5,6,7],
                         "className": "text-center",
                     },
                 ],
@@ -287,8 +308,24 @@
                     {
                         "data": "amount",
                         "render": function (data, type, full) {
-                            return ' - ' + data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            data = data ? data : '';
+                            return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     }
+                    },
+
+                       {
+                        "data": "total_amount",
+                        "render": function (data, type, full) {
+                            data = data ? data : '';
+                            return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        }
+                    },
+                    {
+                        "data": "tax",
+                        "render": function (data, type, full) {
+                            data = data ? data : '';
+                            return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        }
                     },
                     {
                         "data": "status",
@@ -302,7 +339,7 @@
                                      text = '<span class="text-success"> สำเร็จ </span>'
                                     break;
                                 case 2:
-                                     text = '<span class="text-danger"> ยกเลิก </span>'
+                                     text = `<a href="#" onclick="showNote('${full.note ? full.note : '' }')" class="text-danger"> <u>ยกเลิก<u> </a>`;
                                     break;
                                 default:
                                     break;
@@ -326,6 +363,14 @@
             );
 
         }
+
+
+        function showNote(note){
+            // console.log(note)
+            $('#noteModal').modal('show');
+            $('#note').text(note);
+        }
+
 
 
 

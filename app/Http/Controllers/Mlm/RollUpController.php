@@ -72,8 +72,9 @@ class RollUpController extends BaseMLM
 
     private function calculateResultCouple($RangeCouple, $numCouple){
         $result = 0;
-        $min = $RangeCouple["phrase1"];
-        $max = $RangeCouple["phrase2"];
+        if(!isset($RangeCouple) || $RangeCouple === null) return;
+        $min = (isset($RangeCouple["phrase1"])) ? $RangeCouple["phrase1"] : 0;
+        $max = (isset($RangeCouple["phrase2"])) ? $RangeCouple["phrase2"] : 0;
         if($numCouple >= $min["countCouple"]){
             $result += $min["price"] * $min["countCouple"];
             $numCouple -= $min["countCouple"];
@@ -129,7 +130,7 @@ class RollUpController extends BaseMLM
         $PercentRollUp = $this->getPercentRollUp($UserLevel);
         foreach($ReferralData as $user){
             $UserID = $user->id;
-            $UserLevel  = $user->level;
+            $UserLevel  = $this->getLevelByProductId($user->product_id);
             $PriceLevel = $this->getLevelCost($UserLevel);
             $RollUpResult = ($PercentRollUp / 100) * $PriceLevel;
             $DealerID = $this->getDealer($id);
@@ -173,4 +174,5 @@ class RollUpController extends BaseMLM
         }
         return 0;
     }
+
 }

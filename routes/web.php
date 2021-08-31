@@ -21,7 +21,12 @@ Route::get('/icon', [App\Http\Controllers\Controller::class, 'icon'])->name('ico
 Route::get('/ui-general', [App\Http\Controllers\Controller::class, 'uiGeneral'])->name('ui-general');
 // Route::get('/depositCash', [App\Http\Controllers\Controller::class, 'depositCash'])->name('depositCash');
 // Route::get('/depositCashWithValidation', [App\Http\Controllers\Controller::class, 'depositCashWithValidation'])->name('depositCash');
-Route::get('/withdrawCash', [App\Http\Controllers\Controller::class, 'withdrawCash'])->name('withdrawCash');
+// Route::get('/withdrawCash', [App\Http\Controllers\Controller::class, 'withdrawCash'])->name('withdrawCash');
+Route::get('/getWalletBalance/{id}', [App\Http\Controllers\Controller::class, 'getWalletBalance'])->name('getWalletBalance');
+Route::get('/getCashWalletBalance/{id}', [App\Http\Controllers\Controller::class, 'getCashWalletBalance'])->name('getCashWalletBalance');
+Route::get('/getCoinWalletBalance/{id}', [App\Http\Controllers\Controller::class, 'getCoinWalletBalance'])->name('getCoinWalletBalance');
+Route::get('/getRevenue/{id}', [App\Http\Controllers\Controller::class, 'getRevenue'])->name('getRevenue');
+
 
 // user
 Route::get('/member', [App\Http\Controllers\User\UserController::class, 'index'])->name('memberView');
@@ -47,6 +52,11 @@ Route::get('/profile/update', [App\Http\Controllers\AccountController::class, 'u
 Route::put('/profile/edit', [App\Http\Controllers\AccountController::class, 'accountProfileUpdate'])->name('accountProfileUpdate');
 Route::get('/start-change-password', [App\Http\Controllers\StartUserController::class, 'startChangePassIndex'])->name('startChangePassIndex');
 Route::post('/start-update-password', [App\Http\Controllers\StartUserController::class, 'changePassword'])->name('startChangePass');
+
+Route::get('/reset-password/index', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'forgotPasswordIndex'])->name('resetPass');
+Route::post('/reset-password/generate-otp', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'generateOTP'])->name('generateOTP');
+Route::post('/reset-password/verify-otp', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'verifyOTP'])->name('verifyOTP');
+Route::post('/reset-password/change-pass', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'changePassword'])->name('resetChangePass');
 
 // Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 
@@ -123,3 +133,4 @@ Route::get('/mlm/test/insert-fee/{id}', [App\Http\Controllers\MLM\BasicControlle
 Route::get('/mlm/test/insert-rollup/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertRollUp'])->name('insertRollUp');
 Route::get('/mlm/test/insert-key/{id}/{childUser}', [App\Http\Controllers\MLM\LogsController::class, 'insertKey'])->name('insertKey');
 Route::get('/mlm/test/insert-couple/{id}', [App\Http\Controllers\MLM\LogsController::class, 'insertCouple'])->name('insertCouple');
+Route::get('/mlm/test/fetch/{id}', [App\Http\Controllers\MLM\RollUpController::class, 'getLeftRight']);

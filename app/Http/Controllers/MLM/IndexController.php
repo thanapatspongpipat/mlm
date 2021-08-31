@@ -37,5 +37,17 @@ class IndexController extends Controller
         $Logs = new LogsController();
         $Logs->insertCouple($headUserId);
     }
+
+    /**
+     * ทดสอบระบบสร้าง Transactions ของการคำนวน MLM
+     *
+     * @param integer $Id       UserID ที่จะให้ระบบเริ่มคำนวนค่าครบคู่
+     * @param integer $childId  UserID ที่สมัครใหม่
+     *
+     * @author Aom (siriwat576@gmail.com)
+     */
+    public function TestCreateAll($Id, $childId){
+        return $this->CreateNewUser($Id, $Id, $childId, $Id);
+    }
 }
 ?>

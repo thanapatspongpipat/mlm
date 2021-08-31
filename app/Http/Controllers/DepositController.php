@@ -47,6 +47,16 @@ class DepositController extends Controller
         $time = $req->time;
         $userId = Auth::user()->id;
 
+        if ($amount <= 0) {
+            $data = [
+                    'title' => 'ไม่สำเร็จ!',
+                    'msg' => 'จำนวนเงินไม่ถูกต้อง',
+                    'status' => 'error',
+                ];
+
+            return $data;
+        }
+
         $dateTime = date_format(date_create($date.' '.$time), "Y-m-d H:i:s");
 
         // return $amount;

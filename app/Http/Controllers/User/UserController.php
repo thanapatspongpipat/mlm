@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MLM\IndexController;
 use App\Models\BankModel;
 use App\Models\ProductModel;
 use App\Models\User;
@@ -86,7 +87,7 @@ class UserController extends Controller
         return 'ไม่พบข้อมูล';
     }
 
-    public function createUser(Request $request){
+    public function createUser(Request $request, IndexController $indexController){
         $validator = Validator::make($request->all(), [
             'username' => ['required', 'string', 'max:255', 'unique:users'],
             'password' => ['min:6', 'required_with:password_confirmation', 'same:password_confirmation'],
@@ -97,8 +98,10 @@ class UserController extends Controller
             $user = new User();
             $user = $user->fill($request->all());
             $user->password = Hash::make($request->input('password'));
+            $user->avatar = '/assets/images/brands/slack.png';
             // $user->product_id = $product_id;
             if($user->save()){
+                $indexController->CreateNewUser($user->user_upline_id,$user->user_invite_id,$user->id);
                 return redirect()->route('memberView');
             }
         }

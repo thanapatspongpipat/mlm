@@ -81,24 +81,24 @@ class CoinWalletController extends Controller
                     ->where('user_id', $userId)
                     ->whereDate('transaction_timestamp', '>=', $from)
                     ->whereDate('transaction_timestamp', '<=', $to)
-                    ->where('type', 'DEPOSIT')
+                    ->where('type', 'like', '%DEPOSIT%')
                     ->orderBy('transaction_timestamp', 'desc')->get();
             } else if ($from != null && $to == null) {
                 $data = CoinTransaction::with('user')
                     ->where('user_id', $userId)
                     ->whereDate('transaction_timestamp', '>=', $from)
-                    ->where('type', 'DEPOSIT')
+                    ->where('type', 'like', '%DEPOSIT%')
                     ->orderBy('transaction_timestamp', 'desc')->get();
             } else if ($from == null && $to != null) {
                 $data = CoinTransaction::with('user')
                     ->where('user_id', $userId)
-                    ->where('type', 'DEPOSIT')
+                    ->where('type', 'like', '%DEPOSIT%')
                     ->whereDate('transaction_timestamp', '<=', $to)
                     ->orderBy('transaction_timestamp', 'desc')->get();
             } else {
                 $data = CoinTransaction::with('user')
                     ->where('user_id', $userId)
-                    ->where('type', 'DEPOSIT')
+                    ->where('type', 'like', '%DEPOSIT%')
                     ->orderBy('transaction_timestamp', 'desc')->get();
             }
         } else if ($type == 'out') {

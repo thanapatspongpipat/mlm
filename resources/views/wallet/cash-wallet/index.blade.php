@@ -156,12 +156,49 @@
     <script>
         $(document).ready(function () {
             $('#simple_table').DataTable();
+            filterFirst()
         });
+
+    function filterFirst() {
+            var from = '';
+            var to = moment().format('DD-MM-YYYY');
+            var type = 'all';
+
+            $.post("{{  route('wallet.cash-wallet.search')  }}", data = {
+                    _token: '{{ csrf_token() }}',
+                    from: from,
+                    to: to,
+                    type: type,
+                },
+                function (res) {
+                    $('#appendTable').html(res.html);
+                    $('#simple_table').DataTable({
+                           "searching": true,
+                            "responsive": true,
+                            "bFilter": false,
+                            "bLengthChange": true,
+                            "destroy": true,
+                            "pageLength": 50,
+                            "order": [
+                                [0, "desc"]
+                            ],
+                    });
+                },
+            );
+        }
 
 
         function filter1() {
             var from = $('#from').val();
+            if(from != null || from != ''){
+                from = moment(from).format('DD-MM-YYYY');
+            }
+
             var to = $('#to').val();
+            if(to != null || to != ''){
+                to = moment(to).format('DD-MM-YYYY');
+            }
+
             var type = $('#type').val();
 
             $.post("{{  route('wallet.cash-wallet.search')  }}", data = {

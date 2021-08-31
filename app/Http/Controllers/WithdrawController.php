@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdditionalFunction;
 use App\Models\Bank;
 use App\Models\BankAccount;
 use App\Models\Withdraw;
@@ -88,7 +89,17 @@ class WithdrawController extends Controller
         $bankAccount = BankAccount::find($bankAccountId);
         // return $bankAccount;
         $oldBalance = $cashWallet->balance;
+        // return $amount ;
         // $oldWithdraw = $cashWallet->withdraw;
+        if ($amount <= 0) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวนเงินไม่ถูกต้อง',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
 
         if($amount > $oldBalance){
             $data = [
@@ -140,6 +151,7 @@ class WithdrawController extends Controller
         $withdraw->status = 0;
         $withdraw->user_create_id = $userId;
         $withdraw->save();
+
 
         DB::commit();
 

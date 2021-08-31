@@ -10,6 +10,10 @@ use App\Models\Deposit;
 use App\Models\Withdraw;
 use App\Models\CoinWithdraw;
 use App\Models\CoinDeposit;
+use App\Models\CompanyWithdraw;
+use App\Models\CompanyDeposit;
+use App\Models\CompanyWallet;
+use App\Models\CompanyTransaction;
 use App\Models\User;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -39,7 +43,7 @@ class Controller extends BaseController
     }
 
     // public function depositCash()
-    public function depositCash($userId, $amount, $detail, $userCreateId)
+    public function depositCash($userId, $amount, $detail, $userCreateId, $typeDeposit)
     {
         // $userId = Auth::user()->id;
         // $amount = 100000;
@@ -62,6 +66,15 @@ class Controller extends BaseController
             $data = [
                 'title' => 'ผิดพลาด!',
                 'msg' => 'ไม่พบผู้ใช้นี้',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
+        if ($amount <= 0) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวนเงินไม่ถูกต้อง',
                 'status' => 'error',
             ];
 
@@ -102,7 +115,7 @@ class Controller extends BaseController
         $ts->user_id = $userId;
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
-        $ts->type = 'DEPOSIT';
+        $ts->type = $typeDeposit ? $typeDeposit : 'DEPOSIT';
         $ts->transaction_timestamp = Carbon::now();
         $ts->detail = $detail ? $detail : 'เติมเงินเข้า CASH-WALLET';
         $ts->user_create_id = $userCreateId;
@@ -179,14 +192,14 @@ class Controller extends BaseController
         return $data;
     }
 
-    public function withdrawCash()
-    // public function withdrawCash($userId, $amount, $detail, $userCreateId)
+    // public function withdrawCash()
+    public function withdrawCash($userId, $amount, $detail, $userCreateId)
     {
 
-        $userId = Auth::user()->id;
-        $amount = 150;
-        $detail = 'ทดสอบตัดเงิน';
-        $userCreateId = Auth::user()->id;
+        // $userId = Auth::user()->id;
+        // $amount = 150;
+        // $detail = 'ทดสอบตัดเงิน';
+        // $userCreateId = Auth::user()->id;
 
         $wallet = CashWallet::where('user_id', $userId)->first();
         $oldBalance = $wallet->balance;
@@ -210,11 +223,24 @@ class Controller extends BaseController
             return $data;
         }
 
+        if($amount <= 0){
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวนเงินไม่ถูกต้อง',
+                'status' => 'error',
+            ];
+
+            return $data;
+
+        }
+
 
         DB::beginTransaction();
 
         $withdraw = new Withdraw;
         $withdraw->user_id = $userId;
+        $withdraw->amount = (string) $amount;
+        $withdraw->tax = 0;
         $withdraw->amount = (string) $amount;
         $withdraw->transaction_timestamp = Carbon::now();
         $withdraw->bank_id = null;
@@ -261,8 +287,101 @@ class Controller extends BaseController
 
     }
 
+    // public function withdrawCashWithTax()
+    public function withdrawCashWithTax($userId, $amount, $detail, $userCreateId, $tax)
+    {
+
+        // $userId = Auth::user()->id;
+        // $amount = 150;
+        // $detail = 'ทดสอบตัดเงิน';
+        // $userCreateId = Auth::user()->id;
+
+        $wallet = CashWallet::where('user_id', $userId)->first();
+        $oldBalance = $wallet->balance;
+        if ($wallet == null) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'ไม่พบ wallet',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
+
+        if ($amount > $oldBalance) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวนเงินใน Wallet ไม่เพียงพอ',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
+
+        if ($amount <= 0) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวนเงินไม่ถูกต้อง',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
+
+
+        DB::beginTransaction();
+
+        $withdraw = new Withdraw;
+        $withdraw->user_id = $userId;
+        $withdraw->amount = (string) $amount;
+        $withdraw->tax = $tax;
+        $withdraw->amount = (string) ($amount - $tax);
+        $withdraw->transaction_timestamp = Carbon::now();
+        $withdraw->bank_id = null;
+        $withdraw->bank_account_name = null;
+        $withdraw->bank_account_no = null;
+        $withdraw->status = 1;
+        $withdraw->detail = $detail;
+        $withdraw->user_create_id = $userCreateId;
+        $withdraw->save();
+
+        $oldBalance = $wallet->balance;
+        $oldWithdraw = $wallet->withdraw;
+        $newBalance = $oldBalance - $amount;
+
+        $ts = new Transaction;
+        $ts->user_id = $userId;
+        $ts->amount = (string) $amount;
+        $ts->balance = (string) $newBalance;
+        $ts->type = 'WITHDRAW';
+        $ts->transaction_timestamp = Carbon::now();
+        $ts->detail = $detail;
+        $ts->user_create_id = $userCreateId;
+        $ts->user_approve_id = 1;
+        $ts->save();
+
+        $newWithdraw = $oldWithdraw + $amount;
+        $wallet->balance = (string) $newBalance;
+        $wallet->withdraw = (string) $newWithdraw;
+        $wallet->save();
+
+        $withdraw->status = 1;
+        $withdraw->user_approve_id = Auth::user()->id;
+        $withdraw->save();
+
+        DB::commit();
+
+        $data = [
+            'title' => 'สำเร็จ!',
+            'msg' => 'สร้างรายการถอนเงินสำเร็จ',
+            'status' => 'success',
+        ];
+
+        return $data;
+    }
+
     // public function depositCash()
-    public function depositCoin($userId, $amount, $detail, $userCreateId)
+    public function depositCoin($userId, $amount, $detail, $userCreateId , $typeDeposit)
     {
         // $userId = Auth::user()->id;
         // $amount = 100000;
@@ -291,6 +410,15 @@ class Controller extends BaseController
             return $data;
         }
 
+        if ($amount <= 0) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวน Coin ไม่ถูกต้อง',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
         $wallet = CoinWallet::where('user_id', $userId,)->first();
 
         DB::beginTransaction();
@@ -323,7 +451,7 @@ class Controller extends BaseController
         $ts->user_id = $userId;
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
-        $ts->type = 'DEPOSIT';
+        $ts->type = $typeDeposit ? $typeDeposit : 'DEPOSIT';
         $ts->transaction_timestamp = Carbon::now();
         $ts->detail = $detail ? $detail : 'เติมเงินเข้า CASH-WALLET';
         $ts->user_create_id = $userCreateId;
@@ -370,6 +498,15 @@ class Controller extends BaseController
             return $data;
         }
 
+        if ($amount <= 0) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวน Coin ไม่ถูกต้อง',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
 
         DB::beginTransaction();
 
@@ -462,6 +599,118 @@ class Controller extends BaseController
 
         return $data;
 
+    }
+
+    public function getRevenue($userId)
+    {
+        $toDayRevenue = Transaction::with('user')
+            ->where('user_id', $userId)
+            ->whereDate('transaction_timestamp', Carbon::now())
+            ->where('type', '!=', 'DEPOSIT')
+            ->where('type', '!=', 'WITHDRAW')
+            ->sum('amount');
+
+        $toDayWithdraw = Transaction::with('user')
+            ->where('user_id', $userId)
+            ->whereDate('transaction_timestamp', Carbon::now())
+            ->where('type', 'WITHDRAW')
+            ->sum('amount');
+
+        $balanceRevenue = $toDayRevenue - $toDayWithdraw;
+
+
+        $data = [
+            'revenue' => $balanceRevenue,
+        ];
+
+        return $data;
+    }
+
+    public function depositCompanyWallaet($userId, $amount, $detail)
+    {
+        // $userId = Auth::user()->id;
+        // $amount = 100000;
+        // $detail = 'ทดสอบ';
+        // $userCreateId = Auth::user()->id;
+
+        if ($userId == null || $amount == null || $detail == null) {
+
+            $data = [
+                'title' => 'ผิดพลาด!',
+                'msg' => 'กรุณาใส่ข้อมูลที่จำเป็น',
+                'status' => 'warning',
+            ];
+
+            return $data;
+        }
+
+        if (!User::find($userId)) {
+
+            $data = [
+                'title' => 'ผิดพลาด!',
+                'msg' => 'ไม่พบผู้ใช้นี้',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
+        if ($amount <= 0) {
+            $data = [
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวนเงินไม่ถูกต้อง',
+                'status' => 'error',
+            ];
+
+            return $data;
+        }
+
+        $wallet = CompanyWallet::where('user_id', $userId,)->first();
+
+        DB::beginTransaction();
+
+        if ($wallet == null) {
+            $wallet = new CompanyWallet;
+            $wallet->balance = 0;
+            $wallet->deposit = 0;
+            $wallet->withdraw = 0;
+            $wallet->save();
+        }
+
+        $deposit = new CompanyDeposit;
+        $deposit->user_id = $userId;
+        $deposit->amount = (string) $amount < 0 ? $amount * (-1) : $amount;
+        $deposit->transaction_timestamp = Carbon::now();
+        $deposit->detail = $detail ? $detail : 'เติมเงินเข้า COMPANY - WALLET';
+        $deposit->save();
+
+        $tmpAmount = $amount < 0 ? $amount * (-1) : $amount;
+        $oldBalance = $wallet->balance;
+        $oldDeposit = $wallet->deposit;
+        $newBalance = $oldBalance + $tmpAmount;
+
+        $ts = new CompanyTransaction;
+        $ts->user_id = $userId;
+        $ts->amount = (string) $amount;
+        $ts->balance = (string) $newBalance;
+        $ts->type = 'DEPOSIT';
+        $ts->transaction_timestamp = Carbon::now();
+        $ts->detail = $detail ? $detail : 'เติมเงินเข้า COMPANY-WALLET';
+        $ts->save();
+
+        $newDeposit = $oldDeposit + $amount;
+        $wallet->balance = (string) $newBalance;
+        $wallet->deposit = (string) $newDeposit;
+        $wallet->save();
+
+        DB::commit();
+
+        $data = [
+            'title' => 'สำเร็จ!',
+            'msg' => 'สร้างรายการเติมเงินสำเร็จ',
+            'status' => 'success',
+        ];
+
+        return $data;
     }
 
 

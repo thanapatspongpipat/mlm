@@ -19,6 +19,9 @@
             margin-right: auto;
             width: 50%;
             }
+
+
+
     </style>
 @endsection
 
@@ -105,7 +108,7 @@
                                         <label for="amount" class="form-label"> จำนวนเงิน </label>
                                         <div class="input-group mb-3">
                                             <label class="input-group-text"> <i class="bx bx-money"></i></label>
-                                             <input type="number" class="formInput form-control" name="amount" id="amount" value="" placeholder="Enter amount" required>
+                                             <input type="number" class="formInput form-control" name="amount" id="amount" value="" min="1" placeholder="กรอกจำนวนเงิน" required>
                                             <label class="input-group-text">฿ </label>
                                         </div>
                                     </div>
@@ -114,7 +117,8 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label for="date" class="form-label">วันที่โอน</label>
-                                                <input type="date" name="date" id="date" value="" class="form-control formInput" placeholder="-" required>
+                                                {{-- <input type="date" name="date" id="date" value="" class="form-control formInput" placeholder="-" required> --}}
+                                                 <input type="text" name="date" id="date" class="form-control datepicker" data-provide="datepicker" placeholder="วันที่โอน">
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="time" class="form-label">เวลาที่โอน</label>
@@ -140,10 +144,14 @@
 
                                     <div class="mb-3">
                                         <label for="image" class="form-label">หลักฐานการโอน</label>
-                                        <input type="file" class="form-control formInput" accept="image/*" name="" id="imgFile"  onchange="loadFile(event)" required>
+                                        <input type="file" class="form-control formInput" accept="image/*" name="" id="imgFile" placeholder="กรุณาเลือกรูปภาพ" style="display:none" onchange="loadFile(event)" required>
                                         <input type="hidden" id="imgbase64" name="imgbase64" value="" />
+                                        <button style="display:block;" class="form-control" onclick="document.getElementById('imgFile').click()"> อัพโหลดรูป </button>
 
                                     </div>
+
+
+
 
                                     <div class="mb-3">
                                         <img id="output" max-width="300" style="max-height: 500px; display: none;" class="img-responsive form-control" />
@@ -213,6 +221,26 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+         <!--  Note modal example -->
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+        aria-hidden="true" id="noteModal">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel"> หมายเหตุ </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                      {{-- <p class="text-center" id="note"> </p> --}}
+                      <h5 class="text-center text-danger" id="note"></h5>
+                  </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 
 
 @endsection
@@ -297,7 +325,7 @@
                                      text = '<span class="text-success"> สำเร็จ </span>'
                                     break;
                                 case 2:
-                                     text = '<span class="text-danger"> ยกเลิก </span>'
+                                    text = `<a href="#" onclick="showNote('${full.note ? full.note : '' }')" class="text-danger"> <u>ยกเลิก<u> </a>`;
                                     break;
                                 default:
                                     break;
@@ -399,6 +427,14 @@
             $('#infoModal').modal('show');
             $('#infoImg').attr('src', img);
         }
+
+
+        function showNote(note){
+            // console.log(note)
+            $('#noteModal').modal('show');
+            $('#note').text(note);
+        }
+
 
 
     </script>

@@ -33,7 +33,7 @@ class AccountController extends Controller
     public function accountProfileUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'country'=> 'required|max:191',
+    
             'send_zip_code'=>'numeric|max:99999',
             'email'=>'email|max:191',
         ]);
@@ -56,9 +56,7 @@ class AccountController extends Controller
                 'line' => $request->line,
                 'fb' => $request->fb,
                 'ig' => $request->ig,
-                'country' => $request->country,
                 'send_address' => $request-> send_address,
-                'send_region' => $request->send_region,
                 'send_province' => $request->send_province,
                 'send_sub_district' => $request->send_sub_district,
                 'send_district' => $request->send_district,
@@ -67,12 +65,20 @@ class AccountController extends Controller
                 'send_phone_number' => $request->send_phone_number,
             );
             
-            $userData->update($form_user);
-            return response()->json([
-                'isSuccess' => true,
-                'status'=>200,
-                'Message'=>'Updated Successfully.'
-            ]);
+            
+            if($userData->update($form_user)){
+                return response()->json([
+                    'isSuccess' => true,
+                    'status'=>200,
+                    'Message'=>'Updated Successfully.'
+                ]);
+            }else{
+                return response()->json([
+                    'isSuccess' => false,
+                    'status'=>500,
+                    'Message'=>'เกิดข้อผิดพลาดโปรดลองใหม่อีกครั้ง'
+                ]);
+            }
 
         }else
         {

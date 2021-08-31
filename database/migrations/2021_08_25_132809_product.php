@@ -19,8 +19,10 @@ class Product extends Migration
             $table->string('level')->nullable();
             $table->string('name')->nullable();
             $table->integer('price')->nullable();
+            $table->float('price_num')->nullable();
             $table->string('image')->nullable();
             $table->integer('order')->nullable();
+            $table->float('point')->nullable();
         });
     }
 

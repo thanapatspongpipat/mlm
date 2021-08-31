@@ -19,7 +19,9 @@ class ProductModel extends Model
         'image',
         'order',
         'price_num',
-        'comment'
+        'comment',
+        'point',
+        'status'
     ];
 
 

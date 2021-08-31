@@ -17,7 +17,12 @@ class BaseMLM extends Controller
 
     protected function getUserLevel($userId){
         $User = $this->getUserById($userId);
-        return (isset($User)) ? $User->level : null;
+        return (isset($User)) ? $this->getLevelByProductId($User->product_id) : null;
+    }
+
+    protected function getLevelByProductId($productId){
+        $Product = $this->getProduct($productId);
+        return (isset($Product)) ? $Product->level : null;
     }
 
     private $InviterCache = array();
@@ -29,9 +34,20 @@ class BaseMLM extends Controller
     }
 
     private $LevelCache = null;
-    protected function getLevelCost($Level){
+    protected function getProductAll(){
         if($this->LevelCache == null || count($this->LevelCache) <= 0) $this->LevelCache = ProductModel::all();
-        foreach($this->LevelCache as $LevelData){
+        return $this->LevelCache;
+    }
+
+    protected function getProduct($productId){
+        foreach($this->getProductAll() as $product){
+            if($product->id === $productId) return $product;
+        }
+        return null;
+    }
+
+    protected function getLevelCost($Level){
+        foreach($this->getProductAll() as $LevelData){
             if(strtolower($LevelData->level) == strtolower($Level)) return intval($LevelData->price_num);
         }
         return 0;
