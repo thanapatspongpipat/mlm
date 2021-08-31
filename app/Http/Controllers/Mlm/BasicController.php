@@ -41,6 +41,11 @@ class BasicController extends RollUpController
         return $result;
     }
 
+    private function isFeeInsert($id, $inviteUserId){
+
+    }
+
+
     public function insertFee($id){
         $presentArray = array();
         $type = 'DEPOSIT_FEE';
@@ -49,23 +54,28 @@ class BasicController extends RollUpController
         foreach($presentArray as $present){
             foreach($present['total'] as $index){
                 $action = "ค่าแนะนำสมาชิก {$index['invitedUserId']}";
-                    if (count(Transaction::where('user_id', $present['id'])->get()) <= 0  || count(Transaction::where('fk_id', $index['invitedUserId'])->get()) <= 0){
-                        Transaction::insert(array(
-                            'user_id' => $present['id'],
-                            'type' => $type,
-                            'fk_id' => $index['invitedUserId'],
-                            'amount' => $index['total'],
-                            'detail' => $action,
-                            'balance' => 0,
-                            'user_approve_id' => 0,
-                            'user_create_id' => 0
-                        ));
-                        $finishedCount++;
-                    }
+                //Transaction::where('user_id', $present['id'])->get();
+                //Transaction::where('fk_id', $index['invitedUserId'])->get()
+                $type = "DEPOSIT_FEE";
+                $transactionById = $this->getTransactionByUserId($present['id'], $type);
+                $transactionByFk = $this->getTransactionFieldKeyById($index['invitedUserId'], $type);
+                if (count($transactionById) <= 0  || count($transactionByFk) <= 0){
+                    Transaction::insert(array(
+                        'user_id' => $present['id'],
+                        'type' => $type,
+                        'fk_id' => $index['invitedUserId'],
+                        'amount' => $index['total'],
+                        'detail' => $action,
+                        'balance' => 0,
+                        'user_approve_id' => 0,
+                        'user_create_id' => 0
+                    ));
+                    $finishedCount++;
                 }
             }
-            return $finishedCount > 0;
         }
+        return $finishedCount > 0;
+    }
 
     private function computeReferral($id, &$presentArray){
         $userData = $this->getLeftRight($id);

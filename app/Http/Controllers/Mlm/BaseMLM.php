@@ -3,6 +3,7 @@ namespace App\Http\Controllers\MLM;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Transaction;
 use App\Models\ProductModel;
 
 class BaseMLM extends Controller
@@ -98,6 +99,13 @@ class BaseMLM extends Controller
         return (isset($result[$Level]))?$result[$Level]:0;
     }
 
+    protected function getTransactionFieldKeyById($id, $type){
+        return Transaction::where('fk_id', $id)->where('type', $type)->get();
+    }
+
+    protected function getTransactionByUserId($id, $type){
+        return Transaction::where('user_id', $id)->where('type', $type)->get();
+    }
 
     protected function convertMaxCouple($level){
         $result = array(

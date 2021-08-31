@@ -145,10 +145,15 @@ class LogsController extends RollUpController
 
     public function insertKey($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
+        $type = "DEPOSIT_KEY";
+        if($id == 1){
+            $id = 0;
+            $pairId = 0;
+        }
         $keyDuplicate = Transaction::where([
             ['user_id', '=', $id],
             ['fk_id', '=', $pairId],
-            ['type', '=', "DEPOSIT_KEY"]
+            ['type', '=', $type]
         ])->get();
         if(count($keyDuplicate) > 0) return false;
         Transaction::insert([
@@ -157,7 +162,7 @@ class LogsController extends RollUpController
             "amount"=>$keyValue["cost"],
             "balance"=>0,
             "fk_id"=>$pairId,
-            "type"=>"DEPOSIT_KEY",
+            "type"=>$type,
             "user_approve_id"=>0,
             "user_create_id"=>0
         ]);
