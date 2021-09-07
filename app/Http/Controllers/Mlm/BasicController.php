@@ -129,7 +129,7 @@ class BasicController extends RollUpController
     }
 
     public function upgradeUser($upgradedUser){
-
+        // implement here
     }
 
 }
