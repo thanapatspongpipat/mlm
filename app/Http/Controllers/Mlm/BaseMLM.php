@@ -90,13 +90,10 @@ class BaseMLM extends Controller
     }
 
     protected function convertLevelPrice($Level){
-        $result = array(
-            "S"=>1,
-            "M"=>10,
-            "D"=>30,
-            "SD"=>100,
-        );
-        return (isset($result[$Level]))?$result[$Level]:0;
+        foreach($this->getProductAll() as $LevelData){
+            if(strtolower($LevelData->level) == strtolower($Level)) return intval($LevelData->level_value);
+        }
+        return 0;
     }
 
     protected function getTransactionFieldKeyById($id, $type){
