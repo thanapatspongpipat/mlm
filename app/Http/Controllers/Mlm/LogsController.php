@@ -107,7 +107,7 @@ class LogsController extends RollUpController
                 "transaction_timestamp"=>Carbon::now()
             ]);*/
             $type = "DEPOSIT_COUPLE";
-            $this->depositCash($id, $balance, $this->detailCouple, 0, $type);
+            $this->extractBalance($id, $balance, $this->detailCouple, $type, 0);
         }
     }
 
@@ -116,24 +116,32 @@ class LogsController extends RollUpController
         $MyPoint = $this->getBalance($id);
         $result = $this->getCoupleValue($id);
         if($result === false) return false;
+        $amountMin = $this->floorp($result["min"][1] * 0.75, 2);
+        $amountMax = $this->floorp($result["max"][1] * 0.75, 2);
         $minTransaction = Transaction::where([
             ["user_id", "=", $id],
-            ["amount", "=", $result["min"][1]]
+            ["amount", "=", $amountMin]
         ])->select("user_id", "balance")->get();
         $maxTransaction = Transaction::where([
             ["user_id", "=", $id],
-            ["amount", "=", $result["max"][1]]
+            ["amount", "=", $amountMax]
         ])->select("user_id", "balance")->get();
+        $toInsertMin = 0;
+        $toInsertMax = 0;
         if(count($minTransaction) < $result["min"][0] && $MyPoint > 0){
-            $toInsert = $result["min"][0] - count($minTransaction);
-            $this->insertTransactionLoop($id, $result["min"][1], $toInsert);
+            $toInsertMin = $result["min"][0] - count($minTransaction);
             $increment++;
         }
         if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
-            $toInsert = $result["max"][0] - count($maxTransaction);
-            $this->insertTransactionLoop($id, $result["max"][1], $toInsert);
+            $toInsertMax = $result["max"][0] - count($maxTransaction);
             $increment++;
         }
+        if($toInsertMax + $toInsertMin >= 99){
+            // insert 99 couple per day
+            $toInsertMax = 99 - $toInsertMin;
+        }
+        $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
+        $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
         return $increment > 0;
     }
 
@@ -150,10 +158,6 @@ class LogsController extends RollUpController
     public function insertKey($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
         $type = "DEPOSIT_KEY";
-        /*if($id == 1){
-            $id = 0;
-            $pairId = 0;
-        }*/
         $keyDuplicate = Transaction::where([
             ['user_id', '=', $id],
             ['fk_id', '=', $pairId],
