@@ -140,8 +140,8 @@ class LogsController extends RollUpController
             // insert 99 couple per day
             $toInsertMax = 99 - $toInsertMin;
         }
-        $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
-        $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
+        if ($toInsertMin > 0) $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
+        if ($toInsertMax > 0) $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
         return $increment > 0;
     }
 
