@@ -167,7 +167,7 @@ class BaseMLM extends Controller
     }
 
     protected function getLevelLogs($userId){
-        return LevelLogs::where(array('user_id', $userId))->distinct()->get();
+        return LevelLogs::where('user_id', $userId)->distinct()->get();
     }
 
 }
