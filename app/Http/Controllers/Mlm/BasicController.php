@@ -128,4 +128,8 @@ class BasicController extends RollUpController
         if($userRight !== null) $this->getLogRollUp($userRight['userId'], $presentArray);
     }
 
+    public function upgradeUser($upgradedUser){
+
+    }
+
 }

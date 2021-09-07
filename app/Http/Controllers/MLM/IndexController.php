@@ -24,6 +24,8 @@ class IndexController extends Controller
 
         $Logs->insertKey($ownerId, $newUserId);
         if ($headUserId > 0) $Logs->insertCouple($headUserId);
+
+        $this->saveLevelState($newUserId);
     }
 
     /**
@@ -36,6 +38,20 @@ class IndexController extends Controller
     public function CalculateCouple($headUserId = 1){
         $Logs = new LogsController();
         $Logs->insertCouple($headUserId);
+    }
+
+    /**
+     * คำนวนค่าครบคู่สำหรับ Cronjob
+     *
+     * @param integer $upgradedUser         UserID ที่ต้องการอัพเกรด
+     *
+     * @author Aom (siriwat576@gmail.com)
+     */
+    public function UpgradeUser($upgradedUser){
+        $Basic = new BasicController();
+
+        $this->saveLevelState($upgradedUser);
+        $Basic->upgradeUser($upgradedUser);
     }
 
     /**

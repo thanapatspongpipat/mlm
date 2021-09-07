@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\MLM;
 
 use App\Http\Controllers\Controller;
+use App\Models\LevelLogs;
 use App\Models\User;
 use App\Models\Transaction;
 use App\Models\ProductModel;
@@ -164,4 +165,9 @@ class BaseMLM extends Controller
 
         $this->depositCompanyWallaet($userId, $this->floorp($remainVatFee, 2), $detail);
     }
+
+    protected function getLevelLogs($userId){
+        return LevelLogs::where(array('user_id', $userId))->distinct()->get();
+    }
+
 }

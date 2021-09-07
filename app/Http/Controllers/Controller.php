@@ -1034,4 +1034,8 @@ class Controller extends BaseController
 
         return $current_code;
     }
+
+    public function saveLevelState($userId){
+
+    }
 }
