@@ -29,7 +29,7 @@ class BaseMLM extends Controller
     private $InviterCache = array();
     protected function getUserInviter($userId){
         if(isset($this->InviterCache["u{$userId}"])) return $this->InviterCache["u{$userId}"];
-        $User = User::where('user_invite_id', $userId)->get();
+        $User = User::where('user_upline_id', $userId)->get();
         $this->InviterCache["u{$userId}"] = $User;
         return $this->InviterCache["u{$userId}"];
     }
@@ -148,5 +148,23 @@ class BaseMLM extends Controller
         );
 
         return (isset($result[$level]))?$result[$level]:null;
+    }
+
+    protected function floorp($val, $precision)
+    {
+        $mult = pow(10, $precision); // Can be cached in lookup table
+        return floor($val * $mult) / $mult;
+    }
+
+    protected function extractBalance($userId, $totalBalance, $detail, $type, $fkId = 0){
+        $eWalletBalance = $totalBalance * 0.75;
+        $pointBalance = $totalBalance * 0.2;
+        $remainVatFee = $totalBalance - ($eWalletBalance + $pointBalance);
+
+        $this->depositCash($userId, $this->floorp($eWalletBalance, 2), $detail, 0, $type, $fkId);
+
+        $this->depositCoin($userId, $this->floorp($pointBalance, 2), $detail, 0, $type);
+
+        $this->depositCompanyWallaet($userId, $this->floorp($remainVatFee, 2), $detail);
     }
 }

@@ -20,6 +20,9 @@ class DepositController extends Controller
     public function index()
     {
         $userId = Auth::user()->id;
+        if ($userId == null) {
+            return abort(404);
+        }
         $comBank = CompanyBankAccount::where('is_active', 1)->orderBy('id', 'desc')->first();
         $cashWallet = CashWallet::where('user_id', $userId)->first();
 
@@ -49,18 +52,21 @@ class DepositController extends Controller
 
         if ($amount <= 0) {
             $data = [
-                    'title' => 'ไม่สำเร็จ!',
-                    'msg' => 'จำนวนเงินไม่ถูกต้อง',
-                    'status' => 'error',
-                ];
+                'title' => 'ไม่สำเร็จ!',
+                'msg' => 'จำนวนเงินไม่ถูกต้อง',
+                'status' => 'error',
+            ];
 
             return $data;
         }
 
-        $dateTime = date_format(date_create($date.' '.$time), "Y-m-d H:i:s");
+        $dateTime = date_format(date_create($date . ' ' . $time), "Y-m-d H:i:s");
 
-        // return $amount;
-        $path = '/imgs/deposit/'. $userId;
+        // $storagePath  = Storage::getDriver()->getAdapter()->getPathPrefix();
+
+        $fullpath = url('/') . '/storage/app/public/imgs/deposit/' . $userId . '/';
+
+        $path = '/imgs/deposit/' . $userId . '/';
 
         DB::beginTransaction();
 
@@ -73,23 +79,25 @@ class DepositController extends Controller
         } else {
             dd('Base64 not match');
         }
+        $code = $this->getCodeForCash();
 
         $deposit = new Deposit;
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount;
         $deposit->transaction_timestamp = $dateTime;
         $deposit->company_bank_account_id = $comBankId;
-        $deposit->slip_img = 'storage' . $path . $filename;
-        $deposit->detail = $detail ? $detail : 'เติมเงินเข้า CASH - WALLET';
+        $deposit->slip_img =  $fullpath . $filename;
+        $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า CASH - WALLET';
         $deposit->status = 0;
         $deposit->user_create_id = Auth::user()->id;
+        $deposit->code = $code;
         $deposit->save();
 
         DB::commit();
 
         $data = [
             'title' => 'สำเร็จ!',
-            'msg' => 'สร้างรายการเติมเงินสำเร็จ',
+            'msg' => 'สร้างรายการฝากเงินสำเร็จ',
             'status' => 'success',
         ];
 
@@ -100,7 +108,7 @@ class DepositController extends Controller
     {
         $userId = Auth::user()->id;
         return datatables()->of(
-            Deposit::query()->where('user_id', $userId)->orderBy('created_at', 'desc')
+            Deposit::query()->where('user_id', $userId)->orderBy('id', 'desc')
         )->toJson();
     }
 
@@ -113,7 +121,6 @@ class DepositController extends Controller
 
         return $cashWallet->balance;
     }
-
 
     public function approve(Request $req)
     {
@@ -164,4 +171,8 @@ class DepositController extends Controller
 
         return $data;
     }
+
+
+
+
 }

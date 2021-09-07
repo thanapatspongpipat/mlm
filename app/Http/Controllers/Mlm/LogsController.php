@@ -6,6 +6,7 @@ use App\Http\Controllers\Mlm\RollUpController;
 use App\Http\Controllers\Mlm\BasicController;
 use App\Models\User;
 use App\Models\Transaction;
+
 class LogsController extends RollUpController
 {
     public function insertCouple($id){
@@ -95,15 +96,18 @@ class LogsController extends RollUpController
 
     private function insertTransactionLoop($id, $balance, $count){
         for($i=0;$i<$count;$i++){
-            Transaction::insert([
+            /*Transaction::insert([
                 "user_id"=>$id,
                 "balance"=>0,
                 "amount"=>$balance,
                 "type"=>"DEPOSIT_COUPLE",
                 "detail"=>$this->detailCouple,
-                "user_approve_id"=>0,
-                "user_create_id"=>0
-            ]);
+                "user_approve_id"=>Auth::user()->id ,
+                "user_create_id"=>0,
+                "transaction_timestamp"=>Carbon::now()
+            ]);*/
+            $type = "DEPOSIT_COUPLE";
+            $this->depositCash($id, $balance, $this->detailCouple, 0, $type);
         }
     }
 
@@ -146,26 +150,20 @@ class LogsController extends RollUpController
     public function insertKey($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
         $type = "DEPOSIT_KEY";
-        if($id == 1){
+        /*if($id == 1){
             $id = 0;
             $pairId = 0;
-        }
+        }*/
         $keyDuplicate = Transaction::where([
             ['user_id', '=', $id],
             ['fk_id', '=', $pairId],
             ['type', '=', $type]
         ])->get();
         if(count($keyDuplicate) > 0) return false;
-        Transaction::insert([
-            "user_id"=>$id,
-            "detail"=>"ค่าลงทะเบียน {$pairId}",
-            "amount"=>$keyValue["cost"],
-            "balance"=>0,
-            "fk_id"=>$pairId,
-            "type"=>$type,
-            "user_approve_id"=>0,
-            "user_create_id"=>0
-        ]);
+
+        $keyDetail = "ค่าลงทะเบียน {$pairId}";
+        $this->extractBalance($id, $keyValue["cost"], $keyDetail, $type, $pairId);
+
         return true;
     }
 

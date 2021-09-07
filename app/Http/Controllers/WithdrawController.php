@@ -21,6 +21,9 @@ class WithdrawController extends Controller
     public function index()
     {
         $userId = Auth::user()->id;
+        if($userId == null){
+            return abort(404);
+        }
 
         $bankAccount = BankAccount::with('bank')->where('user_id', $userId)->first();
 
@@ -62,13 +65,19 @@ class WithdrawController extends Controller
         $branch = $req->branch;
         // return $req->all();
         $userId = Auth::user()->id;
+        if($userId == null){
+            return abort(404);
+        }
+        // return $req->all();
 
         DB::beginTransaction();
         $bankAccount = BankAccount::where('user_id', $userId)->first();
+        // return $bankAccount;
         if($bankAccount == null){
             $bankAccount = new BankAccount;
         }
-        $bankAccount->bank_id = $bankId;
+
+        $bankAccount->bank_id = 1;
         $bankAccount->account_name = $accountName;
         $bankAccount->account_no = $accountNo;
         $bankAccount->branch = $branch;
@@ -139,6 +148,7 @@ class WithdrawController extends Controller
 
         DB::beginTransaction();
 
+        $code = $this->getCodeForCash();
 
         $withdraw = new Withdraw;
         $withdraw->user_id = $userId;
@@ -150,6 +160,7 @@ class WithdrawController extends Controller
         $withdraw->bank_account_no = $accountNo;
         $withdraw->status = 0;
         $withdraw->user_create_id = $userId;
+        $withdraw->code = $code;
         $withdraw->save();
 
 
@@ -168,7 +179,7 @@ class WithdrawController extends Controller
     {
         $userId = Auth::user()->id;
         return datatables()->of(
-            Withdraw::query()->with('bank')->where('user_id', $userId)->orderBy('created_at', 'desc')
+            Withdraw::query()->with('bank')->where('user_id', $userId)->orderBy('id', 'desc')
         )->toJson();
     }
 

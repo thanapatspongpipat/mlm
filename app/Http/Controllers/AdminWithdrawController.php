@@ -81,7 +81,7 @@ class AdminWithdrawController extends Controller
 
         $data = [
             'title' => 'สำเร็จ!',
-            'msg' => 'เติมเงินสำเร็จ',
+            'msg' => 'ฝากเงินสำเร็จ',
             'status' => 'success',
         ];
 

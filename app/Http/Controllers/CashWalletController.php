@@ -20,6 +20,10 @@ class CashWalletController extends Controller
 
         $userId = Auth::user()->id;
 
+        if ($userId == null) {
+            return abort(404);
+        }
+
         $wallet = CashWallet::where('user_id', $userId)->first();
 
         if ($wallet == null) {
@@ -38,100 +42,125 @@ class CashWalletController extends Controller
     {
 
         // return $req->all();
-        $from = $req->from != null ? date('Y-m-d', strtotime($req->from)) : null;
-        $to = $req->to != null ? date('Y-m-d', strtotime($req->to)) : null;
+        $from = $req->from != null && $req->from != 'Invalid date' ? date('Y-m-d', strtotime($req->from)) : null;
+        $to = $req->to != null && $req->to != 'Invalid date' ? date('Y-m-d', strtotime($req->to)) : null;
         $type = $req->type;
+        $code = $req->code;
 
         // return $from;
 
         $userId = Auth::user()->id;
         $wallet = CashWallet::where('user_id', $userId)->first();
 
-        if ($type == 'all') {
-            if ($from != null && $to != null) {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->whereDate('transaction_timestamp', '>=', $from)
-                    ->whereDate('transaction_timestamp', '<=', $to)
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-                // return $data;
+        if($code != null ){
 
-            } else if ($from != null && $to == null) {
+            $data = Transaction::with('user')
+                ->where('user_id', $userId)
+                ->where('code', 'LIKE', '%' . $code . '%')
+                // ->orderBy('id', 'desc')
+                ->get();
 
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->whereDate('transaction_timestamp', '>=', $from)
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            } else if ($from == null && $to != null) {
+        }else{
+            if ($type == 'all') {
+                if ($from != null && $to != null) {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->whereDate('transaction_timestamp', '>=', $from)
+                        ->whereDate('transaction_timestamp', '<=', $to)
+                        ->orderBy('id', 'desc')->get();
+                    // return $data;
 
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->whereDate('transaction_timestamp', '<=', $to)
-                    ->orderBy('transaction_timestamp', 'desc')->get();
+                } else if ($from != null && $to == null) {
+
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->whereDate('transaction_timestamp', '>=', $from)
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+
+                } else if ($from == null && $to != null) {
+
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->whereDate('transaction_timestamp', '<=', $to)
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                } else {
+
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->orderBy('id', 'desc')
+                        ->get();
+                }
+            } else if ($type == 'in') {
+                if ($from != null && $to != null) {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->whereDate('transaction_timestamp', '>=', $from)
+                        ->whereDate('transaction_timestamp', '<=', $to)
+                        ->where('type',  'like', '%DEPOSIT%')
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                } else if ($from != null && $to == null) {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->whereDate('transaction_timestamp', '>=', $from)
+                        ->where('type', 'like', '%DEPOSIT%')
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                } else if ($from == null && $to != null) {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->where('type', 'like', '%DEPOSIT%')
+                        ->whereDate('transaction_timestamp', '<=', $to)
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                } else {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        ->where('type', 'like', '%DEPOSIT%')
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                }
+            } else if ($type == 'out') {
+                if ($from != null && $to != null) {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        // ->orWhere('to_user_id', $userId)
+                        ->whereDate('transaction_timestamp', '>=', $from)
+                        ->whereDate('transaction_timestamp', '<=', $to)
+                        ->where('type', 'WITHDRAW')
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                } else if ($from != null && $to == null) {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        // ->orWhere('to_user_id', $userId)
+                        ->whereDate('transaction_timestamp', '>=', $from)
+                        ->where('type', 'WITHDRAW')
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                } else if ($from == null && $to != null) {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        // ->orWhere('to_user_id', $userId)
+                        ->whereDate('transaction_timestamp', '<=', $to)
+                        ->where('type', 'WITHDRAW')
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                } else {
+                    $data = Transaction::with('user')
+                        ->where('user_id', $userId)
+                        // ->orWhere('to_user_id', $userId)
+                        ->where('type', 'WITHDRAW')
+                        ->orderBy('id', 'desc')->get();
+                        // ->orderBy('transaction_timestamp', 'desc')->get();
+                }
             } else {
-
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->orderBy('transaction_timestamp', 'desc')->get();
             }
-        } else if ($type == 'in') {
-            if ($from != null && $to != null) {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->whereDate('transaction_timestamp', '>=', $from)
-                    ->whereDate('transaction_timestamp', '<=', $to)
-                    ->where('type',  'like', '%DEPOSIT%')
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            } else if ($from != null && $to == null) {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->whereDate('transaction_timestamp', '>=', $from)
-                    ->where('type', 'like', '%DEPOSIT%')
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            } else if ($from == null && $to != null) {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->where('type', 'like', '%DEPOSIT%')
-                    ->whereDate('transaction_timestamp', '<=', $to)
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            } else {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    ->where('type', 'like', '%DEPOSIT%')
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            }
-        } else if ($type == 'out') {
-            if ($from != null && $to != null) {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    // ->orWhere('to_user_id', $userId)
-                    ->whereDate('transaction_timestamp', '>=', $from)
-                    ->whereDate('transaction_timestamp', '<=', $to)
-                    ->where('type', 'WITHDRAW')
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            } else if ($from != null && $to == null) {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    // ->orWhere('to_user_id', $userId)
-                    ->whereDate('transaction_timestamp', '>=', $from)
-                    ->where('type', 'WITHDRAW')
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            } else if ($from == null && $to != null) {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    // ->orWhere('to_user_id', $userId)
-                    ->whereDate('transaction_timestamp', '<=', $to)
-                    ->where('type', 'WITHDRAW')
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            } else {
-                $data = Transaction::with('user')
-                    ->where('user_id', $userId)
-                    // ->orWhere('to_user_id', $userId)
-                    ->where('type', 'WITHDRAW')
-                    ->orderBy('transaction_timestamp', 'desc')->get();
-            }
-        } else {
         }
+
+
 
 
 

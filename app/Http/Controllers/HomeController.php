@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use App\Models\Transaction;
+use Carbon\Carbon;
+use App\Models\News;
+//app('App\Http\Controllers\Controller')->getPrintReport();
 
 class HomeController extends Controller
 {
@@ -38,10 +44,18 @@ class HomeController extends Controller
 
     public function root()
     {   
+        $newsData = News::find(1);
         $userId = Auth::user()->id;
+        $getRevenue = new Controller;
+        $userData = User::find($userId);
+        
+        $dataRevenue = $getRevenue->getRevenue($userId);
+        $dataCoinRevenue = $getRevenue->getCoinRevenue($userId);
+
         $cashWallet = CashWallet::where('user_id', $userId)->first();
         $coinWallet = CoinWallet::where('user_id', $userId)->first();
-        return view('index', compact('cashWallet', 'coinWallet'));
+
+        return view('index', ['cashWallet' => $cashWallet, 'coinWallet' => $coinWallet, 'dataRevenue' => $dataRevenue,'newsData' => $newsData,'userData' => $userData, 'dataCoinRevenue' => $dataCoinRevenue]);
     }
 
     /*Language Translation*/

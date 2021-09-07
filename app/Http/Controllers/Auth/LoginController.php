@@ -40,6 +40,7 @@ class LoginController extends Controller
 
     protected function username()
     {
-        return 'username';
+        // return 'username';
+        return 'id';
     }
 }

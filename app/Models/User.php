@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,7 +21,6 @@ class User extends Authenticatable
         'id',
         'name',
         'prefix_name',
-        'fullname',
         'username',
         'firstname',
         'lastname',
@@ -45,13 +45,10 @@ class User extends Authenticatable
         'nationality',
         'sex',
         'ig',
-        'country',
-        'region',
         'province',
         'district',
         'sub_district',
         'send_address',
-        'send_region',
         'send_province',
         'send_sub_district',
         'send_district',
@@ -76,6 +73,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -97,6 +99,23 @@ class User extends Authenticatable
         ->with('childrenUpline');
     }
 
+    public function product(){
+        return $this->belongsTo(ProductModel::class, 'product_id', 'id')->withDefault();
+    }
+
+    public function wallet(){
+        return $this->belongsTo(CashWallet::class, 'id', 'user_id');
+    }
+
+    public function inviteCount(){
+        return User::where('user_invite_id', $this->id)->count();
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        $date = Carbon::parse($value);
+        return $date->format('d-m-Y');
+    }
 
 
 

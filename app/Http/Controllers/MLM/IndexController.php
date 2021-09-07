@@ -15,7 +15,7 @@ class IndexController extends Controller
      *
      * @author Aom (siriwat576@gmail.com)
      */
-    public function CreateNewUser($inviterId, $ownerId, $newUserId, $headUserId = 1){
+    public function CreateNewUser($inviterId, $ownerId, $newUserId, $headUserId = 0){
         $Basic = new BasicController();
         $Logs = new LogsController();
 
@@ -23,6 +23,18 @@ class IndexController extends Controller
         $Basic->insertRollUp($inviterId);
 
         $Logs->insertKey($ownerId, $newUserId);
+        if ($headUserId > 0) $Logs->insertCouple($headUserId);
+    }
+
+    /**
+     * คำนวนค่าครบคู่สำหรับ Cronjob
+     *
+     * @param integer $headUserId   UserID ที่จะให้ระบบเริ่มคำนวนค่าครบคู่ (default: 1, เริ่มคำนวนตั้งแต่ต้นสายใหม่ทั้งหมด)
+     *
+     * @author Aom (siriwat576@gmail.com)
+     */
+    public function CalculateCouple($headUserId = 1){
+        $Logs = new LogsController();
         $Logs->insertCouple($headUserId);
     }
 

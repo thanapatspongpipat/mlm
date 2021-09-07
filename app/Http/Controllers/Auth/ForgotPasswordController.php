@@ -137,7 +137,7 @@ class ForgotPasswordController extends Controller
         if($userData) {
             return response()->json([
                 'isSuccess' => true,
-                'message' => "Password updated successfully!"
+                'message' => "เปลี่ยนรหัสผ่านเรียบร้อย"
             ], 200);
 
         } else {

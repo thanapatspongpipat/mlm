@@ -166,8 +166,8 @@ class RollUpController extends BaseMLM
 
     private function getDealer($id){
         $MyData = $this->getUserById($id);
-        $HeaderID = $MyData->user_invite_id;
-        if(isset($HeaderID)){
+        $HeaderID = isset($MyData) && isset($MyData->user_upline_id) ? $MyData->user_upline_id : null;
+        if(isset($HeaderID) && $HeaderID !== null){
             $HeaderLevel = $this->getUserLevel($HeaderID);
             if($HeaderLevel == "D" || $HeaderLevel == "SD") return $HeaderID;
             return $this->getDealer($HeaderID);

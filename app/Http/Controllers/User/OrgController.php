@@ -69,7 +69,7 @@ class OrgController extends Controller
     }
 
     public function uplineListInfo(Request $request){
-        $user = User::where('id', $request->input('id'))->first();
+        $user = User::with('product')->where('id', $request->input('id'))->first();
         if($user){
             return response()->json($user);
         }else{
@@ -77,13 +77,25 @@ class OrgController extends Controller
         }
     }
 
-    public function uplineList(Request $request){
-        // dd($request->all());
-        $username = $request->input('username');
+    public function uplineListInfoarray2(Request $request){
+        $user = User::with('product', 'childrenUpline')->where('id', $request->input('id'))->get();
+        $d = $this->tree2Array($user->toArray());
+        // dd($user);
+        if($d){
+            return response()->json($d);
+        }else{
+            return response()->json([], 400);
+        }
+    }
+    public function uplineListInfoarray(Request $request){
+        // $username = $request->input('username');
+        $username = $request->input('id');
         $start = $request->input('start');
         $end = $request->input('end');
-        $users = User::with('childrenUpline')
-            ->where('username', $username);
+        $users = User::with('product','childrenUpline')
+            // ->where('username', $username);
+            ->where('id', $username);
+
         if($start !== '' && $start !== null){
             $users = $users->whereDate('created_at', '>=', date("Y-m-d",strtotime($start)));
         }
@@ -91,10 +103,69 @@ class OrgController extends Controller
         if($end !== '' && $end !== null){
             $users = $users->whereDate('created_at', '<=', date("Y-m-d",strtotime($end)));
         }
-
-
         $users = $users->orderBy('position_space','ASC')->get();
-        // return $users;
+
+        $data = $this->responsiteData($users, true);
+        if(!$data){
+            $data = [];
+        }else{
+            $data = [$data];
+        }
+        $d = $this->tree2Array2($data);
+        return response()->json($d);
+    }
+
+    private function tree2Array2($data, $parent_id = ''){
+        // dd($data);
+        $dataSet = [];
+        foreach ($data as $value) {
+            // $value['parentId'] = '0-'.$parent_id;
+            $value['parentId'] = $parent_id;
+            $a = $this->tree2Array2($value['children'] ?? [], $value['id']);
+            unset($value['children']);
+            // // $value['id'] = '0-'.$value['id'];
+            $dataSet[] = $value;
+            foreach ($a as $v_a) {
+                $dataSet[] = $v_a;
+            }
+        }
+        return $dataSet;
+    }
+
+    private function tree2Array($data, $parent_id = ''){
+        $dataSet = [];
+        foreach ($data as $value) {
+            // $value['parentId'] = '0-'.$parent_id;
+            $value['parentId'] = $parent_id;
+            $a = $this->tree2Array($value['children_upline'], $value['id']);
+            unset($value['children_upline']);
+            // $value['id'] = '0-'.$value['id'];
+            $dataSet[] = $value;
+            foreach ($a as $v_a) {
+                $dataSet[] = $v_a;
+            }
+        }
+        return $dataSet;
+    }
+
+
+    public function uplineList(Request $request){
+        $username = $request->input('username');
+        $start = $request->input('start');
+        $end = $request->input('end');
+        $users = User::with('childrenUpline')
+            // ->where('username', $username);
+            ->where('id', $username);
+
+        if($start !== '' && $start !== null){
+            $users = $users->whereDate('created_at', '>=', date("Y-m-d",strtotime($start)));
+        }
+
+        if($end !== '' && $end !== null){
+            $users = $users->whereDate('created_at', '<=', date("Y-m-d",strtotime($end)));
+        }
+        $users = $users->orderBy('position_space','ASC')->get();
+
         $data = $this->responsiteData($users, true);
         return response()->json($data);
     }
@@ -108,8 +179,7 @@ class OrgController extends Controller
                 "name"=> $value->firstname.' '.$value->lastname,
                 "title"=> $value->firstname.' '.$value->lastname,
                 "avatar"=> $value->avatar,
-                "level"=> $value->username,
-                "level"=> $value->level,
+                "level_space"=> $value->product->level ?? '-',
                 "username"=> $value->username,
                 "position" => $value->position_space,
                 "empty"=> false,
@@ -124,8 +194,7 @@ class OrgController extends Controller
                     "name"=> '',
                     "title"=> '<button type="button" class="btn btn-primary">Add</button>',
                     "avatar"=> '',
-                    "level"=> '',
-                    "level"=> '',
+                    "level_space"=> '',
                     "username"=> '',
                     "position" => 'left',
                     "empty"=> true,
@@ -136,8 +205,7 @@ class OrgController extends Controller
                     "name"=> '',
                     "title"=> '<button type="button" class="btn btn-primary">Add</button>',
                     "avatar"=> '',
-                    "level"=> '',
-                    "level"=> '',
+                    "level_space"=> '',
                     "username"=> '',
                     "position" => 'right',
                     "empty"=> true,
@@ -154,13 +222,11 @@ class OrgController extends Controller
                     "name"=> '',
                     "title"=> '<button type="button" class="btn btn-primary">Add</button>',
                     "avatar"=> '',
-                    "level"=> '',
-                    "level"=> '',
+                    "level_space"=> '',
                     "username"=> '',
                     "position" => $posi,
                     "empty"=> true,
                 ];
-                // $data_set[] = [];
             }
         }else{
             if(count($data_set)>0){

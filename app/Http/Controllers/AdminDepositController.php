@@ -56,7 +56,7 @@ class AdminDepositController extends Controller
                 $ts->balance = (string) $newBalance;
                 $ts->type = 'DEPOSIT';
                 $ts->transaction_timestamp = Carbon::now();
-                $ts->detail = $deposit->detail ? $deposit->detail : 'เติมเงินเข้า CASH-WALLET';
+                $ts->detail = $deposit->detail ? $deposit->detail : 'ฝากเงินเข้า CASH-WALLET';
                 $ts->user_create_id = $deposit->user_create_id;
                 $ts->user_approve_id = Auth::user()->id;
                 $ts->save();
@@ -83,7 +83,7 @@ class AdminDepositController extends Controller
 
         $data = [
             'title' => 'สำเร็จ!',
-            'msg' => 'เติมเงินสำเร็จ',
+            'msg' => 'ฝากเงินสำเร็จ',
             'status' => 'success',
         ];
 

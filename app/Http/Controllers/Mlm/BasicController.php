@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MLM;
 
 use App\Models\Transaction;
 
+
 class BasicController extends RollUpController
 {
     private function percentage($level){
@@ -41,10 +42,6 @@ class BasicController extends RollUpController
         return $result;
     }
 
-    private function isFeeInsert($id, $inviteUserId){
-
-    }
-
 
     public function insertFee($id){
         $presentArray = array();
@@ -60,16 +57,12 @@ class BasicController extends RollUpController
                 $transactionById = $this->getTransactionByUserId($present['id'], $type);
                 $transactionByFk = $this->getTransactionFieldKeyById($index['invitedUserId'], $type);
                 if (count($transactionById) <= 0  || count($transactionByFk) <= 0){
-                    Transaction::insert(array(
-                        'user_id' => $present['id'],
-                        'type' => $type,
-                        'fk_id' => $index['invitedUserId'],
-                        'amount' => $index['total'],
-                        'detail' => $action,
-                        'balance' => 0,
-                        'user_approve_id' => 0,
-                        'user_create_id' => 0
-                    ));
+                    $presentId = $present['id'];
+                    $amount = $index['total'];
+                    $fkId = $index['invitedUserId'];
+
+                    $this->extractBalance($presentId, $amount, $action, $type, $fkId);
+
                     $finishedCount++;
                 }
             }
@@ -106,16 +99,21 @@ class BasicController extends RollUpController
                                         ->where('type', $type)
                                         ->where('fk_id', $index['userId']);
             if (count($condition->get()) <= 0 and count($selfCondition->get()) <= 0){
-                Transaction::insert(array(
+                $dealerId = $index['dealerId'];
+                $amount = $index['total'];
+                $fkId = $index['userId'];
+                /*Transaction::insert(array(
                     'user_id' => $index['dealerId'],
                     'fk_id' => $index['userId'],
                     'type' => $type,
                     'detail' => $action,
                     'amount' => $index['total'],
                     'balance' => 0,
-                    'user_approve_id' => 0,
-                    'user_create_id' => 0
-                ));
+                    'user_approve_id' => Auth::user()->id,
+                    'user_create_id' => 0,
+                    "transaction_timestamp"=>Carbon::now()
+                ));*/
+                $this->depositCash($dealerId, $amount, $action, 0, $type, $fkId);
                 $finishedCount++;
             }
         }

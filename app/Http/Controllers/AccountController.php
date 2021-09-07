@@ -18,10 +18,6 @@ class AccountController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
-        return view("profile.index");
-    }
-
     public function updateIndex(){
         
         $userId = Auth::user()->id;
@@ -70,7 +66,7 @@ class AccountController extends Controller
                 return response()->json([
                     'isSuccess' => true,
                     'status'=>200,
-                    'Message'=>'Updated Successfully.'
+                    'Message'=>'แก้ไขข้อมูลเรียบร้อย'
                 ]);
             }else{
                 return response()->json([
@@ -117,20 +113,17 @@ class AccountController extends Controller
             $user->password = Hash::make($request->get('password'));
             $user->update();
             if ($user) {
-                Session::flash('message', 'Password updated successfully!');
-                Session::flash('alert-class', 'alert-success');
                 
                 return response()->json([
                     'isSuccess' => true,
-                    'Message' => "Password updated successfully!"
+                    'Message' => "เปลี่ยนรหัสผ่านเรียบร้อย"
                 ], 200); 
                 
             } else {
-                Session::flash('message', 'Something went wrong!');
-                Session::flash('alert-class', 'alert-danger');
+                
                 return response()->json([
                     'isSuccess' => true,
-                    'Message' => "Something went wrong!"
+                    'Message' => "เกิดข้อผิดพลาด!"
                 ], 200);
             }
         }
