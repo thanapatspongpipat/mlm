@@ -126,8 +126,8 @@ class LogsController extends RollUpController
             ["user_id", "=", $id],
             ["amount", "=", $amountMax]
         ])->select("user_id", "balance")->get();
-        $toInsertMin = 0;
-        $toInsertMax = 0;
+        $toInsertMin = 0; // 70
+        $toInsertMax = 0; // 30
         if(count($minTransaction) < $result["min"][0] && $MyPoint > 0){
             $toInsertMin = $result["min"][0] - count($minTransaction);
             $increment++;
@@ -140,6 +140,7 @@ class LogsController extends RollUpController
             // insert 99 couple per day
             $toInsertMax = 99 - $toInsertMin;
         }
+        //dd($toInsertMax, $toInsertMin);
         $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
         $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
         return $increment > 0;
@@ -164,10 +165,8 @@ class LogsController extends RollUpController
             ['type', '=', $type]
         ])->get();
         if(count($keyDuplicate) > 0) return false;
-
         $keyDetail = "ค่าลงทะเบียน {$pairId}";
         $this->extractBalance($id, $keyValue["cost"], $keyDetail, $type, $pairId);
-
         return true;
     }
 
