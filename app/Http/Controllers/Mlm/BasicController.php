@@ -102,18 +102,8 @@ class BasicController extends RollUpController
                 $dealerId = $index['dealerId'];
                 $amount = $index['total'];
                 $fkId = $index['userId'];
-                /*Transaction::insert(array(
-                    'user_id' => $index['dealerId'],
-                    'fk_id' => $index['userId'],
-                    'type' => $type,
-                    'detail' => $action,
-                    'amount' => $index['total'],
-                    'balance' => 0,
-                    'user_approve_id' => Auth::user()->id,
-                    'user_create_id' => 0,
-                    "transaction_timestamp"=>Carbon::now()
-                ));*/
-                $this->depositCash($dealerId, $amount, $action, 0, $type, $fkId);
+                //$this->depositCash($dealerId, $amount, $action, 0, $type, $fkId);
+                $this->extractBalance($dealerId, $amount, $action, $type, $fkId);
                 $finishedCount++;
             }
         }
