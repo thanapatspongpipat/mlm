@@ -77,6 +77,7 @@ class LogsController extends RollUpController
     }
 
     private $detailCouple = "ค่าครบคู่";
+    private $typeCouple = "BONUS_COUPLE";
     public function generateLogsCouple($userId, $balance){
         return [
             "user_id"=>$userId,
@@ -146,6 +147,7 @@ class LogsController extends RollUpController
         return $result;
     }
 
+    // use in case insert key and upgrade user level
     public function insertKey($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
         $keyResult = $keyValue['cost'];

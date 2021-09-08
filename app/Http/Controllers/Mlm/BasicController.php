@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\MLM;
 
 use App\Models\Transaction;
-use App\Models\ProductModel;
 
 
 class BasicController extends RollUpController
@@ -21,12 +20,12 @@ class BasicController extends RollUpController
     }
 
     private function finalCompute($id){
-        $inviteUsersLevel = $this->getUserInvite($id);
+        $inviteUsersLevel = $this->getUserInviter($id);
         $usersLevel = $this->getUserLevel($id);
         $result = array();
         foreach($inviteUsersLevel as $inviteUser){
             $userInviteLevel = $this->getLevelByProductId($inviteUser->product_id);
-            $value = $this->getLevelCost($inviteUser->product_id);
+            $value = $this->getLevelCost($userInviteLevel);
             $percent = $this->percentage($usersLevel);
             $total = $value * $percent;
             $result[] = array(
@@ -54,11 +53,13 @@ class BasicController extends RollUpController
                 $action = "ค่าแนะนำสมาชิก {$index['invitedUserId']}";
                 $transactionById = $this->getTransactionByUserId($present['id'], $type);
                 $transactionByFk = $this->getTransactionFieldKeyById($index['invitedUserId'], $type);
-                if (!$this->isInsertFeeTransaction($present['id'], $index['invitedUserId'], $type)){
+                if (count($transactionById) <= 0  || count($transactionByFk) <= 0){
                     $presentId = $present['id'];
                     $amount = $index['total'];
                     $fkId = $index['invitedUserId'];
+
                     $this->extractBalance($presentId, $amount, $action, $type, $fkId);
+
                     $finishedCount++;
                 }
             }
@@ -86,7 +87,6 @@ class BasicController extends RollUpController
         $this->computeRollup($id, $presentArray);
         $finishedCount = 0;
         foreach($presentArray as $index){
-            //dd($index);
             $userId = $index["userId"];
             $action = "ค่า RollUp {$index['userId']}";
             $condition = Transaction::where('user_id', $userId)
@@ -100,7 +100,6 @@ class BasicController extends RollUpController
                 $amount = $index['total'];
                 $fkId = $index['userId'];
                 $this->extractBalance($dealerId, $amount, $action, $type, $fkId);
-
                 $finishedCount++;
             }
         }
@@ -125,22 +124,8 @@ class BasicController extends RollUpController
         if($userRight !== null) $this->getLogRollUp($userRight['userId'], $presentArray);
     }
 
-    public function upgradeUser($id){
-        $details = "ค่าแนะนำอัพเกรดสมาชิก {$id}";
-        $type = "DEPOSIT_UPGRADE_FEE";
-        $invite_id = $this->getUserById($id)->user_invite_id;
-        $invite_productId = $this->getUserById($invite_id)->product_id;
-        $user_productId = $this->getUserById($id)->product_id;
-        $user_product = ProductModel::where('id', $user_productId)->get()->first();
-        $invite_product = ProductModel::where('id', $invite_productId)->get()->first();
-        $user_product_point = $user_product->point;
-        $percent_invite = $this->percentage($invite_product->level);
-        $amount = $percent_invite * $user_product_point;
-        $checkTransaction = Transaction::where('user_id', $invite_id)
-                                            ->where('fk_id', $id)
-                                            ->where('amount', $amount * 0.75)->get();
-        if(count($checkTransaction) != 0 ) return false;
-        $this->extractBalance($invite_id, $amount, $details, $type, $id);
-        return true;
+    public function upgradeUser($upgradedUser){
+        // implement here
     }
+
 }
