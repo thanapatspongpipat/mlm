@@ -1,7 +1,7 @@
 
 @extends('layouts.master')
 
-@section('title') Withdraw   @endsection
+@section('title') ถอนเงินออกจาก CASH-WALLET  @endsection
 @section('css')
     <!-- DataTables -->
     <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
@@ -30,7 +30,7 @@
 
     @component('components.breadcrumb')
         @slot('li_1') Dashboards @endslot
-        @slot('title') Withdraw   @endslot
+        @slot('title') ถอนเงินออกจาก CASH-WALLET @endslot
     @endcomponent
     <div class="row">
         <div class="col-md-3"></div>
@@ -90,7 +90,7 @@
                                         <label for="amount" class="form-label"> จำนวนเงิน </label>
                                         <div class="input-group mb-3">
                                             <label class="input-group-text"> <i class="bx bx-money"></i></label>
-                                             <input type="number" class="formInput form-control" id="amount" value="" min="1" step="0.01" placeholder="กรอกจำนวนเงิน" required>
+                                             <input type="number"  step="1" class="formInput form-control" id="amount" value="" min="1"  placeholder="กรอกจำนวนเงิน" required>
                                             <label class="input-group-text">฿ </label>
                                         </div>
                                     </div>
@@ -98,7 +98,7 @@
                                     <br>
 
                                     <div class="mb-3">
-                                        <label for="bank" class="form-label">ธนาคาร</label> <a href="{{ route('withdraw.edit-bank') }}"><span class="badge bg-warning float-end"> <i class="bx bx-edit-alt"></i> edit</span></a>
+                                        <label for="bank" class="form-label">ธนาคาร</label> <a href="{{ route('withdraw.edit-bank') }}"><span class="text-primary float-end"> <i class="bx bx-edit-alt"></i> กดเพื่อแก้ไขบัญชีธนาคาร</span></a>
                                         <input type="text" name="bank" id="bank" value="{{ @$bankAccount->bank->name }}" class="form-control" placeholder="-" disabled>
                                         <input type="hidden" name="bankAccountId" id="bankAccountId" value="{{ $bankAccount->id }}">
                                     </div>
@@ -116,7 +116,7 @@
 
 
                                     <div class="mt-3 d-grid">
-                                        <button class="btn btn-primary waves-effect waves-light" type="button" onclick="withdrawCash()"> WITHDRAW </button>
+                                        <button class="btn btn-primary waves-effect waves-light" type="button" onclick="withdrawCash()"> ยืนยันส่งเรื่องถอนเงิน </button>
                                     </div>
 
                                 </form>
@@ -133,14 +133,17 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
+                    <a href="{{ route('wallet.cash-wallet.index') }}"><span class="text-primary float-end"> <i class="bx bx-search-alt"></i> กดเพื่อดูประวัติการทำรายการทั้งหมด</span></a>
+                    <h5>ประวัติการทำรายการ</h5>
 
-                    <h5>History</h5>
+                    <br>
                     <div class="row">
 
                         <table id="simple_table" style="font-size:90%;" class="table table-bordered dt-responsive nowrap w-100">
                             <thead>
                                 <tr class="text-center">
                                     <th scope="col">วันที่ทำรายการ</th>
+                                    <th scope="col">เลขที่ทำรายการ</th>
                                     <th scope="col">รายละเอียด</th>
                                     <th scope="col">ธนาคาร</th>
                                     <th scope="col">เลขบัญชี</th>
@@ -273,7 +276,7 @@
                 },
                 'columnDefs': [
                     {
-                        "targets": [0,1,2,3,4,5,6,7],
+                        "targets": [0,1,2,3,4,5,6,7,8],
                         "className": "text-center",
                     },
                 ],
@@ -284,6 +287,9 @@
                          "render": function (data, type, full) {
                             return moment(data).format('DD-MM-YYYY HH:mm');
                         }
+                    },
+                    {
+                        "data": "code",
                     },
                     {
                         "data": "detail",
@@ -309,7 +315,9 @@
                         "data": "amount",
                         "render": function (data, type, full) {
                             data = data ? data : '';
-                            return  data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            data = data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            var text = `<span class="text-danger">- ${data} </span>`;
+                            return text;
                     }
                     },
 

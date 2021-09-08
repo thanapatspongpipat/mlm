@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title') @lang('translation.Form_Elements') @endsection
+@section('title') เปลี่ยนรหัสผ่าน @endsection
 
 
 @section('css')
@@ -22,42 +22,42 @@
                     
                 
                     <div class="card-body">
-                        <div class="card-title mb-3">เปลี่ยนรหัสผ่าน</div>
+
                         <form method="POST" id="change_password">
                             <input type="hidden" id="csrf_token" name="_token" value="{{ csrf_token() }}" />
                             @method('PUT')
     
                             <div class="form-group row mb-3">
                                 <label for="current_password"
-                                    class="col-md-4 col-form-label text-md-right">Current Password</label>
+                                    class="col-md-4 col-form-label text-md-right">รหัสผ่านปัจจุบัน</label>
     
                                 <div class="col-md-6">
                                     <input id="current_password" type="password"
                                         class="form-control @error('current_password') is-invalid @enderror"
-                                        name="current_password" autocomplete="current_password" placeholder="รหัสผ่านปัจจุบัน" required>
+                                        name="current_password" autocomplete="current_password" placeholder="" required>
                                         <div class="text-danger" id="current_passwordErr" data-ajax-feedback="current_password"></div>
                                 </div>
                             </div>
     
                             <div class="form-group row mb-3">
                                 <label for="new_password"
-                                    class="col-md-4 col-form-label text-md-right">New Password</label>
+                                    class="col-md-4 col-form-label text-md-right">รหัสผ่านใหม่</label>
                                 <div class="col-md-6">
                                     <input id="new_password" type="password"
                                         class="form-control @error('password') is-invalid @enderror"
-                                        name="password" autocomplete="new_password" placeholder="รหัสผ่านใหม่" required>
+                                        name="password" autocomplete="new_password" placeholder="" required>
                                         <div class="text-danger" id="passwordErr" data-ajax-feedback="new_password"></div>
                                 </div>
                             </div>
     
                             <div class="form-group row mb-3">
                                 <label for="new_password_confirm"
-                                    class="col-md-4 col-form-label text-md-right">Confirm New Password</label>
+                                    class="col-md-4 col-form-label text-md-right">ยืนยันรหัสผ่านใหม่</label>
     
                                 <div class="col-md-6">
                                     <input id="new_password_confirm" type="password"
                                         class="form-control"
-                                        name="password_confirmation" placeholder="ยืนยันรหัสผ่านใหม่" required>
+                                        name="password_confirmation" placeholder="" required>
                                     <div class="text-danger" id="password_confirmErr" data-ajax-feedback="new_password_confirm"></div>
                                 </div>
                             </div>
@@ -66,7 +66,7 @@
                             <div class="form-group row mt-5 mb-0">
                                     <div class="col-md-6 offset-md-4">
                                     <button id="submitBtn" type="submit" class="btn btn-success">
-                                        Submit
+                                        บันทึก
                                     </button>
                                 </div>
                             </div>
@@ -123,7 +123,7 @@
                 }else if(response.isSuccess == true){
 
                         Swal.fire(
-                            'Success!',
+                            'สำเร็จ!',
                              response.Message,
                             'success'
                         )

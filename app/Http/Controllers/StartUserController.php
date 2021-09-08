@@ -31,7 +31,7 @@ class StartUserController extends Controller
         if (!(Hash::check($request->get('current_password'), Auth::user()->password))) {
             return response()->json([
                 'isSuccess' => false,
-                'Message' => "Your Current password does not matches with the password you provided. Please try again."
+                'Message' => "รหัสผ่านปัจจุบันไม่ถูกต้อง"
             ], 200);
         } else {
             $user = User::find($currentUserId);
@@ -42,7 +42,7 @@ class StartUserController extends Controller
                 
                 return response()->json([
                     'isSuccess' => true,
-                    'Message' => "Password updated successfully!"
+                    'Message' => "เปลี่ยนรหัสผ่านสำเร็จ"
                 ], 200); 
                 
             } else {

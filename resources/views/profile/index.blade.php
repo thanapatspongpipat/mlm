@@ -55,7 +55,7 @@
                     }else if(response.isSuccess == true){
     
                             Swal.fire(
-                                'Success!',
+                                'สำเร็จ!',
                                  response.Message,
                                 'success'
                             )

@@ -1,7 +1,7 @@
 
 @extends('layouts.master')
 
-@section('title') Deposit   @endsection
+@section('title') ฝากเงินเข้าสู่ CASH-WALLET   @endsection
 @section('css')
     <!-- DataTables -->
     <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
@@ -29,7 +29,7 @@
 
     @component('components.breadcrumb')
         @slot('li_1') Dashboards @endslot
-        @slot('title') Deposit   @endslot
+        @slot('title') ฝากเงินสู่ CASH-WALLET  @endslot
     @endcomponent
     <div class="row">
         <div class="col-md-3"></div>
@@ -80,7 +80,7 @@
                         </a>
                     </div>
 
-                    <div class="col-md-12">
+                    {{-- <div class="col-md-12">
 
                         <div class="card mini-stats-wid">
                                 <div class="card-body">
@@ -96,7 +96,7 @@
                                 </div>
                             </div>
 
-                    </div>
+                    </div> --}}
 
                     <div class="col-md-12">
                         <div class="card">
@@ -108,7 +108,7 @@
                                         <label for="amount" class="form-label"> จำนวนเงิน </label>
                                         <div class="input-group mb-3">
                                             <label class="input-group-text"> <i class="bx bx-money"></i></label>
-                                             <input type="number" class="formInput form-control" name="amount" id="amount" value="" min="1" placeholder="กรอกจำนวนเงิน" required>
+                                             <input type="number" class="formInput form-control" name="amount" id="amount" value=""  step="1" min="1" placeholder="กรอกจำนวนเงิน" required>
                                             <label class="input-group-text">฿ </label>
                                         </div>
                                     </div>
@@ -116,11 +116,13 @@
                                     <div class="mb-3">
                                         <div class="row">
                                             <div class="col-md-6">
+
                                                 <label for="date" class="form-label">วันที่โอน</label>
                                                 {{-- <input type="date" name="date" id="date" value="" class="form-control formInput" placeholder="-" required> --}}
-                                                 <input type="text" name="date" id="date" class="form-control datepicker" data-provide="datepicker" placeholder="วันที่โอน">
+                                                 <input style="border: 1px solid #ced4da; margin-bottom: 15px;" type="text" name="date" id="date" autocomplete="off" class="form-control datepicker" data-provide="datepicker" placeholder="วันที่โอน">
                                             </div>
                                             <div class="col-md-6">
+
                                                 <label for="time" class="form-label">เวลาที่โอน</label>
                                                 <input type="time" name="time" id="time" class="form-control formInput" value="" placeholder="-" required>
                                             </div>
@@ -130,7 +132,7 @@
 
                                     <div class="mb-3">
                                         <label for="detail" class="form-label">รายละเอียด</label>
-                                        <input type="text" class="form-control formInput" name="detail" id="detail" placeholder="รายละเอียดการเติมเงิน" >
+                                        <input type="text" class="form-control formInput" name="detail" id="detail" placeholder="รายละเอียดการฝากเงิน" >
                                     </div>
 
                                     <input type="hidden" name="comBankAccount" id="comBankAccount" value="{{ $comBank->id }}">
@@ -146,7 +148,7 @@
                                         <label for="image" class="form-label">หลักฐานการโอน</label>
                                         <input type="file" class="form-control formInput" accept="image/*" name="" id="imgFile" placeholder="กรุณาเลือกรูปภาพ" style="display:none" onchange="loadFile(event)" required>
                                         <input type="hidden" id="imgbase64" name="imgbase64" value="" />
-                                        <button style="display:block;" class="form-control" onclick="document.getElementById('imgFile').click()"> อัพโหลดรูป </button>
+                                        <button type="button" style="display:block;" class="form-control" onclick="document.getElementById('imgFile').click()"> อัพโหลดสลิป </button>
 
                                     </div>
 
@@ -159,7 +161,7 @@
 
                                     <div class="mt-3 d-grid">
                                         <br>
-                                        <button class="btn btn-primary waves-effect waves-light" type="submit"> DEPOSIT </button>
+                                        <button class="btn btn-primary waves-effect waves-light" type="submit"> ยืนยันการส่งข้อมุล </button>
                                     </div>
 
                                 </form>
@@ -176,17 +178,20 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-
-                    <h5>History</h5>
+                    <a href="{{ route('wallet.cash-wallet.index') }}"><span class="text-primary float-end"> <i class="bx bx-search-alt"></i> กดเพื่อดูประวัติการทำรายการทั้งหมด</span></a>
+                    <h5>ประวัติการทำรายการ</h5>
+                     <br>
                     <div class="row">
 
                         <table id="simple_table" style="font-size:90%;" class="table table-bordered dt-responsive nowrap w-100">
                             <thead>
                                 <tr class="text-center">
                                     <th scope="col">วันที่ทำรายการ</th>
+                                    <th scope="col">เลขที่ทำรายการ</th>
                                     <th scope="col">รายละเอียด</th>
                                     <th scope="col">จำนวนเงิน</th>
                                     <th scope="col">สถานะ</th>
+                                    <th scope="col">หมายเหตุ</th>
                                     <th scope="col">หลักฐาน</th>
                                 </tr>
 
@@ -210,7 +215,7 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="myLargeModalLabel">หลักฐานการเติมเงิน</h5>
+                    <h5 class="modal-title" id="myLargeModalLabel">หลักฐานการฝากเงิน</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -290,7 +295,7 @@
                 },
                 'columnDefs': [
                     {
-                        "targets": [0,1,2,3,4],
+                        "targets": [0,1,2,3,4,5,6],
                         "className": "text-center",
                     },
                 ],
@@ -302,7 +307,9 @@
                             return moment(data).format('DD-MM-YYYY HH:mm');
                         }
                     },
-
+                    {
+                        "data": "code",
+                    },
                     {
                         "data": "detail",
 
@@ -310,7 +317,10 @@
                     {
                         "data": "amount",
                         "render": function (data, type, full) {
-                            return ' + ' + data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            // return ' + ' + data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            data = data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            var text = `<span class="text-success">+ ${data} </span>`;
+                            return text;
                         }
                     },
                     {
@@ -325,7 +335,8 @@
                                      text = '<span class="text-success"> สำเร็จ </span>'
                                     break;
                                 case 2:
-                                    text = `<a href="#" onclick="showNote('${full.note ? full.note : '' }')" class="text-danger"> <u>ยกเลิก<u> </a>`;
+                                    text = '<span class="text-danger"> ยกเลิก </span>'
+                                    // text = `<a href="#" onclick="showNote('${full.note ? full.note : '' }')" class="text-danger"> <u>ยกเลิก<u> </a>`;
                                     break;
                                 default:
                                     break;
@@ -334,10 +345,14 @@
                         }
                     },
                     {
+                        "data": "note",
+
+                    },
+                    {
                         "data": "slip_img",
                         "render": function (data, type, full) {
                             if(data != null){
-                                 var text = `<a href="#" onclick="showInfo('{{ URL::asset('${data}') }}')"> ดูรูปภาพ </a>`;
+                                 var text = `<a href="#" onclick="showInfo('${data}')"> ดูรูปภาพ </a>`;
                             }else{
                                  var text = `<a href="#"> - </a>`;
                             }

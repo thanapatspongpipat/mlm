@@ -9,7 +9,34 @@
 
 
 <style>
+    #chart-container {
+        /* font-family: Arial; */
+        /* height: 820px; */
+        height: 100%;
+        border: 2px dashed #aaa;
+        border-radius: 5px;
+        overflow: auto;
+        text-align: center;
+    }
 
+
+    div.card-footer.bg-transparent.border-top{
+
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+
+    }
+    .w-sm {
+        min-width: 85px;
+    }
+
+
+
+    .orgchart {
+        background: #f8f8fb;
+    }
 </style>
 
 @endsection
@@ -65,6 +92,8 @@
             </div>
             <!-- end card -->
 
+
+            <div class="card-body p-0">
 
 
                 <div id="chart-container"></div>
@@ -145,11 +174,56 @@
   <div class="chart-container" style=" height:1200px ;background-color:#F6F6F6"></div>
 
   <script>
+    var chart;
+      d3.csv(
+        'https://raw.githubusercontent.com/bumbeishvili/sample-data/main/org.csv'
+      ).then(dataFlattened => {
+        chart = new d3.OrgChart()
+          .container('.chart-container')
+          .data(dataFlattened)
+          .nodeWidth(d => 250)
+          .initialZoom(0.7)
+          .nodeHeight(d => 175)
+          .childrenMargin(d => 40)
+          .compactMarginBetween(d => 15)
+          .compactMarginPair(d => 80)
+          .nodeContent(function(d, i, arr, state) {
+            return `
+            <div style="padding-top:30px;background-color:none;margin-left:1px;height:${
+              d.height
+            }px;border-radius:2px;overflow:visible">
+              <div style="height:${d.height -
+                32}px;padding-top:0px;background-color:white;border:1px solid lightgray;">
 
+                <img src=" ${
+                  d.data.imageUrl
+                }" style="margin-top:-30px;margin-left:${d.width / 2 - 30}px;border-radius:100px;width:60px;height:60px;" />
 
+               <div style="margin-right:10px;margin-top:15px;float:right">${
+                 d.data.id
+               }</div>
 
+               <div style="margin-top:-30px;background-color:#3AB6E3;height:10px;width:${d.width -
+                 2}px;border-radius:1px"></div>
 
-
+               <div style="padding:20px; padding-top:35px;text-align:center">
+                   <div style="color:#111672;font-size:16px;font-weight:bold"> ${
+                     d.data.name
+                   } </div>
+                   <div style="color:#404040;font-size:16px;margin-top:4px"> ${
+                     d.data.positionName
+                   } </div>
+               </div>
+               <div style="display:flex;justify-content:space-between;padding-left:15px;padding-right:15px;">
+                 <div > Manages:  ${d.data._directSubordinates} 👤</div>
+                 <div > Oversees: ${d.data._totalSubordinates} 👤</div>
+               </div>
+              </div>
+      </div>
+  `;
+          })
+          .render();
+      });
   </script>
 
 
@@ -186,10 +260,10 @@
                     <b>ตำแหน่ง: </b><span class="p-2">`+data.product.level+`</span>
                 </div>
                 <div class="col-sm-6 p-3">
-                    <b>ผู้แนะนำ: </b><span class="p-2">`+(data.user_invite_id == 0 ? '-' : data.user_invite_id)+`</span>
+                    <b>ผู้แนะนำ: </b><span class="p-2">`+data.username+`</span>
                 </div>
                 <div class="col-sm-6 p-3">
-                    <b>วันที่สมัคร: </b><span class="p-2">`+data.created_at+`</span>
+                    <b>วันที่สมัคร: </b><span class="p-2">`+data.username+`</span>
                 </div>
                 <div class="col-sm-6 p-3">
                     <b>เบอร์โทร: </b><span class="p-2">`+data.phone_number+`</span>
@@ -211,98 +285,7 @@
         })
     }
 
-    function init(){
-        $('.chart-container').empty()
-        var chart;
-      $.post("{{route('orgUplineList.info.array')}}", {
-            _token: '{{ csrf_token() }}',
-            id: $('#horizontal-email-input').val(),
-            start: $('input[name=start]').val(),
-            end: $('input[name=end]').val()
-        }, function(data, status) {
-
-
-
-
-
-            chart = new d3.OrgChart({
-                setActiveNodeCentered: true,
-                expandLevel:3
-            })
-
-          .container('.chart-container')
-          .data(data)
-          .nodeWidth(d => 230)
-          .initialZoom(0.7)
-          .nodeHeight(d => 220)
-          .childrenMargin(d => 40)
-          .compactMarginBetween(d => 15)
-          .compactMarginPair(d => 80)
-          .nodeContent(function(d, i, arr, state) {
-              if(d.data.empty){
-                return `
-                    <div style="padding-top:30px;background-color:none;margin-left:1px;height:${
-                        d.height
-                    }px;border-radius:2px;overflow:visible">
-                        <div style="height:${d.height -
-                        32}px;padding-top:0px;background-color:white;border:1px solid lightgray;">
-
-
-
-                        <div style="margin-right:10px;margin-top:15px;float:right"></div>
-
-
-                        <div style="padding:20px; padding-top:35px;text-align:center">
-                            <div style="color:#111672;font-size:16px;font-weight:bold">ไม่พบผู้สมัคร</div>
-                            <div style="color:#404040;font-size:16px;margin-top:4px"></div>
-                        </div>
-                        <div style="display:flex;justify-content: center;padding-left:15px;padding-right:15px;margin-top: 25px;">
-                            <a href="/member/items/${d.data.parent_id}/${d.data.position}" class="btn btn-outline-primary w-sm">สมัครตำแหน่งนี้</a>
-
-
-
-                        </div>
-                        </div>
-                </div>
-                    `;
-              }else{
-                    return `
-                    <div style="padding-top:30px;background-color:none;margin-left:1px;height:${
-                        d.height
-                    }px;border-radius:2px;overflow:visible">
-                        <div style="height:${d.height -
-                        32}px;padding-top:0px;background-color:white;border:1px solid lightgray;">
-
-                        <img src=" ${
-                            d.data.avatar
-                        }" style="margin-top:-30px;margin-left:${d.width / 2 - 30}px;border-radius:100px;width:60px;height:60px;" />
-
-                        <div style="margin-right:10px;margin-top:15px;float:right"></div>
-
-                        <div style="margin-top:-30px;background-color:#3AB6E3;height:10px;width:${d.width -
-                        2}px;border-radius:1px"></div>
-
-                        <div style="padding:20px; padding-top:35px;text-align:center">
-                            <div style="color:#111672;font-size:16px;font-weight:bold"> ${d.data.name}<p class="mb-0">รหัสสมาชิก: ${d.data.id}</p></div>
-                            <div style="color:#404040;font-size:16px;margin-top:4px">แพ็กเกจ ${ d.data.level_space } </div>
-                        </div>
-                        <div style="display:flex;justify-content: center;padding-left:15px;padding-right:15px;margin-top: -10px;">
-                            <button type="button" class="btn btn-outline-primary w-sm" onclick="toUP('` + d.data.id + `')">ขึ้นบน</button>
-                            <button type="button" class="btn btn-outline-primary w-sm" onclick="showINfo('` + d.data.id + `')">รายละเอียด</button>
-
-
-                        </div>
-                        </div>
-                </div>
-                    `;
-              }
-          })
-          .render()
-          .expandAll();
-
-        })
-    }
-    function init1() {
+    function init() {
         $.post("{{route('orgUplineList')}}", {
             _token: '{{ csrf_token() }}',
             username: $('#horizontal-email-input').val(),

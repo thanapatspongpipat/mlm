@@ -62,16 +62,26 @@ class UserController extends Controller
         // $users = $users->paginate($request->input('length'), ['*'], 'page', ($request->input('start') / $request->input('length')) + 1);
         // // dd($request->input('length'), ['*'], 'page', ($request->input('start')/$request->input('length'))+1);
 
+        // user id list under
+        $user_id_list_model = User::with('childrenUpline')->where('id', auth()->user()->id)->get();
+        $user_id_list = $this->listIdChile($user_id_list_model);
+
         $users = new User();
-        if ($request->input('username') !== '' && $request->input('username') !== null) {
-            $username = $request->input('username');
-            $users = $users->orWhere('id', $username);
+        if(count($user_id_list)>0){
+            $users = $users->whereIn('id', $user_id_list);
         }
-        if ($request->input('display_name') !== '' && $request->input('display_name') !== null) {
-            $display_name = $request->input('display_name');
-            $users = $users->orWhere('firstname', 'like', "%{$display_name}%");
-            $users = $users->orWhere('lastname', 'like', "%{$display_name}%");
-        }
+        $users = $users->where(function ($users) use($request) {
+            if ($request->input('username') !== '' && $request->input('username') !== null) {
+                $username = $request->input('username');
+                $users = $users->orWhere('id', $username);
+            }
+            if ($request->input('display_name') !== '' && $request->input('display_name') !== null) {
+                $display_name = $request->input('display_name');
+                $users = $users->orWhere('firstname', 'like', "%{$display_name}%");
+                $users = $users->orWhere('lastname', 'like', "%{$display_name}%");
+            }
+        });
+
         $users = $users->with('childrenUpline')->first();
         if(!$users){
             return response()->json([
@@ -180,7 +190,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'phone_number' => ['required', 'string', 'max:255', 'unique:users'],
-            'phone_number' => ['required', 'string', 'max:255', 'unique:users'],
+            // 'phone_number' => ['required', 'string', 'max:255', 'unique:users'],
             'password' => ['min:6', 'required_with:password_confirmation', 'same:password_confirmation'],
             'password_confirmation' => ['min:6'],
             'user_invite_id' => ['required', 'string', 'max:255']

@@ -150,7 +150,7 @@
 
                         Swal.fire({
                             icon: 'success',
-                            title: "Success!",
+                            title: "สำเร็จ!",
                             text: response.Message,
                             
                         }).then(function() {

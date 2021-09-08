@@ -87,7 +87,25 @@ class OrgController extends Controller
             return response()->json([], 400);
         }
     }
+
+    public function listIdChile($data){
+        $data_set = [];
+        foreach ($data as $value) {
+            $data_set[] = $value->id;
+            if($value->childrenUpline){
+                $a = $this->listIdChile($value->childrenUpline);
+                foreach ($a as $v) {
+                    $data_set[] = $v;
+                }
+            }
+        }
+        return $data_set;
+    }
+
     public function uplineListInfoarray(Request $request){
+        $user_id_list_model = User::with('childrenUpline')->where('id', auth()->user()->id)->get();
+        $user_id_list = $this->listIdChile($user_id_list_model);
+
         // $username = $request->input('username');
         $username = $request->input('id');
         $start = $request->input('start');
@@ -95,6 +113,7 @@ class OrgController extends Controller
         $users = User::with('product','childrenUpline')
             // ->where('username', $username);
             ->where('id', $username);
+        $users = $users->whereIn('id', $user_id_list);
 
         if($start !== '' && $start !== null){
             $users = $users->whereDate('created_at', '>=', date("Y-m-d",strtotime($start)));

@@ -84,13 +84,14 @@ class DepositController extends Controller
         $deposit = new Deposit;
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount;
-        $deposit->transaction_timestamp = $dateTime;
+        $deposit->transaction_timestamp = Carbon::now();
         $deposit->company_bank_account_id = $comBankId;
         $deposit->slip_img =  $fullpath . $filename;
         $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า CASH - WALLET';
         $deposit->status = 0;
         $deposit->user_create_id = Auth::user()->id;
         $deposit->code = $code;
+        $deposit->deposit_at = $dateTime;
         $deposit->save();
 
         DB::commit();

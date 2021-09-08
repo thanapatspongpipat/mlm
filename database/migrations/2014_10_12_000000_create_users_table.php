@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('username')->uniqid();
             $table->string('firstname')->nullable();
             $table->string('lastname')->nullable();
+            $table->string('sex')->nullable();
             $table->string('on_card')->nullable();
             $table->date('dob')->nullable();
             $table->string('email')->nullable();
@@ -27,7 +28,16 @@ class CreateUsersTable extends Migration
             $table->string('fb')->nullable();
             $table->string('address')->nullable();
             $table->string('zip_code')->nullable();
+            $table->string('sub_district')->nullable();
+            $table->string('district')->nullable();
+            $table->string('province')->nullable();
             $table->string('send_address')->nullable();
+            $table->string('send_zip_code')->nullable();
+            $table->string('send_province')->nullable();
+            $table->string('send_sub_district')->nullable();
+            $table->string('send_district')->nullable();
+            $table->string('send_email')->nullable();
+            $table->string('send_phone_number')->nullable();
             $table->string('send_zip_code')->nullable();
             $table->integer('user_invite_id')->comment("คนแนะนำ")->nullable();
             $table->integer('user_upline_id')->nullable();
@@ -37,11 +47,10 @@ class CreateUsersTable extends Migration
             $table->string('bank_own_name')->comment('ชื่อบันชี ผู้ใช้')->nullable();
             $table->string('level')->comment('ตำแหน่ง')->nullable();
             $table->integer('product_id')->nullable();
-
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('first_time_login')->default('true');
             $table->string('password')->nullable();
             $table->string('avatar')->nullable();
-
             $table->rememberToken();
             $table->timestamps();
         });

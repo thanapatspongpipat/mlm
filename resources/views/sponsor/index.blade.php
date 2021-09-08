@@ -14,8 +14,8 @@
 @section('content')
 
 @component('components.breadcrumb')
-@slot('li_1') ทีม @endslot
-@slot('title') ข้อมูล ตารางแนะนำ @endslot
+@slot('li_1') ข้อมูลทีม @endslot
+@slot('title') ตารางแนะนำ @endslot
 @endcomponent
 
 <div class="row">
@@ -34,7 +34,7 @@
                     <div class="row mb-3 ">
                         <label for="horizontal-password-input" class="col-sm-4 col-form-label">รหัสสมาชิก</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="horizontal-password-input" placeholder="รหัสสมาชิก" value="{{ auth()->user()->username }}">
+                            <input type="text" class="form-control" id="horizontal-password-input" placeholder="รหัสสมาชิก" value="{{ auth()->user()->id }}">
                         </div>
                     </div>
                     <div class="row mb-3 ">
@@ -66,18 +66,23 @@
                     </div>
                     <hr class="mt-0">
                     <div class="d-flex align-items-end flex-column">
-                        <span>Silver</span>
-                        <h4 class="mt-1">0</h4>
+                        <span>Small</span>
+                        <h4 class="mt-1" id="s-count">0</h4>
                     </div>
                     <hr class="mt-0">
                     <div class="d-flex align-items-end flex-column">
-                        <span>Gold</span>
-                        <h4 class="mt-1">0</h4>
+                        <span>Mediem</span>
+                        <h4 class="mt-1" id="m-count">0</h4>
                     </div>
                     <hr class="mt-0">
                     <div class="d-flex align-items-end flex-column">
-                        <span>Master Dealer</span>
-                        <h4 class="mt-1">0</h4>
+                        <span>Dealer</span>
+                        <h4 class="mt-1" id="d-count">0</h4>
+                    </div>
+                    <hr class="mt-0">
+                    <div class="d-flex align-items-end flex-column">
+                        <span>Super Dealer</span>
+                        <h4 class="mt-1" id="sd-count">0</h4>
                     </div>
                     <hr class="mt-0">
                 </div>
@@ -161,8 +166,10 @@
         }
         function dataSrcSet(json){
             $('#member_under').html(json.recordsTotal)
-            window.d = json
-            console.log(json)
+            $('#s-count').html(json.s_count)
+            $('#m-count').html(json.m_count)
+            $('#d-count').html(json.d_count)
+            $('#sd-count').html(json.sd_count)
             return json.data;
         }
         var table = $('#member-datatable').DataTable({

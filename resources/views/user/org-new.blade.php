@@ -8,17 +8,14 @@
 <link href="{{ URL::asset('/assets/libs/org-chart/src/css/jquery.orgchart.css') }}" rel="stylesheet" type="text/css" />
 
 
-<style>
-
-</style>
 
 @endsection
 
 @section('content')
 
 @component('components.breadcrumb')
-@slot('li_1') ข้อมูลทีม @endslot
-@slot('title') แผนผังทีม @endslot
+@slot('li_1') สมาชิก @endslot
+@slot('title') ข้อมูล สมาชิก @endslot
 @endcomponent
 
 <div class="row">
@@ -66,8 +63,19 @@
             <!-- end card -->
 
 
+            <div class="card-body p-0">
 
-                <div id="chart-container"></div>
+
+
+
+
+
+
+
+
+
+
+
 
 
             </div>
@@ -75,6 +83,10 @@
         <!-- </div> -->
     </div> <!-- end col -->
 </div> <!-- end row -->
+
+<div class="chart-container" style=" height:1200px ;background-color:#FFFEFF"></div>
+
+
 <div class="modal fade bs-example-modal-center" tabindex="-1" role="dialog" aria-hidden="true" id="modal-info">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -137,25 +149,6 @@
 <!-- form advanced init -->
 <script src="{{ URL::asset('/assets/js/pages/form-advanced.init.js') }}"></script>
 
-
-
-<script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-org-chart@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-flextree@2.0.0/build/d3-flextree.js"></script>
-  <div class="chart-container" style=" height:1200px ;background-color:#F6F6F6"></div>
-
-  <script>
-
-
-
-
-
-  </script>
-
-
-
-
-
     @if (session('modal'))
         <script>
             $(document).ready(function(){
@@ -164,9 +157,73 @@
         </script>
     @endif
 
+
+
+
+    <!-- chart -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-org-chart@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-flextree@2.0.0/build/d3-flextree.js"></script>
+    <div
+      class="chart-container"
+    ></div>
+
+    <script>
+      var chart;
+    //   d3.csv(
+    //     'https://raw.githubusercontent.com/bumbeishvili/sample-data/main/org.csv'
+    //   ).then(data => {
+        $.post('{{route("orgUplineList.info.array")}}', {_token: '{{ csrf_token() }}', id: 1}, (data)=>{
+              console.log(data)
+              chart = new d3.OrgChart()
+                .container('.chart-container')
+                .data(data)
+                .nodeContent(function(d, i, arr, state) {
+                    const colors = [
+                    '#6E6B6F',
+                    '#18A8B6',
+                    '#F45754',
+                    '#96C62C',
+                    '#BD7E16',
+                    '#802F74'
+                    ];
+                    const color = colors[d.depth % colors.length];
+                    const imageDim = 80;
+                    const lightCircleDim = 95;
+                    const outsideCircleDim = 110;
+
+                    return `
+                        <div style="background-color:white; position:absolute;width:${
+                        d.width
+                        }px;height:${d.height}px;">
+                        <div style="background-color:${color};position:absolute;margin-top:-${outsideCircleDim / 2}px;margin-left:${d.width / 2 - outsideCircleDim / 2}px;border-radius:100px;width:${outsideCircleDim}px;height:${outsideCircleDim}px;"></div>
+                        <div style="background-color:#ffffff;position:absolute;margin-top:-${lightCircleDim /
+                            2}px;margin-left:${d.width / 2 - lightCircleDim / 2}px;border-radius:100px;width:${lightCircleDim}px;height:${lightCircleDim}px;"></div>
+                        <img src=" ${
+                            d.data.imageUrl
+                        }" style="position:absolute;margin-top:-${imageDim / 2}px;margin-left:${d.width / 2 - imageDim / 2}px;border-radius:100px;width:${imageDim}px;height:${imageDim}px;" />
+                        <div class="card" style="top:${outsideCircleDim / 2 +
+                            10}px;position:absolute;height:30px;width:${d.width}px;background-color:#3AB6E3;">
+                            <div style="background-color:${color};height:28px;text-align:center;padding-top:10px;color:#ffffff;font-weight:bold;font-size:16px">
+                                ${d.data.name}
+                            </div>
+                            <div style="background-color:#F0EDEF;height:28px;text-align:center;padding-top:10px;color:#424142;font-size:16px">
+                                ${d.data.positionName}
+                            </div>
+                        </div>
+                    </div>
+        `;
+                })
+                .render();
+          })
+    //   });
+    </script>
+
+
+
 <script>
     $(document).ready(function(){
-        init()
+        // init()
     })
     function toUP(username) {
         $('#horizontal-email-input').val(username)
@@ -186,10 +243,10 @@
                     <b>ตำแหน่ง: </b><span class="p-2">`+data.product.level+`</span>
                 </div>
                 <div class="col-sm-6 p-3">
-                    <b>ผู้แนะนำ: </b><span class="p-2">`+(data.user_invite_id == 0 ? '-' : data.user_invite_id)+`</span>
+                    <b>ผู้แนะนำ: </b><span class="p-2">`+data.username+`</span>
                 </div>
                 <div class="col-sm-6 p-3">
-                    <b>วันที่สมัคร: </b><span class="p-2">`+data.created_at+`</span>
+                    <b>วันที่สมัคร: </b><span class="p-2">`+data.username+`</span>
                 </div>
                 <div class="col-sm-6 p-3">
                     <b>เบอร์โทร: </b><span class="p-2">`+data.phone_number+`</span>
@@ -211,98 +268,7 @@
         })
     }
 
-    function init(){
-        $('.chart-container').empty()
-        var chart;
-      $.post("{{route('orgUplineList.info.array')}}", {
-            _token: '{{ csrf_token() }}',
-            id: $('#horizontal-email-input').val(),
-            start: $('input[name=start]').val(),
-            end: $('input[name=end]').val()
-        }, function(data, status) {
-
-
-
-
-
-            chart = new d3.OrgChart({
-                setActiveNodeCentered: true,
-                expandLevel:3
-            })
-
-          .container('.chart-container')
-          .data(data)
-          .nodeWidth(d => 230)
-          .initialZoom(0.7)
-          .nodeHeight(d => 220)
-          .childrenMargin(d => 40)
-          .compactMarginBetween(d => 15)
-          .compactMarginPair(d => 80)
-          .nodeContent(function(d, i, arr, state) {
-              if(d.data.empty){
-                return `
-                    <div style="padding-top:30px;background-color:none;margin-left:1px;height:${
-                        d.height
-                    }px;border-radius:2px;overflow:visible">
-                        <div style="height:${d.height -
-                        32}px;padding-top:0px;background-color:white;border:1px solid lightgray;">
-
-
-
-                        <div style="margin-right:10px;margin-top:15px;float:right"></div>
-
-
-                        <div style="padding:20px; padding-top:35px;text-align:center">
-                            <div style="color:#111672;font-size:16px;font-weight:bold">ไม่พบผู้สมัคร</div>
-                            <div style="color:#404040;font-size:16px;margin-top:4px"></div>
-                        </div>
-                        <div style="display:flex;justify-content: center;padding-left:15px;padding-right:15px;margin-top: 25px;">
-                            <a href="/member/items/${d.data.parent_id}/${d.data.position}" class="btn btn-outline-primary w-sm">สมัครตำแหน่งนี้</a>
-
-
-
-                        </div>
-                        </div>
-                </div>
-                    `;
-              }else{
-                    return `
-                    <div style="padding-top:30px;background-color:none;margin-left:1px;height:${
-                        d.height
-                    }px;border-radius:2px;overflow:visible">
-                        <div style="height:${d.height -
-                        32}px;padding-top:0px;background-color:white;border:1px solid lightgray;">
-
-                        <img src=" ${
-                            d.data.avatar
-                        }" style="margin-top:-30px;margin-left:${d.width / 2 - 30}px;border-radius:100px;width:60px;height:60px;" />
-
-                        <div style="margin-right:10px;margin-top:15px;float:right"></div>
-
-                        <div style="margin-top:-30px;background-color:#3AB6E3;height:10px;width:${d.width -
-                        2}px;border-radius:1px"></div>
-
-                        <div style="padding:20px; padding-top:35px;text-align:center">
-                            <div style="color:#111672;font-size:16px;font-weight:bold"> ${d.data.name}<p class="mb-0">รหัสสมาชิก: ${d.data.id}</p></div>
-                            <div style="color:#404040;font-size:16px;margin-top:4px">แพ็กเกจ ${ d.data.level_space } </div>
-                        </div>
-                        <div style="display:flex;justify-content: center;padding-left:15px;padding-right:15px;margin-top: -10px;">
-                            <button type="button" class="btn btn-outline-primary w-sm" onclick="toUP('` + d.data.id + `')">ขึ้นบน</button>
-                            <button type="button" class="btn btn-outline-primary w-sm" onclick="showINfo('` + d.data.id + `')">รายละเอียด</button>
-
-
-                        </div>
-                        </div>
-                </div>
-                    `;
-              }
-          })
-          .render()
-          .expandAll();
-
-        })
-    }
-    function init1() {
+    function init() {
         $.post("{{route('orgUplineList')}}", {
             _token: '{{ csrf_token() }}',
             username: $('#horizontal-email-input').val(),

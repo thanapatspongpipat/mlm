@@ -20,7 +20,7 @@
                                     <div class="col-7">
                                         <div class="text-primary p-4">
                                             <h5 class="text-primary">Welcome Back !</h5>
-                                            <p>Sign in to continue to Skote.</p>
+                                            <p>Sign in to continue to Happiness Corp.</p>
                                         </div>
                                     </div>
                                     <div class="col-5 align-self-end">
@@ -53,10 +53,10 @@
                                     <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                                     @csrf
                                         <div class="mb-3">
-                                            <label for="username" class="form-label">Username</label>
-                                            <input type="text" class="form-control @error('username') is-invalid @enderror" id="username"
-                                                placeholder="Enter username" name="username">
-                                            @error('username')
+                                            <label for="username" class="form-label">รหัสผู้ใช้งาน</label>
+                                            <input type="text" class="form-control @error('id') is-invalid @enderror" id="username"
+                                                placeholder="รหัสผู้ใช้งาน" name="id">
+                                            @error('id')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
@@ -64,9 +64,9 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label">Password</label>
+                                            <label class="form-label">รหัส</label>
                                             <div class="input-group auth-pass-inputgroup @error('password') is-invalid @enderror">
-                                                <input name="password" type="password" class="form-control  @error('password') is-invalid @enderror" placeholder="Enter password"
+                                                <input name="password" type="password" class="form-control  @error('password') is-invalid @enderror" placeholder="รหัสผ่าน"
                                                     aria-label="Password" aria-describedby="password-addon">
                                                 <button class="btn btn-light " type="button" id="password-addon"><i
                                                         class="mdi mdi-eye-outline"></i></button>
@@ -81,7 +81,7 @@
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="remember-check">
                                             <label class="form-check-label" for="remember-check">
-                                                Remember me
+                                                จำรหัสผ่าน
                                             </label>
                                         </div>
 
@@ -117,7 +117,7 @@
 
                                         <div class="mt-4 text-center">
                                             <a href="{{route('resetPass')}}" class="text-muted"><i
-                                                    class="mdi mdi-lock me-1"></i> Forgot your password?</a>
+                                                    class="mdi mdi-lock me-1"></i> ลืมรหัสผ่าน</a>
                                         </div>
                                     </form>
                                 </div>
@@ -132,7 +132,7 @@
                                 <p>© <script>
                                         document.write(new Date().getFullYear())
 
-                                    </script> Skote. Crafted with <i class="mdi mdi-heart text-danger"></i> by Themesbrand
+                                    </script> Happiness Corp. Crafted with <i class="mdi mdi-heart text-danger"></i> by Themesbrand
                                 </p>
                             </div>
                         </div>

@@ -40,13 +40,33 @@ class SponsorController extends Controller
             ];
         return view("sponsor.index", compact('levels'));
     }
+
+    public function listIdChile($data){
+        $data_set = [];
+        foreach ($data as $value) {
+            $data_set[] = $value->id;
+            if($value->childrenUpline){
+                $a = $this->listIdChile($value->childrenUpline);
+                foreach ($a as $v) {
+                    $data_set[] = $v;
+                }
+            }
+        }
+        return $data_set;
+    }
+
     public function getList(Request $request){
+
+        $user_id_list_model = User::with('childrenUpline')->where('id', auth()->user()->id)->get();
+        $user_id_list = $this->listIdChile($user_id_list_model);
+
         $member = $request->input('member');
         $level = $request->input('level');
 
         $users = new User();
         $users = $users->with('childrenUpline', 'product')
-        ->where('username', $member)->get();
+        ->where('id', $member)
+        ->whereIn('id', $user_id_list)->get();
 
         $data = $this->setDataRemember($users,0);
         $s_count = 0;

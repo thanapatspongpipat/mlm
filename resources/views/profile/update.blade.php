@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title') @lang('translation.Form_Elements') @endsection
+@section('title') แก้ไขข้อมูลส่วนตัว @endsection
 
 @section('css')
     <link href="{{ URL::asset('/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -20,26 +20,34 @@
                 @method('PUT')
                 <input type="hidden" id="csrf_token" name="_token" value="{{ csrf_token() }}" />
             <div class="card">
-                <div class="card-body">    
+                <div class="card-body">
                         <div class="row">
-                             
-                            <div class="col-lg-12">
+
+                            <div class="col-lg-6">
                                 <div class="mb-3">
                                     <div class="col-lg-12">
-                                        <label class="form-label">ชื่อ - สกุล</label>
-                                        <input class="form-control" type="text" name="fullname" value="{{$userData->fullname}}" disabled>
+                                        <label class="form-label">ชื่อ - นามสกุล</label>
+                                        <input class="form-control" type="text" name="fullname" value="{{$userData->firstname}} {{$userData->lastname}}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <div class="col-lg-12">
+                                        <label class="form-label">รหัสสมาชิก</label>
+                                        <input class="form-control" type="text"  value="{{ auth()->user()->id ?? '-' }}" disabled>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6 col-sm-6">
                                 <div class="mb-3">
-                                    <label class="form-label">คำนำหน้า</label>
+                                    <label class="form-label">คำนำหน้าชื่อ</label>
                                     <select class="form-control select2-selection select2-selection--single" aria-hidden="true" id="prefix_name" name="prefix_name">
                                     @if($userData->prefix_name !=null || $userData->prefix_name !="")
                                     <option value="{{$userData->prefix_name}}" selected>{{$userData->prefix_name}}</option>
                                     @else
-                                    <option value="" selected disabled>เลือก คำนำหน้า</option>
+                                    <option value="" selected disabled>เลือก คำนำหน้าชื่อ</option>
                                     @endif
                                     <option value="นาย">นาย</option>
                                     <option value="นาง">นาง</option>
@@ -107,12 +115,12 @@
         </div>
         <!-- end card one -->
 
-      
+
         <!-- card two -->
         <div class="col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">ที่อยู่ตามเอกสาร</h4>
+                    <h4 class="card-title mb-3">ที่อยู่ตามบัตร</h4>
 
                         <div class="row">
 
@@ -129,7 +137,7 @@
                                     <input class="form-control" type="text" value="{{$userData->province}}" disabled>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 col-sm-6">
                                 <div class="mb-3">
                                     <label class="form-label">เขต/อำเภอ</label>
@@ -146,7 +154,7 @@
 
                             <div class="col-lg-12">
                                 <div class="mb-3">
-                                        <label class="form-label">ที่อยู่</label>
+                                        <label class="form-label">รายละเอียดที่อยู่เพิ่มฝาก</label>
                                         <textarea class="form-control" rows="3" disabled>{{$userData->address}}</textarea>
                                 </div>
                             </div>
@@ -177,8 +185,8 @@
             <div class="card h-100">
 
                 <div class="card-body">
-                    <h4 class="card-title mb-3">ที่อยู่ปัจจุบัน</h4>
-                    
+                    <h4 class="card-title mb-3">ที่อยู่ปัจจุบัน สำหรับจัดส่งสินค้า</h4>
+
                         <div class="row">
 
                             <div class="col-md-6 col-sm-6">
@@ -195,7 +203,7 @@
                                     <input class="form-control" id="send_province" id="send_province" name="send_province" type="text" value="{{$userData->send_province}}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 col-sm-6">
                                 <div class="mb-3">
                                     <label class="form-label">เขต/อำเภอ</label>
@@ -213,7 +221,7 @@
 
                             <div class="col-lg-12">
                                 <div class="mb-3">
-                                        <label class="form-label">ที่อยู่</label>
+                                        <label class="form-label">รายละเอียดที่อยู่เพิ่มฝาก</label>
                                         <textarea class="form-control" rows="3" id="send_address" name="send_address">{{$userData->send_address}}</textarea>
                                 </div>
                             </div>
@@ -241,7 +249,7 @@
         </div>
         <!-- end card three -->
 
-    
+
 
         <div class="col-12">
             <center>
@@ -266,19 +274,20 @@
 <script src="{{ URL::asset('/assets/libs/thailand/jquery.Thailand.min.js') }}"></script>
 <script>
 $.Thailand({
+    database: '{{ asset('/assets/libs/thailand/db.json') }}',
     $district: $('#send_sub_district'), // input ของตำบล
     $amphoe: $('#send_district'), // input ของอำเภอ
     $province: $('#send_province'), // input ของจังหวัด
     $zipcode: $('#send_zip_code'), // input ของรหัสไปรษณีย์
     onDataFill: function(data){
-       
+
     }
-    
+
 });
 
 $('#form_update_profile').on('submit',function(event){
         event.preventDefault();
-        
+
         $('#saveBtn').append('<i id="loadingBtn" class="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>');
         $("#saveBtn").attr("disabled", true);
 
@@ -290,7 +299,7 @@ $('#form_update_profile').on('submit',function(event){
         var fb = $('#fb').val();
         var ig = $('#ig').val();
         var line = $('#line').val();
-        
+
         var sendAddress = $('#send_address').val();
         var sendProvince = $('#send_province').val();
         var sendDistrict = $('#send_district').val();
@@ -298,7 +307,7 @@ $('#form_update_profile').on('submit',function(event){
         var sendZipCode = $('#send_zip_code').val();
         var sendPhoneNumber = $('#send_phone_number').val();
         var sendEmail = $('#send_email').val();
-        
+
         $('#current_passwordErr').text('');
         $('#passwordErr').text('');
         $('#password_confirmErr').text('');
@@ -321,9 +330,9 @@ $('#form_update_profile').on('submit',function(event){
                 "send_phone_number": sendPhoneNumber,
                 "send_email": sendEmail
             },
-            
+
             success:function(response){
-                
+
                 $('#zipcodeErr').text('');
                 $('#countryErr').text('');
                 $("#loadingBtn").remove();
@@ -335,20 +344,21 @@ $('#form_update_profile').on('submit',function(event){
 
                 }else if(response.isSuccess == true){
                         Swal.fire(
-                            'Success!',
+                            'สำเร็จ!',
                              response.Message,
                             'success'
-                        )          
+                        )
                 }
-                
+
             },
             error: function(response) {
-                //console.log(response.responseJSON)
+                $("#loadingBtn").remove();
+                $("#saveBtn").attr("disabled", false);
                 $('#zipcodeErr').text(response.responseJSON.errors.send_zip_code);
             }
         });
-        
-       
+
+
     });
 </script>
 @endsection

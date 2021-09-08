@@ -34,7 +34,7 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h5>History</h5>
+                    <h5>ประวัติการทำรายการ</h5>
                     <div class="row">
 
                         <table id="simple_table" style="font-size:90%;" class="table table-bordered dt-responsive nowrap w-100">

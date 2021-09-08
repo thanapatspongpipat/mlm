@@ -52,6 +52,7 @@ class AccountController extends Controller
                 'line' => $request->line,
                 'fb' => $request->fb,
                 'ig' => $request->ig,
+                'prefix_name'=> $request->prefix_name,
                 'send_address' => $request-> send_address,
                 'send_province' => $request->send_province,
                 'send_sub_district' => $request->send_sub_district,
@@ -106,7 +107,7 @@ class AccountController extends Controller
         if (!(Hash::check($request->get('current_password'), Auth::user()->password))) {
             return response()->json([
                 'isSuccess' => false,
-                'Message' => "Your Current password does not matches with the password you provided. Please try again."
+                'Message' => "รหัสผ่านปัจจุบันไม่ถูกต้อง"
             ], 200); // Status code
         } else {
             $user = User::find($currentUserId);
@@ -129,88 +130,4 @@ class AccountController extends Controller
         }
     }
 
-    /*
-    public function UserEdit(Request $request){
-
-        $UserCurrentID = Auth::user()->user_id;
-        
-        $MemberData = Member::where('user_id',$UserCurrentID)->first();
-
-        if ($MemberData == null){
-
-            return redirect()->route('ActivateMemberCode');
-        }
-      
-
-        if($request->isMethod('put')){
-            $birthday_convert = str_replace('/', '-', $request->birthday);
-            $birthday_to_use = date('Y-m-d', strtotime($birthday_convert));
-            $birthday_to_sql = Carbon::parse($birthday_to_use)->subYears(543)->format('Y-m-d');
-
-            $form_member = array(
-                'nickname' => $request->nickname,
-                'generation' => $request->generation,
-                'year_of_study' => $request->year_of_study,
-                'birthday' => $birthday_to_sql,
-                'phone_number' => $request->phone_number,
-                'home_phone_number' => $request->home_phone_number,
-                'email' => $request->email,
-                'line_id' => $request->line_id,
-                'house_no' => $request->house_no,
-                'address' => $request->address,
-                'district' => $request->district,
-                'province' => $request->province,
-                'country' => $request->country,
-                'zipcode' => $request->zipcode,
-                'status_id' => $request->status,
-                'contact_status_id' => $request->contact_status,
-                'update_by' => null,
-            );
-
-            $form_office = array(
-                'office_name' => $request->office_name,
-                'department' => $request->department,
-                'office_no' => $request->office_no,
-                'address' => $request->office_address,
-                'district' => $request->office_district,
-                'province' => $request->office_province,
-                'country' => $request->office_country,
-                'zipcode' => $request->office_zipcode,
-                'office_phone' => $request->office_phone,
-            );
-
-            $form_name = array(
-                'firstname' => $request->firstname,
-                'lastname' => $request->lastname,
-                'title_name' => $request->title_name,
-            
-            );
-
-            $form_name_current = array(
-                'firstname' => $request->firstname_current,
-                'lastname' => $request->lastname_current,
-                'title_name' => $request->title_name_current,
-            
-            );
-
-            $form_member_updateStatus = Member::where('member_id',$MemberData->member_id)->update($form_member);
-            OfficeAddress::where('member_id',$MemberData->member_id)->update($form_office);
-            NameData::where('member_id',$MemberData->member_id)->where('name_status_id',1)->update($form_name);
-            NameData::where('member_id',$MemberData->member_id)->where('name_status_id',2)->update($form_name_current); 
-          
-            if($form_member_updateStatus == true ){
-                alert()->success(' ', 'บันทึกข้อมูลสำเร็จ');
-                return redirect()->route('profile');
-                
-            }
-            else{
-                alert()->warning('บันทึกข้อมูลไม่สำเร็จ', 'เกิดปัญหาในการบันทึกข้อมูล !');
-            }
-            
-        }
-     
-        return view('user.edit',['MemberData'=> $MemberData]);
-        
-    }
-    */
 }

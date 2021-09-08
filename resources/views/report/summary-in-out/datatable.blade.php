@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <div class="media">
                             <div class="media-body">
-                                <p class="text-muted fw-medium">Summary Deposit </p>
+                                <p class="text-muted fw-medium">Summary ยืนยันการส่งข้อมุล </p>
                                 <h4 class="mb-0">฿ <span id="deposit">  {{ number_format($header['sumDeposit'], 2) }} </span></h4>
                             </div>
                             <i class="bx bx-down-arrow-alt text-success display-4"></i>
@@ -61,7 +61,7 @@
                                     <th scope="col">username</th>
                                     <th scope="col">ยอดคงเหลือ</th>
                                     <th scope="col">ยอดถอน</th>
-                                    <th scope="col">ยอดเติม</th>
+                                    <th scope="col">ยอดฝาก</th>
                                 </tr>
 
                             </thead>

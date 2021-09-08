@@ -36,12 +36,13 @@ class ForgotPasswordController extends Controller
     public function generateOTP(Request $req){
 
         $phoneNumber = $req->phoneNumber;
-        $userData = User::where('phone_number',$phoneNumber)->first();
-        
+        // $userData = User::where('phone_number',$phoneNumber)->first();
+        $userData = User::where('id',$phoneNumber)->first();
+
         if ($userData != null) {
 
                 $client = new Client();
-    
+
                 $res = $client->request('POST', 'https://otp.thaibulksms.com/v1/otp/request', [
                     'form_params' => [
                         'key' => '1709486729410897',
@@ -49,17 +50,17 @@ class ForgotPasswordController extends Controller
                         'msisdn' => $userData->phone_number
                     ]
                 ]);
-                
+
                 $resBody = json_decode($res->getBody());
                 if($res->getStatusCode() && $resBody->data->status == 'success'){
-                    
+
                     return response()->json([
                         'isSuccess' => true,
                         'status'=>200,
                         'message'=> 'success',
                         'otp_token' => $resBody->data->token
                     ]);
-                    
+
                 }else{
 
                     return response()->json([
@@ -68,23 +69,23 @@ class ForgotPasswordController extends Controller
                         'errors'=> 'SMS Service error please try again.'
                     ]);
                 }
-            
-            
+
+
         }else{
             return response()->json([
                 'isSuccess' => false,
                 'status'=>404,
-                'phoneNumberErr'=> 'This phone number is not found.'
+                'phoneNumberErr'=> 'ไม่พบหมายเลขโทรศัพท์มือถือนี้.'
             ]);
         }
 
     }
 
     public function verifyOTP(Request $req){
-        
+
         //$phoneNumber = $req->phoneNumber;
         //$userData = User::where('phone_number',$phoneNumber)->first();
-        
+
         $client = new Client();
 
         try {
@@ -103,7 +104,7 @@ class ForgotPasswordController extends Controller
         }
 
         $resBody = json_decode($res->getBody());
-        
+
         if($resBody->data->status == 'success' && $resBody->data->message == 'Code is correct.'){
 
             return response()->json([
@@ -111,22 +112,23 @@ class ForgotPasswordController extends Controller
                 'status'=>200,
                 'message'=> 'Verify success.',
             ]);
-            
+
         }else{
-    
+
             return response()->json([
                 'isSuccess' => false,
                 'status'=>500,
                 'errors'=> 'Somethings worng.'
             ]);
-            
+
        }
     }
 
     public function changePassword(Request $request) {
 
         $phoneNumber = $request->get('phone_number');
-        $userData = User::where('phone_number', $phoneNumber)->first();
+        // $userData = User::where('phone_number', $phoneNumber)->first();
+        $userData = User::where('id', $phoneNumber)->first();
 
         $request -> validate([
             'password' => ['required', 'string', 'min:6', 'confirmed'],
@@ -148,6 +150,6 @@ class ForgotPasswordController extends Controller
         }
     }
 
-  
+
 }
 

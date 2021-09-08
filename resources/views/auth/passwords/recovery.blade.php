@@ -44,12 +44,14 @@
                                 </div>
 
                                 <div class="p-2">
-                                    
+
                                     <form class="form-horizontal" id="forgot_password_form">
 
                                         <div class="alert alert-danger" id="error-msg"></div>
+                                        <div id="otp-section">
                                         <div class="mb-3">
-                                            <label for="phone_number" class="form-label">Phone Number</label>
+                                            <!-- <label for="phone_number" class="form-label">Phone Number</label> -->
+                                            <label for="phone_number" class="form-label">รหัสผู้ใช้งาน</label>
                                             <div class="input-group">
                                             <input id="phone_number" type="text" class="form-control" name="phone_number" placeholder="หมายเลขโทรศัพท์มือถือ" required>
                                             <button class="btn btn-primary" type="button" id="send_otp_btn">รับรหัส OTP </button>
@@ -61,27 +63,28 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="otp_input" class="form-label">Enter OTP Number</label>
-                                            
+                                            <label for="otp_input" class="form-label">เลข OTP</label>
+
                                                 <input type="text" class="form-control" id="otp_input" placeholder="เลข OTP 4 หลัก" required>
-                                              
+
                                                 <div class="text-danger" id="otp_inputErr" data-ajax-feedback="otp_input" ></div>
+                                        </div>
                                         </div>
 
                                         <div id="change_pass_input">
                                             <div class="mb-3">
-                                                <label for="new_password" class="form-label">New Password</label>
-                                                
+                                                <label for="new_password" class="form-label">รหัสผ่านใหม่</label>
+
                                                     <input type="password" class="form-control" id="new_password" placeholder="รหัสผ่านใหม่" required>
-                                                
+
                                                     <div class="text-danger" id="new_passwordErr" data-ajax-feedback="new_password"></div>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="new_password_confirm" class="form-label">Confirm New Password</label>
-                                                
+                                                <label for="new_password_confirm" class="form-label">ยืนยันรหัสผ่านใหม่</label>
+
                                                     <input type="password" class="form-control" id="new_password_confirm" placeholder="ยืนยันรหัสผ่านใหม่" required>
-                                                
+
                                                     <div class="text-danger" id="new_password_confirmErr" data-ajax-feedback="new_password_confirm"></div>
                                             </div>
                                         </div>
@@ -129,19 +132,16 @@
     <script src="{{ URL::asset('/assets/libs/parsleyjs/parsleyjs.min.js') }}"></script>
     <script src="{{ URL::asset('/assets/js/pages/form-validation.init.js') }}"></script>
     <script src="{{ URL::asset('/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
-    
+
 <script>
 $( document ).ready(function() {
     $("#error-msg").hide();
     $("#change_pass_input").hide();
     $("#submitBtn").hide();
-    
+
     $('#changePassBtn').on('click',function(event){
         event.preventDefault();
-        $('#changePassBtn').append('<i id="loadingchangePassBtn" class="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>');
-        $("#changePassBtn").attr("disabled", true);
 
-        
         var phoneNumberInput = $('#phone_number').val();
         var otp_input = $('#otp_input').val();
         var otp_token = $('#otp_token').val();
@@ -152,6 +152,9 @@ $( document ).ready(function() {
             $('#phone_numberErr').text("Phone Number is required");
             return
         }
+
+        $('#changePassBtn').append('<i id="loadingchangePassBtn" class="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>');
+        $("#changePassBtn").attr("disabled", true);
 
         $('#phone_numberErr').text('');
         $('#passwordErr').text('');
@@ -174,13 +177,14 @@ $( document ).ready(function() {
                 $("#changePassBtn").hide();
 
                 if(response.isSuccess == false){
-                    console.log("in fail "+JSON.stringify(response))
+
                     $('#otp_inputErr').text(response.message);
-                    
+
                 }else if(response.isSuccess == true){
 
                     $("#change_pass_input").show();
                     $("#submitBtn").show();
+                    $("#otp-section").hide();
                     $("#send_otp_btn").attr("disabled", true);
                     $("#phone_number").attr("disabled", true);
                     $("#otp_input").attr("disabled", true);
@@ -188,7 +192,7 @@ $( document ).ready(function() {
                     changePassBtn.parentNode.removeChild(changePassBtn);
 
                 }
-                
+
             },
             error: function(response) {
 
@@ -212,7 +216,7 @@ $( document ).ready(function() {
 
         $('#send_otp_btn').append('<i id="loading_otp_btn" class="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>');
         $("#send_otp_btn").attr("disabled", true);
-        
+
         $('#phone_numberErr').text('');
         $('#phone_numberInfo').hide();
         $('#error-msg').text('');
@@ -232,9 +236,9 @@ $( document ).ready(function() {
 
                 if(response.isSuccess == false){
                     $('#phone_numberErr').text(response.phoneNumberErr);
-                    
+
                 }else if(response.isSuccess == true){
-              
+
                     $("#otp_token").val(response.otp_token);
                     $('#phone_numberInfo').text('✓  ส่งรหัส OTP 4 หลัก เรียบร้อยแล้ว');
                     var secondsBeforeExpire = 60;
@@ -251,9 +255,9 @@ $( document ).ready(function() {
                             $("#send_otp_btn").text(secondsBeforeExpire);
                         }
                     }, 1000);
-                                
+
                 }
-                
+
             },
             error: function(response) {
                 $("#loading_otp_btn").remove();
@@ -269,8 +273,6 @@ $( document ).ready(function() {
 
 $('#forgot_password_form').on('submit',function(event){
         event.preventDefault();
-        $('#submitBtn').append('<i id="loadingBtn" class="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>');
-        $("#submitBtn").attr("disabled", true);
 
         var phoneNumberInput = $('#phone_number').val();
         var password = $('#new_password').val();
@@ -282,6 +284,9 @@ $('#forgot_password_form').on('submit',function(event){
             $('#phone_numberErr').text("Phone Number is required");
             return null
         }
+
+        $('#submitBtn').append('<i id="loadingBtn" class="bx bx-loader bx-spin font-size-16 align-middle me-2"></i>');
+        $("#submitBtn").attr("disabled", true);
 
         $('#phone_numberErr').text('');
         $('#new_passwordErr').text('');
@@ -304,21 +309,21 @@ $('#forgot_password_form').on('submit',function(event){
                 $("#submitBtn").attr("disabled", false);
 
                 if(response.isSuccess == false){
-            
+
                     $('#error-msg').text(response.message);
 
                 }else if(response.isSuccess == true){
 
                         Swal.fire({
                             icon: 'success',
-                            title: "Success!",
+                            title: "สำเร็จ!",
                             text: response.message,
-                            
+
                         }).then(function() {
                             window.location = "{{ route('login') }}";
-                        });  
+                        });
                 }
-                
+
             },
             error: function(response) {
 
@@ -330,5 +335,5 @@ $('#forgot_password_form').on('submit',function(event){
         });
     });
 </script>
-    
-@endsection 
+
+@endsection

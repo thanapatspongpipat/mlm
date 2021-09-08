@@ -22,7 +22,7 @@
 
     @component('components.breadcrumb')
         @slot('li_1') Dashboards @endslot
-        @slot('title') Bank Accont   @endslot
+        @slot('title') บัญชีธนาคารสำหรับถอนเงิน   @endslot
 
 
     @endcomponent
@@ -34,7 +34,7 @@
         <div class="col-md-6">
             <div class="row">
                     <div class="col-md-12">
-                        <h4> <i class="bx bxs-bank"></i> บัญชีธนาคาร </h4>
+                        <h4> <i class="bx bxs-bank"></i> บัญชีธนาคารสำหรับถอนเงิน </h4>
                     </div>
                     <div class="col-md-12">
                         <div class="card">

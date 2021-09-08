@@ -38,7 +38,7 @@
                 <div class="card-body">
                     <div class="media">
                         <div class="media-body">
-                            <p class="text-muted fw-medium"> Balance </p>
+                            <p class="text-muted fw-medium"> คงเหลือ </p>
 
                             <h4 class="mb-0">฿ {{ number_format($wallet->balance, 2) }}</h4>
                         </div>
@@ -54,10 +54,10 @@
                     <div class="card-body">
                         <div class="media">
                             <div class="media-body">
-                                <p class="text-muted fw-medium"> Deposit </p>
+                                <p class="text-muted fw-medium"> ฝาก </p>
                                 <h4 class="mb-0">฿ {{ number_format($wallet->deposit, 2) }}</h4>
                             </div>
-                            <i class="bx bx-down-arrow-alt text-success display-4"></i>
+                            <i class="bx bx-up-arrow-alt text-success display-4"></i>
                         </div>
                     </div>
                 </div>
@@ -70,10 +70,10 @@
                     <div class="card-body">
                         <div class="media">
                             <div class="media-body">
-                                <p class="text-muted fw-medium rt"> Withdraw </p>
+                                <p class="text-muted fw-medium rt"> ถอน </p>
                                 <h4 class="mb-0">฿ {{ number_format($wallet->withdraw, 2) }}</h4>
                             </div>
-                            <i class="bx bx-up-arrow-alt text-danger display-4"></i>
+                            <i class="bx bx-down-arrow-alt text-danger display-4"></i>
                         </div>
                     </div>
                 </div>
@@ -88,35 +88,40 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <h5> Filter </h5>
+                        <h5> กรอง </h5>
                         <div class="col-md-6">
                             <br>
                             {{-- <label for="from" class="form-label">From</label> --}}
-                            <input type="text" name="from" id="from" class="form-control datepicker"
-                                data-provide="datepicker" placeholder="From">
+                            <input type="text" style="border: 1px solid #ced4da;" name="from" id="from" class="form-control datepicker"
+                                data-provide="datepicker" autocomplete="off" placeholder="จากวันที่">
                         </div>
 
                         <div class="col-md-6">
                             <br>
                             {{-- <label for="to" class="form-label">To</label> --}}
-                            <input type="text" name="to" id="to" class="form-control datepicker"
-                                data-provide="datepicker" placeholder="To">
+                            <input type="text" style="border: 1px solid #ced4da;" name="to" id="to" class="form-control datepicker"
+                                data-provide="datepicker"  autocomplete="off" placeholder="ถึงวันที่">
                         </div>
 
                         <div class="col-md-6">
                             <br>
                             {{-- <label for="type" class="form-label">Type</label> --}}
                             <select name="type" id="type" class="form-control">
-                                <option value="all"> All </option>
-                                <option value="in"> Income </option>
-                                <option value="out"> Outcome </option>
+                                <option value="all"> ทั้งหมด </option>
+                                <option value="in"> ฝาก </option>
+                                <option value="out"> ถอน </option>
                             </select>
                         </div>
 
                         <div class="col-md-6">
+                              <br>
+                                <input type="text" name="code" id="code" class="form-control" placeholder="เลขที่ทำรายการ">
+                        </div>
+
+                        <div class="col-md-12">
                             <br>
                             <button type="button" class="btn btn-primary form-control" onclick="filter1()"> <i
-                                    class="bx bx-search-alt-2"></i> Search </button>
+                                    class="bx bx-search-alt-2"></i> ค้นหา </button>
                         </div>
                     </div>
                 </div>
@@ -161,14 +166,17 @@
 
     function filterFirst() {
             var from = '';
-            var to = moment().format('DD-MM-YYYY');
+            // var to = moment().format('DD-MM-YYYY');
+            var to = '';
             var type = 'all';
+            var code = '';
 
             $.post("{{  route('wallet.cash-wallet.search')  }}", data = {
                     _token: '{{ csrf_token() }}',
                     from: from,
                     to: to,
                     type: type,
+                    code: code,
                 },
                 function (res) {
                     $('#appendTable').html(res.html);
@@ -200,12 +208,14 @@
             }
 
             var type = $('#type').val();
+            var code = $('#code').val();
 
             $.post("{{  route('wallet.cash-wallet.search')  }}", data = {
                     _token: '{{ csrf_token() }}',
                     from: from,
                     to: to,
                     type: type,
+                    code: code,
                 },
                 function (res) {
                     $('#appendTable').html(res.html);

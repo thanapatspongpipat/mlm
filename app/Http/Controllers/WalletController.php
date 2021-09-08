@@ -52,11 +52,11 @@ class WalletController extends Controller
 
         $search_code =  'A' . $year . $month . $day;
 
-        return $search_code;
+        // return $search_code;
 
         $lastest_code1 = Deposit::where('code', 'LIKE', $search_code . '%')->orderBy('code', 'desc')->first();
         $lastest_code2 = Withdraw::where('code', 'LIKE', $search_code . '%')->orderBy('code', 'desc')->first();
-
+        // dd($lastest_code1, $lastest_code2);
         $rand = rand(1, 9);
         if ($lastest_code1 == null && $lastest_code2 == null) {
             $current_code = $search_code . '0001' . $rand;
@@ -64,11 +64,12 @@ class WalletController extends Controller
             return $current_code;
         }
 
+
         if($lastest_code1 != null && $lastest_code2 != null){
-            $code1 = substr($lastest_code1, 0, -1);;
+            $code1 = substr($lastest_code1->code, 0, -1);;
             $num1 = (int) substr($code1, -3);
 
-            $code2 = substr($lastest_code2, 0, -1);;
+            $code2 = substr($lastest_code2->code, 0, -1);;
             $num2 = (int) substr($code2, -3);
 
             if($num1 > $num2){
@@ -77,12 +78,12 @@ class WalletController extends Controller
                 $code = $lastest_code2->code;
             }
         }else if($lastest_code1 != null && $lastest_code2 == null){
-            $code1 = substr($lastest_code1, 0, -1);;
+            $code1 = substr($lastest_code1->code, 0, -1);;
             $num1 = (int) substr($code1, -3);
             $code = $lastest_code1->code;
 
         }else if($lastest_code1 == null && $lastest_code2 != null){
-            $code2 = substr($lastest_code2, 0, -1);;
+            $code2 = substr($lastest_code2->code, 0, -1);;
             $num1 = (int) substr($code2, -3);
             $code = $lastest_code2->code;
 
@@ -94,7 +95,7 @@ class WalletController extends Controller
         }
 
         // $code = $lastest_code->code;
-    //    return $code;
+        //return $code;
         $code = substr($code, 0, -1);;
         // return $code;
 

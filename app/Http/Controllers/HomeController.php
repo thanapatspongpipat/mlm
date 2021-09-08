@@ -55,7 +55,11 @@ class HomeController extends Controller
         $cashWallet = CashWallet::where('user_id', $userId)->first();
         $coinWallet = CoinWallet::where('user_id', $userId)->first();
 
-        return view('index', ['cashWallet' => $cashWallet, 'coinWallet' => $coinWallet, 'dataRevenue' => $dataRevenue,'newsData' => $newsData,'userData' => $userData, 'dataCoinRevenue' => $dataCoinRevenue]);
+        $totalIncome = $getRevenue->getTotalIncome($userId);
+
+        return view('index', 
+        ['cashWallet' => $cashWallet, 'coinWallet' => $coinWallet, 'dataRevenue' => $dataRevenue,'newsData' => $newsData,
+        'userData' => $userData, 'dataCoinRevenue' => $dataCoinRevenue, 'totalIncome' => $totalIncome]);
     }
 
     /*Language Translation*/

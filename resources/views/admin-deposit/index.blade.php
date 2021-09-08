@@ -1,7 +1,7 @@
 
 @extends('layouts.master')
 
-@section('title') รายการขอเติมเงิน   @endsection
+@section('title') รายการขอฝากเงิน   @endsection
 @section('css')
     <!-- DataTables -->
     <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
@@ -26,7 +26,7 @@
 
     @component('components.breadcrumb')
         @slot('li_1') Dashboards @endslot
-        @slot('title') รายการขอเติมเงิน   @endslot
+        @slot('title') รายการขอฝากเงิน   @endslot
     @endcomponent
     <div class="row">
         <div class="col-md-3"></div>
@@ -59,7 +59,7 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h5>รายการขอเติมเงิน</h5>
+                    <h5>รายการขอฝากเงิน</h5>
                     <br>
                     <div class="row">
 
@@ -96,7 +96,7 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="myLargeModalLabel">หลักฐานการเติมเงิน</h5>
+                    <h5 class="modal-title" id="myLargeModalLabel">หลักฐานการฝากเงิน</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -239,11 +239,11 @@
 
 
                             if(data == 0){
-                                text = `<button type="button" class="btn btn-sm btn-primary" onclick='deposit(${obj}, 1)'> เติมเงิน </button>
+                                text = `<button type="button" class="btn btn-sm btn-primary" onclick='deposit(${obj}, 1)'> ฝากเงิน </button>
                                         <button type="button" class="btn btn-sm btn-danger" onclick='deposit(${obj}, 2)'> ยกเลิก </button>
                                     `;
                             }else{
-                                text = `<button type="button" class="btn btn-sm btn-secondary" disabled> เติมเงิน </button>
+                                text = `<button type="button" class="btn btn-sm btn-secondary" disabled> ฝากเงิน </button>
                                         <button type="button" class="btn btn-sm btn-secondary" disabled> ยกเลิก </button>
                                     `;
                             }
@@ -271,7 +271,7 @@
             if(status == 1){
                 Swal.fire({
                     title: 'คุณมั่นใจหรือไม่?',
-                    text: `ที่จะเติมเงิน ${amount} ให้กับ ${username} ?`,
+                    text: `ที่จะฝากเงิน ${amount} ให้กับ ${username} ?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#556ee6',
@@ -296,7 +296,7 @@
             }else{
                 Swal.fire({
                     title: 'คุณมั่นใจหรือไม่?',
-                    text: `ที่จะยกเลิกเติมเงิน ${amount} ให้กับ ${username} ?`,
+                    text: `ที่จะยกเลิกฝากเงิน ${amount} ให้กับ ${username} ?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#7A7978',

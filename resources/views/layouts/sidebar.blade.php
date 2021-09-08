@@ -28,22 +28,26 @@
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="bx bx-store"></i>
-                        <span key="t-ecommerce">Register</span>
+                        <span key="t-ecommerce">ลงทะเบียนและอัพเกรด</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="/member" key="t-products">Member Detail</a></li>
+                        <li><a href="/upline" key="t-products">ลงทะเบียนสมาชิกใหม่</a></li>
                         <!-- <li><a href="/member/items" key="t-products">Member Register</a></li> -->
-                        <li><a href="{{route('member.upgrade')}}" key="t-products">Member Upgrade</a></li>
+                        @if (auth()->user()->product->level !== 'S' && auth()->user()->product->level !== 'M')
+                        <li><a href="{{route('member.upgrade')}}" key="t-products">อัพเกรดแพคเกจ</a></li>
+                        @endif
                         <!-- <li><a href="/member" key="t-products">OrderTrading</a></li> -->
+
                     </ul>
                 </li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="bx bx-store"></i>
-                        <span key="t-ecommerce">ทีม</span>
+                        <span key="t-ecommerce">ข้อมูลทีม</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="/upline" key="t-products">แผนผังทีม</a></li>
+                        <li><a href="/member" key="t-products">ตารางรายชื่อทีม</a></li>
                         <li><a href="/sponsor" key="t-products">ตารางแนะนำ</a></li>
                     </ul>
                 </li>
@@ -466,15 +470,15 @@
 
                 <li>
                     <a href="{{ route('withdraw.index') }}" class="waves-effect">
-                        <i class="bx bx-up-arrow-alt "></i>
-                        <span key="t-maps"> Withdraw </span>
+                        <i class="bx bx-down-arrow-alt "></i>
+                        <span key="t-maps"> ถอนเงิน </span>
                     </a>
                 </li>
 
                 <li>
                     <a href="{{ route('deposit.index') }}" class="waves-effect">
-                        <i class="bx bx-down-arrow-alt "></i>
-                        <span key="t-maps"> Deposit </span>
+                        <i class="bx bx-up-arrow-alt "></i>
+                        <span key="t-maps"> ฝากเงิน </span>
                     </a>
                 </li>
 
@@ -488,7 +492,7 @@
                 <li>
                     <a href="{{ route('admin.deposit.index') }}" class="has-arrow waves-effect">
                         <i class="bx bx-down-arrow-alt "></i>
-                        <span key="t-maps"> รายการขอเติมเงิน </span>
+                        <span key="t-maps"> รายการขอฝากเงิน </span>
                     </a>
                 </li> --}}
 

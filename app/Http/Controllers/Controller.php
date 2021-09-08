@@ -14,9 +14,9 @@ use App\Models\CompanyWithdraw;
 use App\Models\CompanyDeposit;
 use App\Models\CompanyWallet;
 use App\Models\CompanyTransaction;
-use App\Models\LevelLogs;
 use App\Models\User;
 use App\Models\Transaction;
+use App\Models\LevelLogs;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -97,17 +97,19 @@ class Controller extends BaseController
 
         $code = $this->getCodeForCash();
 
+        $timestp = Carbon::now();
+
         $deposit = new Deposit;
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount < 0 ? $amount * (-1) : $amount;
-        $deposit->transaction_timestamp = Carbon::now();
+        $deposit->transaction_timestamp = $timestp;
         $deposit->company_bank_account_id = null;
         $deposit->slip_img = null;
         $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า CASH - WALLET';
         $deposit->status = 1;
         $deposit->user_create_id = $userCreateId ? $userCreateId : Auth::user()->id;
         $deposit->user_approve_id = 1;
-        $deposit->approved_at = Carbon::now();
+        $deposit->approved_at = $timestp;
         $deposit->code = $code;
         $deposit->save();
 
@@ -122,7 +124,7 @@ class Controller extends BaseController
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
         $ts->type = $typeDeposit ? $typeDeposit : 'DEPOSIT';
-        $ts->transaction_timestamp = Carbon::now();
+        $ts->transaction_timestamp = $timestp;
         $ts->detail = $detail ? $detail : 'ฝากเงินเข้า CASH-WALLET';
         $ts->user_create_id = $userCreateId;
         $ts->user_approve_id = 1;
@@ -178,13 +180,14 @@ class Controller extends BaseController
         }
 
         $code = $this->getCodeForCash();
+        $timestp = Carbon::now();
 
         DB::beginTransaction();
 
         $deposit = new Deposit;
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount < 0 ? $amount * (-1) : $amount;
-        $deposit->transaction_timestamp = Carbon::now();
+        $deposit->transaction_timestamp = $timestp;
         $deposit->company_bank_account_id = null;
         $deposit->slip_img = null;
         $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า CASH - WALLET';
@@ -249,13 +252,14 @@ class Controller extends BaseController
         DB::beginTransaction();
 
         $code = $this->getCodeForCash();
+        $timestp = Carbon::now();
 
         $withdraw = new Withdraw;
         $withdraw->user_id = $userId;
         $withdraw->amount = (string) $amount;
         $withdraw->tax = 0;
         $withdraw->amount = (string) $amount;
-        $withdraw->transaction_timestamp = Carbon::now();
+        $withdraw->transaction_timestamp = $timestp;
         $withdraw->bank_id = null;
         $withdraw->bank_account_name = null;
         $withdraw->bank_account_no = null;
@@ -274,7 +278,7 @@ class Controller extends BaseController
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
         $ts->type = 'WITHDRAW';
-        $ts->transaction_timestamp = Carbon::now();
+        $ts->transaction_timestamp = $timestp;
         $ts->detail = $detail;
         $ts->user_create_id = $userCreateId;
         $ts->user_approve_id = 1;
@@ -348,13 +352,14 @@ class Controller extends BaseController
         DB::beginTransaction();
 
         $code = $this->getCodeForCash();
+        $timestp = Carbon::now();
 
         $withdraw = new Withdraw;
         $withdraw->user_id = $userId;
         $withdraw->amount = (string) $amount;
         $withdraw->tax = 0;
         $withdraw->amount = (string) $amount;
-        $withdraw->transaction_timestamp = Carbon::now();
+        $withdraw->transaction_timestamp = $timestp;
         $withdraw->bank_id = null;
         $withdraw->bank_account_name = null;
         $withdraw->bank_account_no = null;
@@ -373,7 +378,7 @@ class Controller extends BaseController
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
         $ts->type = $typeWithdraw ? $typeWithdraw : 'WITHDRAW';
-        $ts->transaction_timestamp = Carbon::now();
+        $ts->transaction_timestamp = $timestp;
         $ts->detail = $detail;
         $ts->user_create_id = $userCreateId;
         $ts->user_approve_id = 1;
@@ -447,13 +452,14 @@ class Controller extends BaseController
         DB::beginTransaction();
 
         $code = $this->getCodeForCash();
+        $timestp = Carbon::now();
 
         $withdraw = new Withdraw;
         $withdraw->user_id = $userId;
         $withdraw->amount = (string) $amount;
         $withdraw->tax = $tax;
         $withdraw->amount = (string) ($amount - $tax);
-        $withdraw->transaction_timestamp = Carbon::now();
+        $withdraw->transaction_timestamp = $timestp;
         $withdraw->bank_id = null;
         $withdraw->bank_account_name = null;
         $withdraw->bank_account_no = null;
@@ -472,7 +478,7 @@ class Controller extends BaseController
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
         $ts->type = 'WITHDRAW';
-        $ts->transaction_timestamp = Carbon::now();
+        $ts->transaction_timestamp = $timestp;
         $ts->detail = $detail;
         $ts->user_create_id = $userCreateId;
         $ts->user_approve_id = 1;
@@ -553,11 +559,12 @@ class Controller extends BaseController
             $wallet->save();
         }
         $code = $this->getCodeForCoin();
+        $timestp = Carbon::now();
 
         $deposit = new CoinDeposit;
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount < 0 ? $amount * (-1) : $amount;
-        $deposit->transaction_timestamp = Carbon::now();
+        $deposit->transaction_timestamp = $timestp;
         $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า COIN - WALLET';
         $deposit->status = 1;
         $deposit->user_create_id = $userCreateId ? $userCreateId : Auth::user()->id;
@@ -575,7 +582,7 @@ class Controller extends BaseController
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
         $ts->type = $typeDeposit ? $typeDeposit : 'DEPOSIT';
-        $ts->transaction_timestamp = Carbon::now();
+        $ts->transaction_timestamp = $timestp;
         $ts->detail = $detail ? $detail : 'ฝากเงินเข้า CASH-WALLET';
         $ts->user_create_id = $userCreateId;
         $ts->code = $code;
@@ -636,11 +643,12 @@ class Controller extends BaseController
         DB::beginTransaction();
 
         $code = $this->getCodeForCoin();
+        $timestp = Carbon::now();
 
         $withdraw = new CoinWithdraw;
         $withdraw->user_id = $userId;
         $withdraw->amount = (string) $amount;
-        $withdraw->transaction_timestamp = Carbon::now();
+        $withdraw->transaction_timestamp = $timestp;
         $withdraw->bank_id = null;
         $withdraw->bank_account_name = null;
         $withdraw->bank_account_no = null;
@@ -659,7 +667,7 @@ class Controller extends BaseController
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
         $ts->type = 'WITHDRAW';
-        $ts->transaction_timestamp = Carbon::now();
+        $ts->transaction_timestamp = $timestp;
         $ts->detail = $detail;
         $ts->user_create_id = $userCreateId;
         $ts->user_approve_id = 1;
@@ -761,6 +769,16 @@ class Controller extends BaseController
         return $data;
     }
 
+    public function getTotalIncome($userId)
+    {
+        $sum = Transaction::with('user')
+            ->where('user_id', $userId)
+            ->where('type', '!=', 'WITHDRAW')
+            ->sum('amount');
+
+        return $sum;
+    }
+
     public function depositCompanyWallaet($userId, $amount, $detail)
     {
         // $userId = Auth::user()->id;
@@ -811,10 +829,12 @@ class Controller extends BaseController
             $wallet->save();
         }
 
+        $timestp = Carbon::now();
+
         $deposit = new CompanyDeposit;
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount < 0 ? $amount * (-1) : $amount;
-        $deposit->transaction_timestamp = Carbon::now();
+        $deposit->transaction_timestamp = $timestp;
         $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า COMPANY - WALLET';
         $deposit->save();
 
@@ -828,7 +848,7 @@ class Controller extends BaseController
         $ts->amount = (string) $amount;
         $ts->balance = (string) $newBalance;
         $ts->type = 'DEPOSIT';
-        $ts->transaction_timestamp = Carbon::now();
+        $ts->transaction_timestamp = $timestp;
         $ts->detail = $detail ? $detail : 'ฝากเงินเข้า COMPANY-WALLET';
         $ts->save();
 
@@ -914,11 +934,12 @@ class Controller extends BaseController
         }
 
         if ($lastest_code1 != null && $lastest_code2 != null) {
-            $code1 = substr($lastest_code1, 0, -1);;
+            $code1 = substr($lastest_code1->code, 0, -1);;
             $num1 = (int) substr($code1, -3);
 
-            $code2 = substr($lastest_code2, 0, -1);;
+            $code2 = substr($lastest_code2->code, 0, -1);;
             $num2 = (int) substr($code2, -3);
+
 
             if ($num1 > $num2) {
                 $code = $lastest_code1->code;
@@ -926,11 +947,11 @@ class Controller extends BaseController
                 $code = $lastest_code2->code;
             }
         } else if ($lastest_code1 != null && $lastest_code2 == null) {
-            $code1 = substr($lastest_code1, 0, -1);;
+            $code1 = substr($lastest_code1->code, 0, -1);;
             $num1 = (int) substr($code1, -3);
             $code = $lastest_code1->code;
         } else if ($lastest_code1 == null && $lastest_code2 != null) {
-            $code2 = substr($lastest_code2, 0, -1);;
+            $code2 = substr($lastest_code2->code, 0, -1);;
             $num1 = (int) substr($code2, -3);
             $code = $lastest_code2->code;
         } else {
@@ -991,11 +1012,12 @@ class Controller extends BaseController
         }
 
         if ($lastest_code1 != null && $lastest_code2 != null) {
-            $code1 = substr($lastest_code1, 0, -1);;
+            $code1 = substr($lastest_code1->code, 0, -1);;
             $num1 = (int) substr($code1, -3);
 
-            $code2 = substr($lastest_code2, 0, -1);;
+            $code2 = substr($lastest_code2->code, 0, -1);;
             $num2 = (int) substr($code2, -3);
+
 
             if ($num1 > $num2) {
                 $code = $lastest_code1->code;
@@ -1004,11 +1026,11 @@ class Controller extends BaseController
             }
 
         } else if ($lastest_code1 != null && $lastest_code2 == null) {
-            $code1 = substr($lastest_code1, 0, -1);;
+            $code1 = substr($lastest_code1->code, 0, -1);;
             $num1 = (int) substr($code1, -3);
             $code = $lastest_code1->code;
         } else if ($lastest_code1 == null && $lastest_code2 != null) {
-            $code2 = substr($lastest_code2, 0, -1);;
+            $code2 = substr($lastest_code2->code, 0, -1);;
             $num1 = (int) substr($code2, -3);
             $code = $lastest_code2->code;
         } else {
