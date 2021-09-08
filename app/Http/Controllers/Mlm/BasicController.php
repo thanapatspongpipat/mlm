@@ -98,7 +98,6 @@ class BasicController extends RollUpController
                 $dealerId = $index['dealerId'];
                 $amount = $index['total'];
                 $fkId = $index['userId'];
-                //$this->depositCash($dealerId, $amount, $action, 0, $type, $fkId);
                 $this->extractBalance($dealerId, $amount, $action, $type, $fkId);
                 $finishedCount++;
             }
