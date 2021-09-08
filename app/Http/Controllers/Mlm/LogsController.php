@@ -118,7 +118,7 @@ class LogsController extends RollUpController
         $toInsertMax = 0;
         $countCoupleMin = $RangeCouple["phrase1"]["countCouple"];
         $countCoupleMax = $RangeCouple["phrase2"]["countCouple"];
-        
+
         if($ToInsertCount >= $countCoupleMin){
             $toInsertMin = $countCoupleMin;
             $ToInsertCount -= $countCoupleMin;
