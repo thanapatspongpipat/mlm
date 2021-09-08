@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MLM;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\LevelLogs;
 class GenerateUser extends Controller
 {
     public function generateUser(){
@@ -54,6 +55,10 @@ class GenerateUser extends Controller
                     "product_id"=>$productId,
                     "password"=>$password,
                     "avatar"=>$avatar
+                ]);
+                LevelLogs::insert([
+                    "user_id"=>$this->getMaxCurrentUserId(),
+                    "product_id"=>$productId
                 ]);
             } else {
                 return true;
