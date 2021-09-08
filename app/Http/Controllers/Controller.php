@@ -105,7 +105,7 @@ class Controller extends BaseController
         $deposit->transaction_timestamp = $timestp;
         $deposit->company_bank_account_id = null;
         $deposit->slip_img = null;
-        $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า CASH - WALLET';
+        $deposit->detail = $detail ? $detail : 'เติมเงินเข้า CASH-WALLET ของฉัน';
         $deposit->status = 1;
         $deposit->user_create_id = $userCreateId ? $userCreateId : Auth::user()->id;
         $deposit->user_approve_id = 1;
@@ -125,7 +125,7 @@ class Controller extends BaseController
         $ts->balance = (string) $newBalance;
         $ts->type = $typeDeposit ? $typeDeposit : 'DEPOSIT';
         $ts->transaction_timestamp = $timestp;
-        $ts->detail = $detail ? $detail : 'ฝากเงินเข้า CASH-WALLET';
+        $ts->detail = $detail ? $detail : 'เติมเงินเข้า CASH-WALLET ของฉัน';
         $ts->user_create_id = $userCreateId;
         $ts->user_approve_id = 1;
         $ts->code = $code;
@@ -190,7 +190,7 @@ class Controller extends BaseController
         $deposit->transaction_timestamp = $timestp;
         $deposit->company_bank_account_id = null;
         $deposit->slip_img = null;
-        $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า CASH - WALLET';
+        $deposit->detail = $detail ? $detail : 'เติมเงินเข้า CASH-WALLET ของฉัน';
         $deposit->status = 0;
         $deposit->code = $code;
         $deposit->user_create_id = $userCreateId ? $userCreateId : Auth::user()->id;
@@ -565,7 +565,7 @@ class Controller extends BaseController
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount < 0 ? $amount * (-1) : $amount;
         $deposit->transaction_timestamp = $timestp;
-        $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า COIN - WALLET';
+        $deposit->detail = $detail ? $detail : 'เติมเงินเข้า COIN-WALLET ของฉัน';
         $deposit->status = 1;
         $deposit->user_create_id = $userCreateId ? $userCreateId : Auth::user()->id;
         $deposit->user_approve_id = 1;
@@ -583,7 +583,7 @@ class Controller extends BaseController
         $ts->balance = (string) $newBalance;
         $ts->type = $typeDeposit ? $typeDeposit : 'DEPOSIT';
         $ts->transaction_timestamp = $timestp;
-        $ts->detail = $detail ? $detail : 'ฝากเงินเข้า CASH-WALLET';
+        $ts->detail = $detail ? $detail : 'เติมเงินเข้า CASH-WALLET ของฉัน';
         $ts->user_create_id = $userCreateId;
         $ts->code = $code;
         $ts->user_approve_id = 1;
@@ -835,7 +835,7 @@ class Controller extends BaseController
         $deposit->user_id = $userId;
         $deposit->amount = (string) $amount < 0 ? $amount * (-1) : $amount;
         $deposit->transaction_timestamp = $timestp;
-        $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า COMPANY - WALLET';
+        $deposit->detail = $detail ? $detail : 'ฝากเงินเข้า COMPANY-WALLET';
         $deposit->save();
 
         $tmpAmount = $amount < 0 ? $amount * (-1) : $amount;

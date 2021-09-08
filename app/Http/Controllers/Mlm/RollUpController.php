@@ -137,7 +137,7 @@ class RollUpController extends BaseMLM
         foreach($ReferralData as $user){
             $UserID = $user->id;
             $UserLevel  = $this->getLevelByProductId($user->product_id);
-            $PriceLevel = $this->getLevelCost($UserLevel);
+            $PriceLevel = $this->getLevelCost($user->product_id);
             $RollUpResult = ($PercentRollUp / 100) * $PriceLevel;
             $DealerID = $this->getDealer($id);
             $result[] = array(
@@ -151,10 +151,10 @@ class RollUpController extends BaseMLM
     }
 
     public function getKeyCost($headerId, $userId, $Percent = 5){
-        $MyLevel = $this->getUserLevel($userId);
+        $User = $this->getUserById($userId);
         $KeyFee = $Percent / 100;
         return array(
-            "cost" => $this->getLevelCost($MyLevel) * $KeyFee,
+            "cost" => $this->getLevelCost($User->product_id) * $KeyFee,
             "userId"=> $userId,
             "headerId"=>$headerId, // D or SD
         );

@@ -52,9 +52,9 @@ class BaseMLM extends Controller
         return null;
     }
 
-    protected function getLevelCost($Level){
+    protected function getLevelCost($productId){
         foreach($this->getProductAll() as $LevelData){
-            if(strtolower($LevelData->level) == strtolower($Level)) return intval($LevelData->price_num);
+            if($LevelData->id == $productId) return intval($LevelData->price_num);
         }
         return 0;
     }
