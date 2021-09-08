@@ -52,7 +52,6 @@ class BasicController extends RollUpController
         foreach($presentArray as $present){
             foreach($present['total'] as $index){
                 $action = "ค่าแนะนำสมาชิก {$index['invitedUserId']}";
-                $type = "DEPOSIT_FEE";
                 $transactionById = $this->getTransactionByUserId($present['id'], $type);
                 $transactionByFk = $this->getTransactionFieldKeyById($index['invitedUserId'], $type);
                 if (count($transactionById) <= 0  || count($transactionByFk) <= 0){

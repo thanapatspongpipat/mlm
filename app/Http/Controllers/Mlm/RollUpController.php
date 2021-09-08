@@ -47,8 +47,14 @@ class RollUpController extends BaseMLM
     }
 
     public function compute($data, &$total = 0){
-        if($data !== null && $data["level"] !== null) {
-            $total += $this->convertLevelPrice($data["level"]);
+        if($data !== null && $data["level"] !== null && $data['userId'] !== null) {
+            $userId = $data['userId'];
+            $levelLogs = $this->getLevelLogs($userId);
+            foreach($levelLogs as $log){
+                $level = $log->product->level;
+                $total += $this->convertLevelPrice($level);
+            }
+            //$total += $this->convertLevelPrice($data["level"]);
         }
         if($data !== null && $data["left"] !== null ) $this->compute($data["left"], $total);
         if($data !== null && $data["right"] !== null) $this->compute($data["right"], $total);

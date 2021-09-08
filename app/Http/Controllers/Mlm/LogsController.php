@@ -96,16 +96,6 @@ class LogsController extends RollUpController
 
     private function insertTransactionLoop($id, $balance, $count){
         for($i=0;$i<$count;$i++){
-            /*Transaction::insert([
-                "user_id"=>$id,
-                "balance"=>0,
-                "amount"=>$balance,
-                "type"=>"DEPOSIT_COUPLE",
-                "detail"=>$this->detailCouple,
-                "user_approve_id"=>Auth::user()->id ,
-                "user_create_id"=>0,
-                "transaction_timestamp"=>Carbon::now()
-            ]);*/
             $type = "DEPOSIT_COUPLE";
             $this->extractBalance($id, $balance, $this->detailCouple, $type, 0);
         }
@@ -116,30 +106,58 @@ class LogsController extends RollUpController
         $MyPoint = $this->getBalance($id);
         $result = $this->getCoupleValue($id);
         if($result === false) return false;
-        $amountMin = $this->floorp($result["min"][1] * 0.75, 2);
-        $amountMax = $this->floorp($result["max"][1] * 0.75, 2);
-        $minTransaction = Transaction::where([
+        //$amountMin = $this->floorp($result["min"][1] * 0.75, 2);
+        //$amountMax = $this->floorp($result["max"][1] * 0.75, 2);
+        $type = "DEPOSIT_COUPLE";
+        /*$minTransaction = Transaction::where([
             ["user_id", "=", $id],
             ["amount", "=", $amountMin]
         ])->select("user_id", "balance")->get();
         $maxTransaction = Transaction::where([
             ["user_id", "=", $id],
             ["amount", "=", $amountMax]
-        ])->select("user_id", "balance")->get();
-        $toInsertMin = 0; // 70
-        $toInsertMax = 0; // 30
-        if(count($minTransaction) < $result["min"][0] && $MyPoint > 0){
-            $toInsertMin = $result["min"][0] - count($minTransaction);
-            $increment++;
+        ])->select("user_id", "balance")->get();*/
+        $alreadyInsert = Transaction::where([
+            ["user_id", "=", $id],
+            ["type", "=", $type],
+        ])->select('id')->get();
+        $alreadyInsertCount = count($alreadyInsert);
+        //$alreadyInsertCount = count($minTransaction) + count($maxTransaction);
+        $ToInsertCount = $result["max"][0] + $result["min"][0];
+        $userLevel = $this->getUserLevel($id);
+        $RangeCouple = $this->convertMaxCouple($userLevel);
+        if($ToInsertCount >= $alreadyInsertCount){
+            $ToInsertCount -= $alreadyInsertCount;
         }
-        if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
+        $toInsertMin = 0;
+        $toInsertMax = 0;
+        $countCoupleMin = $RangeCouple["phrase1"]["countCouple"];
+        $countCoupleMax = $RangeCouple["phrase2"]["countCouple"];
+        if($ToInsertCount >= $countCoupleMin){
+            $toInsertMin = $countCoupleMin;
+            $ToInsertCount -= $countCoupleMin;
+            $toInsertMax = $ToInsertCount;
+        } else {
+            $toInsertMin = $ToInsertCount;
+            $ToInsertCount = 0;
+        }
+        /*if($insertCount <= $result["min"][0]){
+            $toInsertMin = $insertCount;
+            $toInsertMax = 0;
+            $insertCount = 0;
+            $increment++;
+        } else {
+            $toInsertMin = $result["min"][0];
+            $insertCount -= $result["min"][0];
+        }*/
+        /*if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
             $toInsertMax = $result["max"][0] - count($maxTransaction);
             $increment++;
-        }
-        if($toInsertMax + $toInsertMin >= 99){
-            // insert 99 couple per day
+        }*/
+        /* if($toInsertMax + $toInsertMin >= 99){
+            // insert 99 maximum couple per day
             $toInsertMax = 99 - $toInsertMin;
-        }
+        }*/
         if ($toInsertMin > 0) $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
         if ($toInsertMax > 0) $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
         return $increment > 0;
@@ -157,15 +175,26 @@ class LogsController extends RollUpController
 
     public function insertKey($id, $pairId){
         $keyValue = $this->getKeyCost($id, $pairId);
+        $keyResult = $keyValue['cost'];
         $type = "DEPOSIT_KEY";
         $keyDuplicate = Transaction::where([
             ['user_id', '=', $id],
             ['fk_id', '=', $pairId],
             ['type', '=', $type]
         ])->get();
-        if(count($keyDuplicate) > 0) return false;
+
+        // in case user upgrade level
+        $keyValueInTransaction = 0;
+        if(count($keyDuplicate) > 0){
+            foreach($keyDuplicate as $keyData){
+                $keyValueInTransaction += $keyData->amount;
+                if($keyResult == $keyValueInTransaction) return false;
+            }
+            $keyResult -= $keyValueInTransaction;
+        }
+
         $keyDetail = "ค่าลงทะเบียน {$pairId}";
-        $this->extractBalance($id, $keyValue["cost"], $keyDetail, $type, $pairId);
+        $this->extractBalance($id, $keyResult, $keyDetail, $type, $pairId);
         return true;
     }
 
