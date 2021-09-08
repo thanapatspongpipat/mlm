@@ -109,6 +109,14 @@ class BaseMLM extends Controller
         return Transaction::where('user_id', $id)->where('type', $type)->get();
     }
 
+    protected function isInsertFeeTransaction($id, $fkId, $type){
+        $transaction = Transaction::where('user_id', $id)
+                    ->where('type', $type)
+                    ->where('fk_id', $fkId)
+                    ->get();
+        return (count($transaction) > 0);
+    }
+
     protected function convertMaxCouple($level){
         $result = array(
             "S" => [
