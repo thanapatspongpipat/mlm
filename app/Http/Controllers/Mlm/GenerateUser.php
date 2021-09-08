@@ -54,7 +54,8 @@ class GenerateUser extends Controller
                     "level"=>$userLevel,
                     "product_id"=>$productId,
                     "password"=>$password,
-                    "avatar"=>$avatar
+                    "avatar"=>$avatar,
+                    "user_invite_id"=>$userInviteId
                 ]);
                 LevelLogs::insert([
                     "user_id"=>$this->getMaxCurrentUserId(),

@@ -21,7 +21,7 @@ class BasicController extends RollUpController
     }
 
     private function finalCompute($id){
-        $inviteUsersLevel = $this->getUserInviter($id);
+        $inviteUsersLevel = $this->getUserInvite($id);
         $usersLevel = $this->getUserLevel($id);
         $result = array();
         foreach($inviteUsersLevel as $inviteUser){
@@ -127,19 +127,19 @@ class BasicController extends RollUpController
     public function upgradeUser($id){
         $details = "ค่าแนะนำอัพเกรดสมาชิก {$id}";
         $type = "DEPOSIT_UPGRADE_FEE";
-        $upline_id = $this->getUserById($id)->user_upline_id;
-        $upline_productId = $this->getUserById($upline_id)->product_id;
+        $invite_id = $this->getUserById($id)->user_invite_id;
+        $invite_productId = $this->getUserById($invite_id)->product_id;
         $user_productId = $this->getUserById($id)->product_id;
         $user_product = ProductModel::where('id', $user_productId)->get()->first();
-        $upline_product = ProductModel::where('id', $upline_productId)->get()->first();
+        $invite_product = ProductModel::where('id', $invite_productId)->get()->first();
         $user_product_point = $user_product->point;
-        $percent_upline = $this->percentage($upline_product->level);
+        $percent_invite = $this->percentage($invite_product->level);
         $amount = $percent_upline * $user_product_point;
-        $checkTransaction = Transaction::where('user_id', $upline_id)
+        $checkTransaction = Transaction::where('user_id', $invite_id)
                                             ->where('fk_id', $id)
                                             ->where('amount', $amount * 0.75)->get();
         if(count($checkTransaction) != 0 ) return false;
-        $this->extractBalance($upline_id, $amount, $details, $type, $id);
+        $this->extractBalance($invite_id, $amount, $details, $type, $id);
         return true;
     }
 }
