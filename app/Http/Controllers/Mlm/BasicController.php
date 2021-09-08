@@ -135,6 +135,11 @@ class BasicController extends RollUpController
         $user_product_point = $user_product->point;
         $percent_upline = $this->percentage($upline_product->level);
         $amount = $percent_upline * $user_product_point;
+        $checkTransaction = Transaction::where('user_id', $upline_id)
+                                            ->where('fk_id', $id)
+                                            ->where('amount', $amount * 0.75)->get();
+        if(count($checkTransaction) != 0 ) return false;
         $this->extractBalance($upline_id, $amount, $details, $type, $id);
+        return true;
     }
 }
