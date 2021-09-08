@@ -60,6 +60,7 @@ class BasicController extends RollUpController
                     $fkId = $index['invitedUserId'];
                     $this->extractBalance($presentId, $amount, $action, $type, $fkId);
                     $finishedCount++;
+                    
                 }
             }
         }
