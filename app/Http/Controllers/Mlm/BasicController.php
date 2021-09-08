@@ -54,7 +54,7 @@ class BasicController extends RollUpController
                 $action = "ค่าแนะนำสมาชิก {$index['invitedUserId']}";
                 $transactionById = $this->getTransactionByUserId($present['id'], $type);
                 $transactionByFk = $this->getTransactionFieldKeyById($index['invitedUserId'], $type);
-                if (count($transactionById) <= 0  || count($transactionByFk) <= 0){
+                if (!$this->isInsertFeeTransaction($present['id'], $index['invitedUserId'], $type)){
                     $presentId = $present['id'];
                     $amount = $index['total'];
                     $fkId = $index['invitedUserId'];
