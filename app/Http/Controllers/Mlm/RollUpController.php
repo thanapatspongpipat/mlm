@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\MLM;
 
 use App\Http\Controllers\MLM\BaseMLM;
-use App\Models\transactions;
+use App\Models\User;
 
 class RollUpController extends BaseMLM
 {
@@ -153,7 +153,17 @@ class RollUpController extends BaseMLM
             $UserLevel  = $this->getLevelByProductId($user->product_id);
             $PriceLevel = $this->getLevelCost($user->product_id);
             $RollUpResult = ($PercentRollUp / 100) * $PriceLevel;
-            $DealerID = $this->getDealer($id);
+            //$DealerID = $this->getDealer($id);
+            $MyData = $this->getUserById($id);
+            $InviteId = $MyData->user_invite_id;
+            $InviteData = $this->getUserById($InviteId);
+            if($InviteData == null) continue;
+            $InviteProductId = $InviteData->product_id;
+            $DealerID = 0;
+            // if sd or d return userId to add money
+            if( $InviteProductId == 1 || $InviteProductId == 2){
+                $DealerID = $InviteData->id;
+            }
             $result[] = array(
                 "dealerId"=>$DealerID,
                 "rollUpResult"=>$RollUpResult,
@@ -181,7 +191,7 @@ class RollUpController extends BaseMLM
             "D"=>0,
             "SD"=>0
         );
-        return $levels[$Level];
+        return (isset($levels[$Level]))?$levels[$Level]:null;
     }
 
     private function getDealer($id){
