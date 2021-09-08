@@ -14,6 +14,7 @@ use App\Models\CompanyWithdraw;
 use App\Models\CompanyDeposit;
 use App\Models\CompanyWallet;
 use App\Models\CompanyTransaction;
+use App\Models\LevelLogs;
 use App\Models\User;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -1037,5 +1038,24 @@ class Controller extends BaseController
 
     public function saveLevelState($userId){
 
+        // Search user product_id
+        $user = User::where('id', $userId)->first();
+        $product_id = $user->product_id;
+
+        // exists?
+        $llogs = LevelLogs::where('user_id', $userId)
+                            ->where('product_id', $product_id)
+                            ->get();
+        if(count($llogs) > 0) return false;
+
+        DB::beginTransaction();
+
+        $logs = new LevelLogs();
+        $logs->user_id = $userId;
+        $logs->product_id = $product_id;
+        $logs->save();
+
+        DB::commit();
+        return true;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\MLM;
 
 use App\Models\Transaction;
+use App\Models\ProductModel;
 
 
 class BasicController extends RollUpController
@@ -57,9 +58,7 @@ class BasicController extends RollUpController
                     $presentId = $present['id'];
                     $amount = $index['total'];
                     $fkId = $index['invitedUserId'];
-
                     $this->extractBalance($presentId, $amount, $action, $type, $fkId);
-
                     $finishedCount++;
                 }
             }
@@ -125,8 +124,17 @@ class BasicController extends RollUpController
         if($userRight !== null) $this->getLogRollUp($userRight['userId'], $presentArray);
     }
 
-    public function upgradeUser($upgradedUser){
-        // implement here
+    public function upgradeUser($id){
+        $details = "ค่าแนะนำอัพเกรดสมาชิก {$id}";
+        $type = "DEPOSIT_UPGRADE_FEE";
+        $upline_id = $this->getUserById($id)->user_upline_id;
+        $upline_productId = $this->getUserById($upline_id)->product_id;
+        $user_productId = $this->getUserById($id)->product_id;
+        $user_product = ProductModel::where('id', $user_productId)->get()->first();
+        $upline_product = ProductModel::where('id', $upline_productId)->get()->first();
+        $user_product_point = $user_product->point;
+        $percent_upline = $this->percentage($upline_product->level);
+        $amount = $percent_upline * $user_product_point;
+        $this->extractBalance($upline_id, $amount, $details, $type, $id);
     }
-
 }
