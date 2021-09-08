@@ -94,9 +94,9 @@ class BaseMLM extends Controller
         );
     }
 
-    protected function convertLevelPrice($Level){
+    protected function convertLevelPrice($productId){
         foreach($this->getProductAll() as $LevelData){
-            if(strtolower($LevelData->level) == strtolower($Level)) return intval($LevelData->level_value);
+            if($LevelData->id == $productId) return intval($LevelData->level_value);
         }
         return 0;
     }
@@ -170,7 +170,7 @@ class BaseMLM extends Controller
         $eWalletBalance = $totalBalance * 0.75;
         $pointBalance = $totalBalance * 0.2;
         $remainVatFee = $totalBalance - ($eWalletBalance + $pointBalance);
-
+        //dd($userId, $totalBalance, $detail);
         $this->depositCash($userId, $this->floorp($eWalletBalance, 2), $detail, 0, $type, $fkId);
 
         $this->depositCoin($userId, $this->floorp($pointBalance, 2), $detail, 0, $type);

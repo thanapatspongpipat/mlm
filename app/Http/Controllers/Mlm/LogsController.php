@@ -55,14 +55,12 @@ class LogsController extends RollUpController
         foreach($UserData as $User){
             $userId = $User->id;
             $totalResult = $this->insertCouple($userId);
-
             if($totalResult === null) continue;
-
             $totalBalance = $totalResult["totalBalance"];
             $totalCouple = $totalResult["totalCouple"];
 
             if($totalCouple <= 0) continue;
-
+            //dd($userId, $totalBalance);
             $this->extractBalance($userId, $totalBalance, "ค่าครบคู่ ({$totalCouple} คู่)", "DEPOSIT_COUPLE");
         }
     }
@@ -127,7 +125,7 @@ class LogsController extends RollUpController
             $toInsertMin = $ToInsertCount;
             $ToInsertCount = 0;
         }
-
+        //dd($toInsertMin, $toInsertMax);
         $totalBalance = 0;
         $totalCouple = 0;
         if ($toInsertMin > 0) {

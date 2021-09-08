@@ -64,7 +64,8 @@ class RollUpController extends BaseMLM
             $userId = $data['userId'];
             $levelLogs = $this->getLevelLogs($userId);
             foreach($levelLogs as $log){
-                $level = $log->product->level;
+                //dd($log->product->id);
+                $level = $log->product->id;
                 $total += $this->convertLevelPrice($level);
             }
             //$total += $this->convertLevelPrice($data["level"]);
