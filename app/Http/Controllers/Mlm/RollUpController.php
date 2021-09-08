@@ -41,9 +41,23 @@ class RollUpController extends BaseMLM
         $RangeCouple = $this->convertMaxCouple($MyLevel);
         $LeftValue = $CombineValue["left"];
         $RightValue = $CombineValue["right"];
+        dd($LeftValue, $RightValue);
         $numCouple = min($LeftValue, $RightValue);
         $result = $this->calculateResultCouple($RangeCouple, $numCouple);
         return ["point"=>$result];
+    }
+
+    public function getValueLeftRight($id){
+        $AllData = $this->getAllLog($id);
+        $CombineValue = $this->combine($AllData);
+        $MyLevel = $this->getUserLevel($id);
+        $RangeCouple = $this->convertMaxCouple($MyLevel);
+        $LeftValue = $CombineValue["left"];
+        $RightValue = $CombineValue["right"];
+        return array(
+            "valueLeft"=>$LeftValue,
+            "valueRight"=>$RightValue
+        );
     }
 
     public function compute($data, &$total = 0){
