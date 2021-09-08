@@ -116,6 +116,7 @@ class UserController extends Controller
                 "username" => $value->username,
                 "id" => $value->id,
                 "name" => $value->firstname . " " . $value->lastname,
+                "registrant" => 0, // ผู้ที่ลงทะเบียนให้
                 "invite" => $value->user_invite_id,
                 "upline" => $value->user_upline_id,
                 "position" => $text_thai_space,

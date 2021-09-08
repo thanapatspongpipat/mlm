@@ -90,6 +90,7 @@
                             <th>วันที่ลงทะเบียน</th>
                             <th>รหัสผู้ใช้งาน</th>
                             <th>ชื่อในระบบ</th>
+                            <th>ผู้ลงทะเบียน</th>
                             <th>ผู้แนะนำ</th>
                             <th>อัพไลน์</th>
                             <th>ตำแหน่งว่าง</th>
@@ -184,6 +185,10 @@
             },
             {
                 "data": "name"
+            },
+            {
+                "data": "registrant",
+                className: "text-center align-middle"
             },
             {
                 "data": "invite",
