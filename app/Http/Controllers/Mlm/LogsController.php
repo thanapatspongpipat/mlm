@@ -106,24 +106,14 @@ class LogsController extends RollUpController
         $increment = 0;
         $MyPoint = $this->getBalance($id);
         $result = $this->getCoupleValue($id);
+        dd($result);
         if($result === false) return false;
-        //$amountMin = $this->floorp($result["min"][1] * 0.75, 2);
-        //$amountMax = $this->floorp($result["max"][1] * 0.75, 2);
         $type = "DEPOSIT_COUPLE";
-        /*$minTransaction = Transaction::where([
-            ["user_id", "=", $id],
-            ["amount", "=", $amountMin]
-        ])->select("user_id", "balance")->get();
-        $maxTransaction = Transaction::where([
-            ["user_id", "=", $id],
-            ["amount", "=", $amountMax]
-        ])->select("user_id", "balance")->get();*/
         $alreadyInsert = Transaction::where([
             ["user_id", "=", $id],
             ["type", "=", $type],
         ])->select('id')->get();
         $alreadyInsertCount = count($alreadyInsert);
-        //$alreadyInsertCount = count($minTransaction) + count($maxTransaction);
         $ToInsertCount = $result["max"][0] + $result["min"][0];
         $userLevel = $this->getUserLevel($id);
         $RangeCouple = $this->convertMaxCouple($userLevel);
@@ -142,23 +132,7 @@ class LogsController extends RollUpController
             $toInsertMin = $ToInsertCount;
             $ToInsertCount = 0;
         }
-        /*if($insertCount <= $result["min"][0]){
-            $toInsertMin = $insertCount;
-            $toInsertMax = 0;
-            $insertCount = 0;
-            $increment++;
-        } else {
-            $toInsertMin = $result["min"][0];
-            $insertCount -= $result["min"][0];
-        }*/
-        /*if(count($maxTransaction) < $result["max"][0] && $MyPoint > 0){
-            $toInsertMax = $result["max"][0] - count($maxTransaction);
-            $increment++;
-        }*/
-        /* if($toInsertMax + $toInsertMin >= 99){
-            // insert 99 maximum couple per day
-            $toInsertMax = 99 - $toInsertMin;
-        }*/
+    
         if ($toInsertMin > 0) $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
         if ($toInsertMax > 0) $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
         return $increment > 0;
