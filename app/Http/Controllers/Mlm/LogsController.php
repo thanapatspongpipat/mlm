@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Mlm;
 
 use App\Http\Controllers\MLM\RollUpController;
 use App\Http\Controllers\MLM\BasicController;
+use App\Models\CoupleLogs;
 use App\Models\User;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\DB;
 
 class LogsController extends RollUpController
 {
@@ -50,30 +52,19 @@ class LogsController extends RollUpController
 
     public function InsertData(){
         $UserData = User::select("id")->get();
-        $AllLogs = array();
-        $BasicController = new BasicController();
         foreach($UserData as $User){
             $userId = $User->id;
-            $this->insertCouple($userId);
-            /*$logs = $this->getCoupleValue($userId);
-            $this->insertTransactionById($userId);
-            foreach($logs as $log){
-                for($i=0;$i<$log[0];$i++){
-                    $couple = $this->generateLogsCouple($userId, $log[1]);
-                    if($couple != false){
-                        $AllLogs[] = $couple;
-                    }
-                }
-            }
-            $KeyLogDate = $this->getKeyLogDate($userId);
-            foreach($KeyLogDate as $key){
-                $AllLogs[] = $this->formatKeyLog($key);
-            }
-            // have to add log
-            $BasicController->insertFee($userId);
-            $BasicController->insertRollup($userId);*/
+            $totalResult = $this->insertCouple($userId);
+
+            if($totalResult === null) continue;
+
+            $totalBalance = $totalResult["totalBalance"];
+            $totalCouple = $totalResult["totalCouple"];
+
+            if($totalCouple <= 0) continue;
+
+            $this->extractBalance($userId, $totalBalance, "ค่าครบคู่ ({$totalCouple} คู่)", "DEPOSIT_COUPLE");
         }
-        //return true;
     }
 
     public function formatKeyLog($data){
@@ -96,10 +87,15 @@ class LogsController extends RollUpController
     }
 
     private function insertTransactionLoop($id, $balance, $count){
+        DB::beginTransaction();
         for($i=0;$i<$count;$i++){
-            $type = "DEPOSIT_COUPLE";
-            $this->extractBalance($id, $balance, $this->detailCouple, $type, 0);
+            $coupleLogs = new CoupleLogs();
+            $coupleLogs->user_id = $id;
+            $coupleLogs->amount = $balance;
+            $coupleLogs->fk_id = 0;
+            $coupleLogs->save();
         }
+        DB::commit();
     }
 
     public function insertTransactionById($id){
@@ -107,11 +103,9 @@ class LogsController extends RollUpController
         $MyPoint = $this->getBalance($id);
         $result = $this->getCoupleValue($id);
         if($result === false) return false;
-        $type = "DEPOSIT_COUPLE";
-        $alreadyInsert = Transaction::where([
-            ["user_id", "=", $id],
-            ["type", "=", $type],
-        ])->select('id')->get();
+        $alreadyInsert = CoupleLogs::where('user_id', $id)
+                                    ->select('id')
+                                    ->get();
         $alreadyInsertCount = count($alreadyInsert);
         $ToInsertCount = $result["max"][0] + $result["min"][0];
         $userLevel = $this->getUserLevel($id);
@@ -123,18 +117,23 @@ class LogsController extends RollUpController
         $toInsertMax = 0;
         $countCoupleMin = $RangeCouple["phrase1"]["countCouple"];
         $countCoupleMax = $RangeCouple["phrase2"]["countCouple"];
-        if($ToInsertCount >= $countCoupleMin){
-            $toInsertMin = $countCoupleMin;
-            $ToInsertCount -= $countCoupleMin;
-            $toInsertMax = $ToInsertCount;
-        } else {
-            $toInsertMin = $ToInsertCount;
-            $ToInsertCount = 0;
+
+        $totalBalance = 0;
+        $totalCouple = 0;
+        if ($toInsertMin > 0) {
+            $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
+            $totalCouple += $toInsertMin;
+            $totalBalance += $result["min"][1] * $toInsertMin;
         }
-    
-        if ($toInsertMin > 0) $this->insertTransactionLoop($id, $result["min"][1], $toInsertMin);
-        if ($toInsertMax > 0) $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
-        return $increment > 0;
+        if ($toInsertMax > 0) {
+            $this->insertTransactionLoop($id, $result["max"][1], $toInsertMax);
+            $totalCouple += $toInsertMax;
+            $totalBalance += $result["max"][1] * $toInsertMax;
+        }
+        return array(
+            "totalCouple"=>$totalCouple,
+            "totalBalance"=>$totalBalance
+        );
     }
 
     public function getCoupleValue($id){
