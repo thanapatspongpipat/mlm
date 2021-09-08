@@ -106,7 +106,6 @@ class LogsController extends RollUpController
         $increment = 0;
         $MyPoint = $this->getBalance($id);
         $result = $this->getCoupleValue($id);
-        dd($result);
         if($result === false) return false;
         $type = "DEPOSIT_COUPLE";
         $alreadyInsert = Transaction::where([
