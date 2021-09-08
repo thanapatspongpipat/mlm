@@ -35,6 +35,10 @@ class BaseMLM extends Controller
         return $this->InviterCache["u{$userId}"];
     }
 
+    protected function getUserInvite($userId){
+        return User::where('user_invite_id', $userId)->get();
+    }
+
     private $LevelCache = null;
     protected function getProductAll(){
         if($this->LevelCache == null || count($this->LevelCache) <= 0) $this->LevelCache = ProductModel::all();
