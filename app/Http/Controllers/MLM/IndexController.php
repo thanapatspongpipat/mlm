@@ -35,9 +35,10 @@ class IndexController extends Controller
      *
      * @author Aom (siriwat576@gmail.com)
      */
-    public function CalculateCouple($headUserId = 1){
+    public function CalculateCouple(){
         $Logs = new LogsController();
-        $Logs->insertCouple($headUserId);
+        //$Logs->insertCouple($headUserId);
+        $Logs->InsertData();
     }
 
     /**

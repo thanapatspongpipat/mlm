@@ -54,7 +54,8 @@ class LogsController extends RollUpController
         $BasicController = new BasicController();
         foreach($UserData as $User){
             $userId = $User->id;
-            $logs = $this->getCoupleValue($userId);
+            $this->insertCouple($userId);
+            /*$logs = $this->getCoupleValue($userId);
             $this->insertTransactionById($userId);
             foreach($logs as $log){
                 for($i=0;$i<$log[0];$i++){
@@ -70,9 +71,9 @@ class LogsController extends RollUpController
             }
             // have to add log
             $BasicController->insertFee($userId);
-            $BasicController->insertRollup($userId);
+            $BasicController->insertRollup($userId);*/
         }
-        return $AllLogs;
+        //return true;
     }
 
     public function formatKeyLog($data){

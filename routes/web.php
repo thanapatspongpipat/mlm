@@ -135,3 +135,4 @@ Route::get('/mlm/test/insert-key/{id}/{childUser}', [App\Http\Controllers\MLM\Lo
 Route::get('/mlm/test/insert-couple/{id}', [App\Http\Controllers\MLM\LogsController::class, 'insertCouple'])->name('insertCouple');
 Route::get('/mlm/test/fetch/{id}', [App\Http\Controllers\MLM\RollUpController::class, 'getLeftRight']);
 Route::get('/mlm/test/generate', [App\Http\Controllers\MLM\GenerateUser::class, 'generateUser']);
+Route::get('/mlm/cronjob/calculate-couple', [App\Http\Controllers\MLM\IndexController::class, 'CalculateCouple']);
