@@ -107,7 +107,7 @@ class Controller extends BaseController
         $deposit->slip_img = null;
         $deposit->detail = $detail ? $detail : 'เติมเงินเข้า CASH-WALLET ของฉัน';
         $deposit->status = 1;
-        $deposit->user_create_id = $userCreateId ? $userCreateId : Auth::user()->id;
+        $deposit->user_create_id = $userCreateId ? $userCreateId : 1;
         $deposit->user_approve_id = 1;
         $deposit->approved_at = $timestp;
         $deposit->code = $code;
@@ -567,7 +567,7 @@ class Controller extends BaseController
         $deposit->transaction_timestamp = $timestp;
         $deposit->detail = $detail ? $detail : 'เติมเงินเข้า COIN-WALLET ของฉัน';
         $deposit->status = 1;
-        $deposit->user_create_id = $userCreateId ? $userCreateId : Auth::user()->id;
+        $deposit->user_create_id = $userCreateId ? $userCreateId : 1;
         $deposit->user_approve_id = 1;
         $deposit->code = $code;
         $deposit->save();

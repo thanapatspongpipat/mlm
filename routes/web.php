@@ -133,15 +133,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mlm/logs/{id}-{pairId}-{type}', [App\Http\Controllers\MLM\LogsController::class, 'index'])->name("getLogs");
     */
     // MLM Insert Functions
-    Route::get('/mlm/test/insert-fee/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertFee'])->name('insertFee');
+
+
+    // upgrade
+    Route::post('/upgrade/check', [App\Http\Controllers\Upgrade\UpgradeController::class, 'checkUser'])->name('api.check_user');
+    Route::post('/upgrade/save', [App\Http\Controllers\Upgrade\UpgradeController::class, 'upgradeSave'])->name('api.update.save');
+});
+
+Route::get('/mlm/test/insert-fee/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertFee'])->name('insertFee');
     Route::get('/mlm/test/insert-rollup/{id}', [App\Http\Controllers\MLM\BasicController::class, 'insertRollUp'])->name('insertRollUp');
     Route::get('/mlm/test/insert-key/{id}/{childUser}', [App\Http\Controllers\MLM\LogsController::class, 'insertKey'])->name('insertKey');
     Route::get('/mlm/test/insert-couple/{id}', [App\Http\Controllers\MLM\LogsController::class, 'insertCouple'])->name('insertCouple');
     Route::get('/mlm/test/fetch/{id}', [App\Http\Controllers\MLM\RollUpController::class, 'getLeftRight']);
     Route::get('/mlm/test/generate', [App\Http\Controllers\MLM\GenerateUser::class, 'generateUser']);
     Route::get('/mlm/cronjob/calculate-couple', [App\Http\Controllers\MLM\IndexController::class, 'CalculateCouple']);
-
-    // upgrade
-    Route::post('/upgrade/check', [App\Http\Controllers\Upgrade\UpgradeController::class, 'checkUser'])->name('api.check_user');
-    Route::post('/upgrade/save', [App\Http\Controllers\Upgrade\UpgradeController::class, 'upgradeSave'])->name('api.update.save');
-});

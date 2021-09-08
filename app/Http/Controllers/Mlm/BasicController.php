@@ -86,6 +86,7 @@ class BasicController extends RollUpController
         $this->computeRollup($id, $presentArray);
         $finishedCount = 0;
         foreach($presentArray as $index){
+            //dd($index);
             $userId = $index["userId"];
             $action = "ค่า RollUp {$index['userId']}";
             $condition = Transaction::where('user_id', $userId)
@@ -99,6 +100,7 @@ class BasicController extends RollUpController
                 $amount = $index['total'];
                 $fkId = $index['userId'];
                 $this->extractBalance($dealerId, $amount, $action, $type, $fkId);
+
                 $finishedCount++;
             }
         }
