@@ -9,18 +9,19 @@ class IndexController extends Controller
      * คำนวน Point สำหรับลงข้อมูล User ใหม่
      *
      * @param integer $inviterId    UserID ของคนที่ชวน
+     * @param integer $uplineId     UserID ของคนที่เป็นอัพไลน์ของคนที่สมัครใหม่
      * @param integer $ownerId      UserID ของคนที่กรอก
      * @param integer $newUserId    UserID ของคนที่สมัครใหม่
      * @param integer $headUserId   UserID ที่จะให้ระบบเริ่มคำนวนค่าครบคู่ (default: 1, เริ่มคำนวนตั้งแต่ต้นสายใหม่ทั้งหมด)
      *
      * @author Aom (siriwat576@gmail.com)
      */
-    public function CreateNewUser($inviterId, $ownerId, $newUserId, $headUserId = 0){
+    public function CreateNewUser($inviterId, $uplineId, $ownerId, $newUserId, $headUserId = 0){
         $Basic = new BasicController();
         $Logs = new LogsController();
 
         $Basic->insertFee($inviterId);
-        $Basic->insertRollUp($inviterId);
+        $Basic->insertRollUp($uplineId);
 
         $Logs->insertKey($ownerId, $newUserId);
         if ($headUserId > 0) $Logs->insertCouple($headUserId);

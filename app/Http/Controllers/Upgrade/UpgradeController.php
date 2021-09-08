@@ -117,7 +117,7 @@ class UpgradeController extends Controller
                 // ส่งไปตัดเงิน
                 $indexController->withdrawCash(auth()->user()->id, $price,'อัพเกรดแพ็ค', auth()->user()->id);
                 try {
-                    $indexController->CreateNewUser($user->user_upline_id,$user->user_invite_id,$user->id);
+                    $indexController->CreateNewUser($user->user_invite_id, $user->user_upline_id,$user->user_invite_id,$user->id);
                 } catch (\Throwable $th) {
 
                 }

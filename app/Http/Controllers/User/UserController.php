@@ -219,7 +219,7 @@ class UserController extends Controller
                 $this->createCoinWallet($user->id);
                 $indexController->withdrawCash(auth()->user()->id, $price, 'สมัครสมาชิก', auth()->user()->id);
                 // คิดคะแนน
-                $indexController->CreateNewUser($user->user_upline_id, auth()->user()->id, $user->id);
+                $indexController->CreateNewUser($user->user_invite_id, $user->user_upline_id, auth()->user()->id, $user->id);
 
 
                 // sent sms
