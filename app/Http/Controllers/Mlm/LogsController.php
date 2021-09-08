@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Mlm;
 
-use App\Http\Controllers\Mlm\RollUpController;
-use App\Http\Controllers\Mlm\BasicController;
+use App\Http\Controllers\MLM\RollUpController;
+use App\Http\Controllers\MLM\BasicController;
 use App\Models\User;
 use App\Models\Transaction;
 

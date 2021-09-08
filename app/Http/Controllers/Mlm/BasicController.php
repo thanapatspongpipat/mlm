@@ -134,7 +134,7 @@ class BasicController extends RollUpController
         $invite_product = ProductModel::where('id', $invite_productId)->get()->first();
         $user_product_point = $user_product->point;
         $percent_invite = $this->percentage($invite_product->level);
-        $amount = $percent_upline * $user_product_point;
+        $amount = $percent_invite * $user_product_point;
         $checkTransaction = Transaction::where('user_id', $invite_id)
                                             ->where('fk_id', $id)
                                             ->where('amount', $amount * 0.75)->get();
