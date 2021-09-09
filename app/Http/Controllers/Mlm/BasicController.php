@@ -18,12 +18,12 @@ class BasicController extends RollUpController
     }
 
     private function finalCompute($id){
-        $inviteUsersLevel = $this->getUserInviter($id);
+        $inviteUsersLevel = $this->getUserInvite($id);
         $usersLevel = $this->getUserLevel($id);
         $result = array();
         foreach($inviteUsersLevel as $inviteUser){
             $userInviteLevel = $this->getLevelByProductId($inviteUser->product_id);
-            $value = $this->getLevelCost($userInviteLevel);
+            $value = $this->getLevelCost($inviteUser->product_id);
             $percent = $this->percentage($usersLevel);
             $total = $value * $percent;
             $result[] = array(
