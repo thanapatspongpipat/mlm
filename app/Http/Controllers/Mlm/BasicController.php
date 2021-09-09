@@ -59,7 +59,6 @@ class BasicController extends RollUpController
                     $this->extractBalance($presentId, $amount, $action, $type, $fkId);
 
                     $finishedCount++;
-
                 }
             }
         }
@@ -84,7 +83,6 @@ class BasicController extends RollUpController
         $presentArray = array();
         $type = "DEPOSIT_ROLLUP";
         $this->computeRollup($id, $presentArray);
-        dd($presentArray);
         $finishedCount = 0;
         foreach($presentArray as $index){
             $userId = $index["userId"];
