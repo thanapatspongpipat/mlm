@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\MLM;
 
-use App\Http\Controllers\MLM\BaseMLM;
-use App\Models\User;
-
 class RollUpController extends BaseMLM
 {
 

@@ -1,9 +1,7 @@
 <?php
-
 namespace App\Http\Controllers\MLM;
 
 use App\Models\Transaction;
-
 
 class BasicController extends RollUpController
 {

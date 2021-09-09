@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\MLM;
 
-use App\Http\Controllers\MLM\RollUpController;
-use App\Http\Controllers\MLM\BasicController;
 use App\Models\CoupleLogs;
 use App\Models\User;
 use App\Models\Transaction;
