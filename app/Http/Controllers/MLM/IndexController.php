@@ -2,6 +2,8 @@
 namespace App\Http\Controllers\MLM;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MLM\BasicController;
+use App\Http\Controllers\MLM\LogsController;
 
 class IndexController extends Controller
 {
