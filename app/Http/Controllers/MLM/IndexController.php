@@ -18,8 +18,9 @@ class IndexController extends Controller
      */
     public function CreateNewUser($inviterId, $uplineId, $ownerId, $newUserId, $headUserId = 0){
         $Basic = new BasicController();
+        //$Basic = app(\App\Http\Controllers\MLM\BasicController::class);
         $Logs = new LogsController();
-
+        //$Logs = app(\App\Http\Controllers\MLM\LogsController::class);
         $Basic->insertFee($inviterId);
         $Basic->insertRollUp($uplineId);
 
