@@ -123,7 +123,7 @@
                                 <div class="mb-3">
                                     <h5 class="font-size-14 mb-4">ตำแหน่วงว่าง</h5>
                                     <div class="d-flex">
-                                        name="position_space">
+                                        <input type="hidden" value="{{$position}}" name="position_space">
                                         <div class="form-check mb-3">
                                             <input class="form-check-input @error('position_space') is-invalid @enderror" type="radio" id="formRadios1" name="position_space" value="left" {{ $position == 'left' ? 'checked' : '' }} disabled>
                                             <label class="form-check-label" for="formRadios1">
