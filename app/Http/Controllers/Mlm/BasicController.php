@@ -61,7 +61,7 @@ class BasicController extends RollUpController
                     $this->extractBalance($presentId, $amount, $action, $type, $fkId);
 
                     $finishedCount++;
-                    
+
                 }
             }
         }
@@ -86,21 +86,30 @@ class BasicController extends RollUpController
         $presentArray = array();
         $type = "DEPOSIT_ROLLUP";
         $this->computeRollup($id, $presentArray);
+        dd($presentArray);
         $finishedCount = 0;
         foreach($presentArray as $index){
             $userId = $index["userId"];
             $action = "ค่า RollUp {$index['userId']}";
-            $condition = Transaction::where('user_id', $userId)
-                                        ->where('fk_id', $index['dealerId'])
-                                        ->where('type', $type);
             $selfCondition = Transaction::where('user_id',$index['dealerId'])
                                         ->where('type', $type)
                                         ->where('fk_id', $index['userId']);
-            if (count($condition->get()) <= 0 and count($selfCondition->get()) <= 0){
+            if (count($selfCondition->get()) <= 0){
                 $dealerId = $index['dealerId'];
                 $amount = $index['total'];
                 $fkId = $index['userId'];
-                $this->extractBalance($dealerId, $amount, $action, $type, $fkId);
+                // in first case add money to dealerId
+                // $this->extractBalance($dealerId, $amount, $action, $type, $fkId);
+
+                // in second case
+                if($dealerId == 0){
+                    // add this amount to company without extractBalance
+                    $this->depositCompanyWallaet($dealerId, $this->floorp($amount, 2), $action);
+                } else {
+                    // dealerId > 0
+                    // add money to this delerId
+                    $this->extractBalance($dealerId, $amount, $action, $type, $fkId);
+                }
                 $finishedCount++;
             }
         }
