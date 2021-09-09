@@ -144,16 +144,43 @@ class RollUpController extends BaseMLM
     }
 
     public function getLogRollUp($id){
-        $ReferralData = $this->getUserInviter($id);
+        $ReferralData = $this->getUserInvite($id);
         $result = array();
         $UserLevel = $this->getUserLevel($id);
         $PercentRollUp = $this->getPercentRollUp($UserLevel);
+        //dd($ReferralData, $PercentRollUp, $UserLevel, $id);
         foreach($ReferralData as $user){
             $UserID = $user->id;
             $UserLevel  = $this->getLevelByProductId($user->product_id);
             $PriceLevel = $this->getLevelCost($user->product_id);
             $RollUpResult = ($PercentRollUp / 100) * $PriceLevel;
-            $DealerID = $this->getDealer($id);
+            // case 1
+            // find d or sd to add rollup
+
+
+            //$DealerID = $this->getDealer($id);
+
+
+            // case 2
+            // find user invite center
+            // check if user invite center is d or sd
+            // add money to user invite center
+            // else add money to company
+
+
+            $myUserInviterData = $this->getUserById($id);
+            $DealerID = $myUserInviterData->user_invite_id;
+            $DealerLevel = $this->getUserLevel($DealerID);
+            if($DealerLevel == "D" || $DealerLevel == "SD"){
+                // delerId get this rollup
+                $DealerID = $DealerID;
+            } else {
+                // company get this rollup
+                $DealerID = 0;
+            }
+
+
+            // return array
             $result[] = array(
                 "dealerId"=>$DealerID,
                 "rollUpResult"=>$RollUpResult,
