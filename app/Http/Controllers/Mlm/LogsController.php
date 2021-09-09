@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Mlm;
+namespace App\Http\Controllers\MLM;
 
 use App\Http\Controllers\MLM\RollUpController;
 use App\Http\Controllers\MLM\BasicController;
