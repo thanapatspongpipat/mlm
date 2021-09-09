@@ -41,7 +41,8 @@ class BasicController extends RollUpController
     }
 
 
-    public function insertFee($id){
+    public function insertFee($userId){
+        $id = intval($userId);
         $presentArray = array();
         $type = 'DEPOSIT_FEE';
         $this->computeReferral($id, $presentArray);
