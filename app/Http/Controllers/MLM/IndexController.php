@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers\MLM;
 
-use App\Http\Controllers\MLM\BasicController;
-use App\Http\Controllers\MLM\LogsController;
 use App\Http\Controllers\Controller;
 
 class IndexController extends Controller
