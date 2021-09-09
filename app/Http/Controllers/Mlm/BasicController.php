@@ -7,10 +7,10 @@ class BasicController extends RollUpController
 {
     private function percentage($level){
         $percentage = array(
-            's' => 20,
-            'm' => 25,
+            'sd' => 30,
             'd' => 30,
-            'sd' => 30
+            'm' => 25,
+            's' => 20
         );
         $lowerLevel = strtolower($level);
         if(!isset($percentage[$lowerLevel])) return 0;
@@ -127,7 +127,22 @@ class BasicController extends RollUpController
     }
 
     public function upgradeUser($upgradedUser){
-        // implement here
+        $details = "ค่าแนะนำอัพเกรดสมาชิก {$id}";
+        $type = "DEPOSIT_UPGRADE_FEE";
+        $invite_id = $this->getUserById($id)->user_invite_id;
+        $invite_productId = $this->getUserById($invite_id)->product_id;
+        $user_productId = $this->getUserById($id)->product_id;
+        $user_product = ProductModel::where('id', $user_productId)->get()->first();
+        $invite_product = ProductModel::where('id', $invite_productId)->get()->first();
+        $user_product_point = $user_product->point;
+        $percent_invite = $this->percentage($invite_product->level);
+        $amount = $percent_upline * $user_product_point;
+        $checkTransaction = Transaction::where('user_id', $invite_id)
+                                            ->where('fk_id', $id)
+                                            ->where('amount', $amount * 0.75)->get();
+        if(count($checkTransaction) != 0 ) return false;
+        $this->extractBalance($invite_id, $amount, $details, $type, $id);
+        return true;
     }
 
 }
