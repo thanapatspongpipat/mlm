@@ -178,6 +178,12 @@ class LogsController extends RollUpController
         return true;
     }
 
+    public function getCoupleLeftRight($id){
+        $AllData = $this->getAllLog($id);
+        $CombineValue = $this->combine($AllData);
+        return $CombineValue;
+    }
+
     public function reverseCoupleValue($MyPoint, $RangeCouple){
         $MinCouple = $RangeCouple["phrase1"]["countCouple"];
         $PriceMin = $RangeCouple["phrase1"]["price"];
