@@ -131,7 +131,7 @@ class BasicController extends RollUpController
         if($userRight !== null) $this->getLogRollUp($userRight['userId'], $presentArray);
     }
 
-    public function upgradeUser($upgradedUser){
+    public function upgradeUser($id){
         $details = "ค่าแนะนำอัพเกรดสมาชิก {$id}";
         $type = "DEPOSIT_UPGRADE_FEE";
         $invite_id = $this->getUserById($id)->user_invite_id;
@@ -146,6 +146,7 @@ class BasicController extends RollUpController
                                             ->where('fk_id', $id)
                                             ->where('amount', $amount * 0.75)->get();
         if(count($checkTransaction) != 0 ) return false;
+        //$this->insertFee($invite_id);
         $this->extractBalance($invite_id, $amount, $details, $type, $id);
         return true;
     }

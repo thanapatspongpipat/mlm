@@ -164,14 +164,14 @@ class LogsController extends RollUpController
         ])->get();
 
         // in case user upgrade level
-        $keyValueInTransaction = 0;
+        /*$keyValueInTransaction = 0;
         if(count($keyDuplicate) > 0){
             foreach($keyDuplicate as $keyData){
                 $keyValueInTransaction += $keyData->amount;
                 if($keyResult == $keyValueInTransaction) return false;
             }
             $keyResult -= $keyValueInTransaction;
-        }
+        }*/
 
         $keyDetail = "ค่าลงทะเบียน {$pairId}";
         $this->extractBalance($id, $keyResult, $keyDetail, $type, $pairId);
