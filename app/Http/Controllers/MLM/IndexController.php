@@ -44,7 +44,7 @@ class IndexController extends Controller
     }
 
     /**
-     * คำนวนค่าครบคู่สำหรับ Cronjob
+     * คำนวนค่าแนะนำ และ ค่าคีย์ หลังจากอัพเกรด
      *
      * @param integer $upgradedUser         UserID ที่ต้องการอัพเกรด
      *
