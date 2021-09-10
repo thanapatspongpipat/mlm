@@ -81,13 +81,17 @@ class BasicController extends RollUpController
         $type = "DEPOSIT_ROLLUP";
         $this->computeRollup($id, $presentArray);
         $finishedCount = 0;
+        //dd($presentArray);
         foreach($presentArray as $index){
             $userId = $index["userId"];
+            $dealerId = $index['dealerId'];
             $action = "ค่า RollUp {$index['userId']}";
-            $selfCondition = Transaction::where('user_id',$index['dealerId'])
-                                        ->where('type', $type)
-                                        ->where('fk_id', $index['userId']);
-            if (count($selfCondition->get()) <= 0){
+            $selfCondition = Transaction::where([
+                ['user_id', '=',$dealerId ],
+                ['fk_id', '=', $userId],
+                ['type', '=', $type]
+            ])->get();
+            if (count($selfCondition) <= 0){
                 $dealerId = $index['dealerId'];
                 $amount = $index['total'];
                 $fkId = $index['userId'];

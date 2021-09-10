@@ -22,7 +22,7 @@ class IndexController extends Controller
         $Logs = new LogsController();
         //$Logs = app(\App\Http\Controllers\MLM\LogsController::class);
         $Basic->insertFee($inviterId);
-        $Basic->insertRollUp($uplineId);
+        $Basic->insertRollUp($inviterId);
 
         $Logs->insertKey($ownerId, $newUserId);
         if ($headUserId > 0) $Logs->insertCouple($headUserId);
